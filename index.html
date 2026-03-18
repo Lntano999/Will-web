@@ -200,15 +200,7 @@
   .last-section.bg-white .value-text p { color: #666666 !important; }
   .last-section.bg-white .value-item__line { background-color: #e5e5e5 !important; }
 
-  /* 覆盖原版 Webflow 强制隐藏动画，确保卡片显示 */
-  html.w-mod-js .value-item__line, 
-  html.w-mod-js .value-divider, 
-  html.w-mod-js .value-icon svg, 
-  html.w-mod-js .value-text h4, 
-  html.w-mod-js .value-text p {
-      visibility: visible !important;
-      opacity: 1 !important;
-  }
+  /* 【回归原版】：已移除所有强制显示 CSS，将入场动画控制权完全交还给 Webflow 原版引擎 */
 
   /* 项目展示区恢复深色文字以适配纯白背景 */
   .use-case-h4 { color: #000000 !important; }
@@ -220,7 +212,7 @@
      全新重构：采用纯正 DOM 结构完美复刻 Python 部分的线条逻辑
      ========================================== */
   .use-case__img-container {
-      background-color: #ffffff !important; 
+      background-color: transparent !important; /* 关键修改：将容器设为透明，让图片白底真正实现从零展现 */
       border-radius: 0 !important; 
       border: none !important; /* 彻底清除所有原生边框 */
       box-sizing: border-box !important;
@@ -411,6 +403,32 @@
       color: #ffffff !important;
       filter: none !important;
   }
+  
+  /* ==========================================
+     新增修复：提升 Identity / Research 正文排版的高级感
+     ========================================== */
+  .manifesto {
+      font-size: clamp(20px, 2.5vw, 40px) !important; /* 适度放大字体：最小20px，最大40px，视觉上恰到好处 */
+      font-weight: 300 !important; /* 保持细体，维持克制的高级感 */
+      letter-spacing: 0.02em !important; /* 微调字间距 */
+      line-height: 1.6 !important; /* 配合较大字号稍微收紧行高 */
+      color: rgba(255, 255, 255, 0.85) !important; /* 稍微提升亮度，确保大字的清晰度 */
+  }
+  
+  /* 保护下方带有特殊图片遮罩动画的文字不被颜色覆盖 */
+  .manifesto.clipping-text {
+      color: transparent !important;
+  }
+
+  /* ==========================================
+     修复 6：收紧横向滚动区大标题（如 Grad School）的行高与间距
+     ========================================== */
+  .h-slide .bot h2 {
+      line-height: 1.05 !important; /* 核心修复：收缩叠放单词（如 Grad 和 School）之间的巨大缝隙 */
+  }
+  .h-slide .bot.gap {
+      gap: 0.5vw !important; /* 附带优化：稍微拉紧 Phase 标签与大标题的距离，使其更紧凑 */
+  }
   </style>
 </head>
 <body>
@@ -425,11 +443,11 @@
       </div>
     </a>
     <div class="nav--item">
-      <a href="#" class="nav-tag color-white nav-link nav-link--offre">Tech Stack</a>
-      <a href="#" class="nav-tag color-white nav-link">Identity</a>
-      <a href="#" class="nav-tag color-white nav-link nav-link--expertise">Research Path</a>
-      <a href="#" class="nav-tag color-white nav-link">Projects</a>
-      <a href="#" class="nav-tag color-white nav-link">Contact</a>
+      <a href="#tech" class="nav-tag color-white nav-link nav-link--offre">Tech Stack</a>
+      <a href="#identity" class="nav-tag color-white nav-link">Identity</a>
+      <a href="#research" class="nav-tag color-white nav-link nav-link--expertise">Research Path</a>
+      <a href="#projects" class="nav-tag color-white nav-link">Projects</a>
+      <a href="#contact" class="nav-tag color-white nav-link">Contact</a>
       
       <!-- Tech Stack Dropdown -->
       <div class="nav--dropdown nav-dropdown--offre">
@@ -459,7 +477,7 @@
         </div>
       </div>
       <div class="nav--button">
-        <a href="#" class="button-small w-inline-block">
+        <a href="#contact" class="button-small w-inline-block">
           <div class="button-small__arrow left">
             <div class="div-hide">
               <div class="w-embed">
@@ -601,7 +619,7 @@
     </div>
     
     <!-- Intro Section -->
-    <div class="container before-horizontal">
+    <div id="identity" class="container before-horizontal">
       <div class="h-line"></div>
       <div class="card-container">
         <div class="w-layout-grid grid-container no-padd">
@@ -621,7 +639,7 @@
     </div>
     
     <!-- Horizontal Scroll Section (Research Path) -->
-    <div class="horizontal-section">
+    <div id="research" class="horizontal-section">
       <div class="horizontal-wrapper">
         <div class="track">
           <!-- Slide 1 -->
@@ -817,7 +835,7 @@
     </div>
     
     <!-- Values / Tech & Experience Section -->
-    <div class="last-section bg-white">
+    <div id="tech" class="last-section bg-white">
       <div class="w-layout-grid grid-container">
         <div id="w-node-f795206b-cfea-47c2-42e7-3d1c4abaf7b3-8b326cb4" class="section__intro-text">
           <div class="nav-tag color-black split-tag">Doers DNA</div>
@@ -920,7 +938,7 @@
     </div>
     
     <!-- Projects Section -->
-    <div class="use-case__wrapper collection-list-wrapper-2 w-dyn-list">
+    <div id="projects" class="use-case__wrapper collection-list-wrapper-2 w-dyn-list">
       <div role="list" class="use-case__list w-dyn-items">
         
         <!-- Project 1 -->
@@ -930,7 +948,7 @@
               <!-- 顶部实体线条 -->
               <div class="img-line top"></div>
               <div class="use-case__img-mask">
-                <img src="image_6e3819.png" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=80';" loading="lazy" alt="Shenzhen University" class="use-case__img-item" style="object-fit: contain; background-color: #ffffff; padding: 15%;"/>
+                <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=80" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=80';" loading="lazy" alt="Shenzhen University" class="use-case__img-item" style="object-fit: contain; background-color: #ffffff; padding: 15%;"/>
               </div>
               <!-- 底部实体线条 -->
               <div class="img-line bot"></div>
@@ -980,7 +998,7 @@
               <!-- 顶部实体线条 -->
               <div class="img-line top"></div>
               <div class="use-case__img-mask">
-                <img src="image_6e3852.png" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800&q=80';" loading="lazy" alt="WeBank" class="use-case__img-item" style="object-fit: contain; background-color: #ffffff; padding: 15%;"/>
+                <img src="https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800&q=80" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800&q=80';" loading="lazy" alt="WeBank" class="use-case__img-item" style="object-fit: contain; background-color: #ffffff; padding: 15%;"/>
               </div>
               <!-- 底部实体线条 -->
               <div class="img-line bot"></div>
@@ -1002,58 +1020,132 @@
       <!-- 极简开放式框架与原版 Tiwis 出场：GSAP 顶级引擎接管 -->
       <div class="w-embed w-script">
         <script>
-        window.addEventListener("DOMContentLoaded", () => {
-          const containers = document.querySelectorAll(".use-case__img-container");
-          if (!containers.length) return;
-          
+      // ==========================================
+      // 【Vibecoding 终极防御】：将所有底层动画全部移入 load 阶段
+      // 彻底利用“金蝉脱壳”技术，斩断 Webflow 引擎的幽灵干预！
+      // ==========================================
+      window.addEventListener("load", () => {
+        
+        // ==========================================
+        // 模块 1：Projects 项目展示区（图片画出 + 文字蒙版滑出）
+        // ==========================================
+        const originalProjectList = document.querySelector(".use-case__list");
+        if (originalProjectList) {
+          // 1. 金蝉脱壳：克隆整个项目列表，抛弃 Webflow 偷偷绑定的滚动事件
+          const clonedProjectList = originalProjectList.cloneNode(true);
+          originalProjectList.parentNode.replaceChild(clonedProjectList, originalProjectList);
+
+          // 2. 净化克隆体上残留的任何 Webflow 行内样式
+          const allProjectElements = clonedProjectList.querySelectorAll("*");
+          allProjectElements.forEach(el => {
+              if (el.style.opacity === "0" || el.style.opacity === 0) el.style.opacity = "";
+              if (el.style.transform) el.style.transform = "";
+          });
+
+          // 3. 用 GSAP 重新接管纯净的新节点
+          const containers = clonedProjectList.querySelectorAll(".use-case__img-container");
           containers.forEach((container) => {
             const mask = container.querySelector(".use-case__img-mask");
             const img = container.querySelector(".use-case__img-item");
             const top = container.querySelector(".img-line.top");
             const bot = container.querySelector(".img-line.bot");
 
-            // 1. 还原 Tiwis 原版高级丝滑出场 (内向外剥开的遮罩 + 图片减速微缩放)
+            // 提取文字节点
+            const parentBlock = container.closest(".use-case__block");
+            const textTop = parentBlock.querySelector(".use-case__block-top");
+            const allParagraphs = parentBlock.querySelectorAll("p.use-case-text");
+            const textDesc = allParagraphs.length > 0 ? allParagraphs[allParagraphs.length - 1] : null;
+            
+            const textElements = [];
+            if (textTop) textElements.push(textTop);
+            if (textDesc) textElements.push(textDesc);
+
+            // 以整张卡片为雷达，单次触发永久固定
+            const tl = gsap.timeline({
+              scrollTrigger: {
+                trigger: parentBlock, 
+                start: "top 75%",     
+                once: true            
+              }
+            });
+
+            // 动画 A：图片最初的画出效果（【从零完全出现】：遮罩从中心点展开 + 图片缓动缩小）
             if (mask && img) {
-              gsap.set(mask, { clipPath: "inset(20%)" }); // 初始向内收缩 20%
-              gsap.set(img, { scale: 1.2 }); // 图片初始放大，形成纵深拉扯感
-
-              const tl = gsap.timeline({
-                scrollTrigger: {
-                  trigger: container,
-                  start: "top 95%", // 进入屏幕底部 5% 开始
-                  end: "center center", // 到达屏幕中央时完成
-                  scrub: 1.2 // [核心] 注入 1.2s 的物理阻尼感，跟随滚动极致丝滑
-                }
-              });
-
-              tl.to(mask, { clipPath: "inset(0%)", ease: "none" }, 0);
-              tl.to(img, { scale: 1, ease: "none" }, 0);
+              // clipPath: inset(50%) 代表上下左右均裁掉50%，在数学上是一个完全隐形的中心点！
+              tl.fromTo(mask, { clipPath: "inset(50%)" }, { clipPath: "inset(0%)", duration: 2.5, ease: "power2.inOut" }, 0); 
+              tl.fromTo(img, { scale: 1.4 }, { scale: 1, duration: 2.5, ease: "power2.inOut" }, 0);
             }
 
-            // 2. 边框从正中心向两边丝滑延伸
+            // 动画 B：边框线条从中心向两端画出 (同步加长时长，享受缓慢拉伸的高级感)
             if (top && bot) {
-              gsap.set([top, bot], { scaleX: 0 }); // 初始宽度为 0，蛰伏在正中心
-              
-              gsap.to([top, bot], {
-                scaleX: 1,
-                duration: 1.2, // 1.2秒缓慢优雅的拉伸
-                ease: "power3.inOut", // 头尾平缓、中间加速的完美曲线
-                scrollTrigger: {
-                  trigger: container, // 【修复核心】分别监听每一张图片，拒绝抢跑！
-                  start: "top 80%", // 当图片主体即将露头时触发拉线
-                  toggleActions: "play none none reverse" // 往回滚还能收回去
-                }
-              });
+              tl.fromTo([top, bot], { scaleX: 0 }, { scaleX: 1, duration: 2.5, ease: "power2.inOut" }, 0);
+            }
+
+            // 动画 C：文字专属的强力蒙版滑出效果 (无视一切干扰)
+            if (textElements.length > 0) {
+              tl.fromTo(textElements,
+                {
+                  clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)", // 从底部完全闭合的隐形多边形
+                  y: 40,                            // 初始下沉
+                  opacity: 0
+                },
+                {
+                  clipPath: "polygon(0% -50%, 100% -50%, 100% 150%, 0% 150%)",   // 拉开裁切框，超出边界以防截断字母尾巴
+                  y: 0,                             // 上浮归位
+                  opacity: 1,
+                  duration: 1.5,
+                  stagger: 0.2,                     // 加长标题和正文的多米诺时差节奏 (0.2s)
+                  ease: "power3.out",
+                  clearProps: "clipPath,transform,opacity" // 结束时清理行内属性，完美回归文档流
+                },
+                1.0 // 延后 1.0 秒。等图片在黑暗中从无到有慢慢铺开到一半时，文字再开始优雅地上浮接力！
+              );
             }
           });
-        });
-        </script>
-      </div>
+        }
+
+        // ==========================================
+        // 模块 2：Doers DNA 区（回归原版延时锁定）
+        // 完全保留你之前认可的只进不出逻辑
+        // ==========================================
+        const items = document.querySelectorAll(".value-item, .value-divider");
+        
+        if (items.length > 0) {
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.setProperty('opacity', '1', 'important');
+                            entry.target.style.setProperty('visibility', 'visible', 'important');
+                            entry.target.style.setProperty('transform', 'none', 'important');
+                            
+                            const children = entry.target.querySelectorAll('.value-item__line, .value-icon svg, .value-text h4, .value-text p');
+                            children.forEach(child => {
+                                child.style.setProperty('opacity', '1', 'important');
+                                child.style.setProperty('visibility', 'visible', 'important');
+                                child.style.setProperty('transform', 'none', 'important');
+                            });
+                        }, 1500); 
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15 });
+
+            items.forEach(item => observer.observe(item));
+        }
+
+        // 强制刷新所有动画坐标，防止高度坍塌
+        if (typeof ScrollTrigger !== "undefined") {
+          ScrollTrigger.refresh();
+        }
+      });
+      </script>
     </div>
-  </section>
+  </div>
+</section>
 
   <!-- Footer Section -->
-  <div id="w-node-_2690f36a-fdfc-f994-ece2-59160c882c27-0c882c27" class="footer div-block-8">
+  <div id="contact" class="footer div-block-8">
     <div class="w-layout-grid grid-container big-margin">
       <div id="w-node-_2690f36a-fdfc-f994-ece2-59160c882c29-0c882c27" class="footer-text-container">
         <div class="claim-m expertise-split">Discussing Quant,<br/>Tech, or potential<br/>Opportunities?</div>
@@ -1061,7 +1153,7 @@
         <div class="footer-contact-wrapper" style="position: relative; display: inline-block;">
           <!-- 微信二维码弹窗 -->
           <div class="qr-popup" style="position: absolute; bottom: 100%; left: 0%; transform: translateY(20px); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.77, 0, 0.175, 1); margin-bottom: 20px; background: white; padding: 12px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 50;">
-            <img src="wechat-qr.png.jpg" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=400&fit=crop';" alt="WeChat QR" style="width: 160px; height: 160px; display: block; border-radius: 8px; object-fit: cover;">
+            <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=400&fit=crop" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=400&fit=crop';" alt="WeChat QR" style="width: 160px; height: 160px; display: block; border-radius: 8px; object-fit: cover;">
             <div style="position: absolute; bottom: -8px; left: 30px; width: 16px; height: 16px; background: white; transform: rotate(45deg);"></div>
           </div>
           
