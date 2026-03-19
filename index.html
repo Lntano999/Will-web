@@ -164,16 +164,19 @@
       margin: 0 4vw !important; 
       display: flex !important;
       align-items: center !important;
+      justify-content: center !important; /* 【核心修复】保证水平绝对居中 */
       visibility: visible !important;
       opacity: 1 !important;
+      height: 100% !important; /* 【核心修复】撑满父级确保垂直绝对居中 */
   }
   .marquee__svg svg {
-      width: 3.5vw !important;
+      width: 6vw !important; /* 【核心修复】由于原图是宽幅长方形，这里按比例拉宽，避免被挤压成正方形 */
       height: 3.5vw !important;
+      display: block !important;
   }
   @media screen and (max-width: 479px) {
       .marquee__svg { margin: 0 6vw !important; }
-      .marquee__svg svg { width: 7vw !important; height: 7vw !important; }
+      .marquee__svg svg { width: 12vw !important; height: 7vw !important; }
   }
   
   .use-case__wrapper {
@@ -429,6 +432,89 @@
   .h-slide .bot.gap {
       gap: 0.5vw !important; /* 附带优化：稍微拉紧 Phase 标签与大标题的距离，使其更紧凑 */
   }
+
+  /* ==========================================
+     新增：统一图片高度与比例 (解决 3 张图高度不齐)
+     ========================================== */
+  .use-case__img-container {
+      background-color: transparent !important; 
+      border-radius: 0 !important; 
+      border: none !important; 
+      box-sizing: border-box !important;
+      position: relative !important;
+  }
+  
+  .use-case__img-mask {
+      width: 100% !important;
+      /* 【终极修复 1】：强制所有卡片采用绝对统一的 4:3 比例，高度完全一致 */
+      aspect-ratio: 4 / 3 !important; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* 【终极修复 2】：全白背景填充剩余空间，完美治愈高度差 */
+      background-color: #ffffff !important; 
+      overflow: hidden;
+      position: relative;
+      border: none !important;
+  }
+
+  .use-case__img-mask img.use-case__img-item {
+      width: 100% !important;
+      height: 100% !important;
+      /* 【终极修复 3】：实体图片保持原比例，居中放置在白底上 */
+      object-fit: contain !important; 
+      box-sizing: border-box !important;
+      padding: 12% !important; 
+      background-color: transparent !important;
+  }
+
+  /* ==========================================
+     修改：中间名片巨型 Logo 样式 (去除边框，添加下划线)
+     ========================================== */
+  .center-logo-card {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: transparent !important;
+      position: absolute; 
+      top: 0;
+      left: 0;
+  }
+  .center-huge-logo {
+      font-size: clamp(60px, 12vw, 180px) !important; 
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      line-height: 1 !important;
+      background-image: url('https://cdn.prod.website-files.com/68f77e49c7ca6bd68b326c3d/6900c3d30f2eca17950257bd_Blizar%201.png') !important;
+      background-size: cover !important;
+      background-position: center !important;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
+      color: transparent !important;
+      -webkit-text-fill-color: transparent !important;
+      filter: none !important; 
+      margin: auto;
+      position: relative;
+      display: inline-block;
+  }
+  
+  /* 【终极修复 4】：增加下划线，使用伪元素完美复刻冰川材质，避免 text-decoration 兼容性问题 */
+  .center-huge-logo::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -0.05em; 
+      width: 100%;
+      height: 0.08em;
+      background-image: url('https://cdn.prod.website-files.com/68f77e49c7ca6bd68b326c3d/6900c3d30f2eca17950257bd_Blizar%201.png');
+      background-size: cover;
+      background-position: center;
+  }
+  
+  /* 隐藏所有残余线条 */
+  .img-line { display: none !important; }
   </style>
 </head>
 <body>
@@ -443,29 +529,11 @@
       </div>
     </a>
     <div class="nav--item">
-      <a href="#tech" class="nav-tag color-white nav-link nav-link--offre">Tech Stack</a>
-      <a href="#identity" class="nav-tag color-white nav-link">Identity</a>
-      <a href="#research" class="nav-tag color-white nav-link nav-link--expertise">Research Path</a>
-      <a href="#projects" class="nav-tag color-white nav-link">Projects</a>
+      <!-- 【核心修复 1】：合并 Identity 和 Research Path，精简导航栏结构 -->
+      <a href="#identity" class="nav-tag color-white nav-link">Identity - Research Path</a>
+      <a href="#tech" class="nav-tag color-white nav-link">Tech Stack</a>
+      <a href="#projects" class="nav-tag color-white nav-link">WILL.</a>
       <a href="#contact" class="nav-tag color-white nav-link">Contact</a>
-      
-      <!-- Tech Stack Dropdown -->
-      <div class="nav--dropdown nav-dropdown--offre">
-        <a href="#" class="nav-dropdown__link split-nav nav-link">Python & Quant</a>
-        <a href="#" class="nav-dropdown__link split-nav nav-link">C++ & Algorithms</a>
-        <a href="#" class="nav-dropdown__link split-nav nav-link">Data Pipeline</a>
-      </div>
-
-      <!-- Research Path Dropdown -->
-      <div class="nav--dropdown nav-dropdown--expertise">
-        <div class="w-dyn-list">
-          <div role="list" class="nav-list w-dyn-items">
-            <div role="listitem" class="w-dyn-item"><a href="#" class="nav-dropdown__link split-nav nav-link">Phase 1: Foundation</a></div>
-            <div role="listitem" class="w-dyn-item"><a href="#" class="nav-dropdown__link split-nav nav-link">Phase 2: Research Init</a></div>
-            <div role="listitem" class="w-dyn-item"><a href="#" class="nav-dropdown__link split-nav nav-link">Phase 3: Grad School</a></div>
-          </div>
-        </div>
-      </div>
     </div>
     <div class="nav--buttons">
       <!-- 【核心修改】：将 margin-right 彻底清零 (从 0.3vw 变为 0)，让它更贴近右侧箭头 -->
@@ -568,11 +636,11 @@
     <div class="nav-mobile-panel">
       <div class="div-block-9">
         <ul role="list" class="nav-mobile__list-link">
-          <li class="nav-mobile__list-item"><a data-submenu-target="offres" href="#" class="nav-mobile__link nav-mobile__link-offres">Tech Stack</a></li>
-          <li class="nav-mobile__list-item"><a href="#" class="nav-mobile__link">Identity</a></li>
-          <li class="nav-mobile__list-item"><a data-submenu-target="expertise" href="#" class="nav-mobile__link nav-mobile__link-expertise">Research Path</a></li>
-          <li class="nav-mobile__list-item"><a href="#" class="nav-mobile__link">Projects</a></li>
-          <li class="nav-mobile__list-item"><a href="#" class="nav-mobile__link">Contact</a></li>
+          <!-- 【核心修复 1-移动端】：同步合并移动端的菜单项 -->
+          <li class="nav-mobile__list-item"><a href="#identity" class="nav-mobile__link">Identity - Research Path</a></li>
+          <li class="nav-mobile__list-item"><a href="#tech" class="nav-mobile__link">Tech Stack</a></li>
+          <li class="nav-mobile__list-item"><a href="#projects" class="nav-mobile__link">WILL.</a></li>
+          <li class="nav-mobile__list-item"><a href="#contact" class="nav-mobile__link">Contact</a></li>
         </ul>
       </div>
       <div class="bot clipping-text nav">
@@ -913,25 +981,148 @@
         <div class="marquee-content scroll-marquee">
           <div class="marquee__text clipping-text">ABOUT ME</div>
           <div class="marquee__svg w-embed">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="#FA4838"><path d="M50 0 C50 27.614 72.386 50 100 50 C72.386 50 50 72.386 50 100 C50 72.386 27.614 50 0 50 C27.614 50 50 27.614 50 0 Z" /></svg>
+            <!-- 像素级 3D 穿插复刻：W-Quant 徽标 -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none" style="display:block;">
+              <!-- 1. 底层阴影/加粗轮廓 W -->
+              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#66a6ff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.15"/>
+              <!-- 2. 中层白色实体 W (制造厚度感) -->
+              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#66a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+
+              <!-- 3. 背景细数据折线 (藏在最后面) -->
+              <path d="M 15 75 L 45 45 L 75 85 L 105 35 L 135 70 L 165 25 L 185 55" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 15 75 L 45 45 L 75 85 L 105 35 L 135 70 L 165 25 L 185 55" stroke="#66a6ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+              <!-- 背景折线节点 -->
+              <circle cx="15" cy="75" r="2.5" fill="#66a6ff"/>
+              <circle cx="45" cy="45" r="2.5" fill="#66a6ff"/>
+              <circle cx="75" cy="85" r="2.5" fill="#66a6ff"/>
+              <circle cx="105" cy="35" r="2.5" fill="#66a6ff"/>
+              <circle cx="135" cy="70" r="2.5" fill="#66a6ff"/>
+              <circle cx="165" cy="25" r="2.5" fill="#66a6ff"/>
+              <circle cx="185" cy="55" r="2.5" fill="#66a6ff"/>
+
+              <!-- 4. 前景粗数据折线 (带白色描边以实现"切断"W的视觉穿插3D效果) -->
+              <path d="M 20 95 L 40 65 L 60 95 L 95 40 L 115 75 L 155 15" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 20 95 L 40 65 L 60 95 L 95 40 L 115 75 L 155 15" stroke="#66a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              
+              <!-- 前景折线节点 (外白内蓝增强悬浮感) -->
+              <circle cx="20" cy="95" r="4.5" fill="#ffffff"/>
+              <circle cx="20" cy="95" r="2.5" fill="#66a6ff"/>
+              <circle cx="40" cy="65" r="4.5" fill="#ffffff"/>
+              <circle cx="40" cy="65" r="2.5" fill="#66a6ff"/>
+              <circle cx="60" cy="95" r="4.5" fill="#ffffff"/>
+              <circle cx="60" cy="95" r="2.5" fill="#66a6ff"/>
+              <circle cx="95" cy="40" r="4.5" fill="#ffffff"/>
+              <circle cx="95" cy="40" r="2.5" fill="#66a6ff"/>
+              <circle cx="115" cy="75" r="4.5" fill="#ffffff"/>
+              <circle cx="115" cy="75" r="2.5" fill="#66a6ff"/>
+              
+              <!-- 前景主箭头 -->
+              <polygon points="160,10 146,15 156,25" fill="#ffffff"/>
+              <polygon points="158,12 149,15 155,23" fill="#66a6ff"/>
+            </svg>
           </div>
         </div>
         <div class="marquee-content scroll-marquee">
           <div class="marquee__text clipping-text">ABOUT ME</div>
           <div class="marquee__svg w-embed">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="#FA4838"><path d="M50 0 C50 27.614 72.386 50 100 50 C72.386 50 50 72.386 50 100 C50 72.386 27.614 50 0 50 C27.614 50 50 27.614 50 0 Z" /></svg>
+            <!-- 像素级 3D 穿插复刻：W-Quant 徽标 -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none" style="display:block;">
+              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#66a6ff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.15"/>
+              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#66a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+              <path d="M 15 75 L 45 45 L 75 85 L 105 35 L 135 70 L 165 25 L 185 55" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 15 75 L 45 45 L 75 85 L 105 35 L 135 70 L 165 25 L 185 55" stroke="#66a6ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+              <circle cx="15" cy="75" r="2.5" fill="#66a6ff"/>
+              <circle cx="45" cy="45" r="2.5" fill="#66a6ff"/>
+              <circle cx="75" cy="85" r="2.5" fill="#66a6ff"/>
+              <circle cx="105" cy="35" r="2.5" fill="#66a6ff"/>
+              <circle cx="135" cy="70" r="2.5" fill="#66a6ff"/>
+              <circle cx="165" cy="25" r="2.5" fill="#66a6ff"/>
+              <circle cx="185" cy="55" r="2.5" fill="#66a6ff"/>
+              <path d="M 20 95 L 40 65 L 60 95 L 95 40 L 115 75 L 155 15" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 20 95 L 40 65 L 60 95 L 95 40 L 115 75 L 155 15" stroke="#66a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="20" cy="95" r="4.5" fill="#ffffff"/>
+              <circle cx="20" cy="95" r="2.5" fill="#66a6ff"/>
+              <circle cx="40" cy="65" r="4.5" fill="#ffffff"/>
+              <circle cx="40" cy="65" r="2.5" fill="#66a6ff"/>
+              <circle cx="60" cy="95" r="4.5" fill="#ffffff"/>
+              <circle cx="60" cy="95" r="2.5" fill="#66a6ff"/>
+              <circle cx="95" cy="40" r="4.5" fill="#ffffff"/>
+              <circle cx="95" cy="40" r="2.5" fill="#66a6ff"/>
+              <circle cx="115" cy="75" r="4.5" fill="#ffffff"/>
+              <circle cx="115" cy="75" r="2.5" fill="#66a6ff"/>
+              <polygon points="160,10 146,15 156,25" fill="#ffffff"/>
+              <polygon points="158,12 149,15 155,23" fill="#66a6ff"/>
+            </svg>
           </div>
         </div>
         <div class="marquee-content scroll-marquee">
           <div class="marquee__text clipping-text">ABOUT ME</div>
           <div class="marquee__svg w-embed">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="#FA4838"><path d="M50 0 C50 27.614 72.386 50 100 50 C72.386 50 50 72.386 50 100 C50 72.386 27.614 50 0 50 C27.614 50 50 27.614 50 0 Z" /></svg>
+            <!-- 像素级 3D 穿插复刻：W-Quant 徽标 -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none" style="display:block;">
+              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#66a6ff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.15"/>
+              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#66a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+              <path d="M 15 75 L 45 45 L 75 85 L 105 35 L 135 70 L 165 25 L 185 55" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 15 75 L 45 45 L 75 85 L 105 35 L 135 70 L 165 25 L 185 55" stroke="#66a6ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+              <circle cx="15" cy="75" r="2.5" fill="#66a6ff"/>
+              <circle cx="45" cy="45" r="2.5" fill="#66a6ff"/>
+              <circle cx="75" cy="85" r="2.5" fill="#66a6ff"/>
+              <circle cx="105" cy="35" r="2.5" fill="#66a6ff"/>
+              <circle cx="135" cy="70" r="2.5" fill="#66a6ff"/>
+              <circle cx="165" cy="25" r="2.5" fill="#66a6ff"/>
+              <circle cx="185" cy="55" r="2.5" fill="#66a6ff"/>
+              <path d="M 20 95 L 40 65 L 60 95 L 95 40 L 115 75 L 155 15" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 20 95 L 40 65 L 60 95 L 95 40 L 115 75 L 155 15" stroke="#66a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="20" cy="95" r="4.5" fill="#ffffff"/>
+              <circle cx="20" cy="95" r="2.5" fill="#66a6ff"/>
+              <circle cx="40" cy="65" r="4.5" fill="#ffffff"/>
+              <circle cx="40" cy="65" r="2.5" fill="#66a6ff"/>
+              <circle cx="60" cy="95" r="4.5" fill="#ffffff"/>
+              <circle cx="60" cy="95" r="2.5" fill="#66a6ff"/>
+              <circle cx="95" cy="40" r="4.5" fill="#ffffff"/>
+              <circle cx="95" cy="40" r="2.5" fill="#66a6ff"/>
+              <circle cx="115" cy="75" r="4.5" fill="#ffffff"/>
+              <circle cx="115" cy="75" r="2.5" fill="#66a6ff"/>
+              <polygon points="160,10 146,15 156,25" fill="#ffffff"/>
+              <polygon points="158,12 149,15 155,23" fill="#66a6ff"/>
+            </svg>
           </div>
         </div>
         <div class="marquee-content scroll-marquee">
           <div class="marquee__text clipping-text">ABOUT ME</div>
           <div class="marquee__svg w-embed">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="#FA4838"><path d="M50 0 C50 27.614 72.386 50 100 50 C72.386 50 50 72.386 50 100 C50 72.386 27.614 50 0 50 C27.614 50 50 27.614 50 0 Z" /></svg>
+            <!-- 像素级 3D 穿插复刻：W-Quant 徽标 -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none" style="display:block;">
+              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#66a6ff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.15"/>
+              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#66a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+              <path d="M 15 75 L 45 45 L 75 85 L 105 35 L 135 70 L 165 25 L 185 55" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 15 75 L 45 45 L 75 85 L 105 35 L 135 70 L 165 25 L 185 55" stroke="#66a6ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+              <circle cx="15" cy="75" r="2.5" fill="#66a6ff"/>
+              <circle cx="45" cy="45" r="2.5" fill="#66a6ff"/>
+              <circle cx="75" cy="85" r="2.5" fill="#66a6ff"/>
+              <circle cx="105" cy="35" r="2.5" fill="#66a6ff"/>
+              <circle cx="135" cy="70" r="2.5" fill="#66a6ff"/>
+              <circle cx="165" cy="25" r="2.5" fill="#66a6ff"/>
+              <circle cx="185" cy="55" r="2.5" fill="#66a6ff"/>
+              <path d="M 20 95 L 40 65 L 60 95 L 95 40 L 115 75 L 155 15" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 20 95 L 40 65 L 60 95 L 95 40 L 115 75 L 155 15" stroke="#66a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="20" cy="95" r="4.5" fill="#ffffff"/>
+              <circle cx="20" cy="95" r="2.5" fill="#66a6ff"/>
+              <circle cx="40" cy="65" r="4.5" fill="#ffffff"/>
+              <circle cx="40" cy="65" r="2.5" fill="#66a6ff"/>
+              <circle cx="60" cy="95" r="4.5" fill="#ffffff"/>
+              <circle cx="60" cy="95" r="2.5" fill="#66a6ff"/>
+              <circle cx="95" cy="40" r="4.5" fill="#ffffff"/>
+              <circle cx="95" cy="40" r="2.5" fill="#66a6ff"/>
+              <circle cx="115" cy="75" r="4.5" fill="#ffffff"/>
+              <circle cx="115" cy="75" r="2.5" fill="#66a6ff"/>
+              <polygon points="160,10 146,15 156,25" fill="#ffffff"/>
+              <polygon points="158,12 149,15 155,23" fill="#66a6ff"/>
+            </svg>
           </div>
         </div>
       </div>
@@ -945,14 +1136,9 @@
         <div role="listitem" class="use-case__item w-dyn-item">
           <a href="#" class="use-case__block w-inline-block">
             <div class="use-case__img-container">
-              <!-- 顶部实体线条 -->
-              <div class="img-line top"></div>
               <div class="use-case__img-mask">
-                <!-- 修改为正确的深圳大学图片名 -->
-                <img src="image_6e3819.png" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=80';" loading="lazy" alt="Shenzhen University" class="use-case__img-item" style="object-fit: contain; background-color: #ffffff; padding: 15%;"/>
+                <img src="image_6e3819.png" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&q=80';" loading="lazy" alt="Shenzhen University" class="use-case__img-item" />
               </div>
-              <!-- 底部实体线条 -->
-              <div class="img-line bot"></div>
             </div>
             <div class="use-case__block-top">
               <div class="top use-case__top-margin">
@@ -971,13 +1157,11 @@
         <div role="listitem" class="use-case__item w-dyn-item">
           <a href="#" class="use-case__block w-inline-block">
             <div class="use-case__img-container">
-              <!-- 顶部实体线条 -->
-              <div class="img-line top"></div>
               <div class="use-case__img-mask">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='1200' viewBox='0 0 1600 1200'%3E%3Crect width='1600' height='1200' fill='%23ffffff'/%3E%3Ctext x='50%25' y='42%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='100' font-weight='900' font-style='normal' fill='%23000000' letter-spacing='-0.02em'%3EWilliam Leo Tang%3C/text%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='50' font-weight='900' font-style='normal' fill='%23000000'%3Eor%3C/text%3E%3Ctext x='50%25' y='66%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='80' font-weight='900' font-style='normal' fill='%23000000' letter-spacing='0.05em'%3E唐嘉辰%3C/text%3E%3C/svg%3E" loading="lazy" alt="William Leo Tang" class="use-case__img-item" style="object-fit: cover;"/>
+                <div class="use-case__img-item center-logo-card">
+                  <div class="center-huge-logo">WILL.</div>
+                </div>
               </div>
-              <!-- 底部实体线条 -->
-              <div class="img-line bot"></div>
             </div>
             <div class="use-case__block-top">
               <div class="top use-case__top-margin">
@@ -996,14 +1180,9 @@
         <div role="listitem" class="use-case__item w-dyn-item">
           <a href="#" class="use-case__block w-inline-block">
             <div class="use-case__img-container">
-              <!-- 顶部实体线条 -->
-              <div class="img-line top"></div>
               <div class="use-case__img-mask">
-                <!-- 修改为正确的微众银行图片名 -->
-                <img src="image_6e3852.png" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800&q=80';" loading="lazy" alt="WeBank" class="use-case__img-item" style="object-fit: contain; background-color: #ffffff; padding: 15%;"/>
+                <img src="image_6e3852.png" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800&q=80';" loading="lazy" alt="WeBank" class="use-case__img-item" />
               </div>
-              <!-- 底部实体线条 -->
-              <div class="img-line bot"></div>
             </div>
             <div class="use-case__block-top">
               <div class="top use-case__top-margin">
@@ -1049,9 +1228,7 @@
           containers.forEach((container) => {
             const mask = container.querySelector(".use-case__img-mask");
             const img = container.querySelector(".use-case__img-item");
-            const top = container.querySelector(".img-line.top");
-            const bot = container.querySelector(".img-line.bot");
-
+            
             // 提取文字节点
             const parentBlock = container.closest(".use-case__block");
             const textTop = parentBlock.querySelector(".use-case__block-top");
@@ -1078,12 +1255,7 @@
               tl.fromTo(img, { scale: 1.4 }, { scale: 1, duration: 2.5, ease: "power2.inOut" }, 0);
             }
 
-            // 动画 B：边框线条从中心向两端画出 (同步加长时长，享受缓慢拉伸的高级感)
-            if (top && bot) {
-              tl.fromTo([top, bot], { scaleX: 0 }, { scaleX: 1, duration: 2.5, ease: "power2.inOut" }, 0);
-            }
-
-            // 动画 C：文字专属的强力蒙版滑出效果 (无视一切干扰)
+            // 动画 B：文字专属的强力蒙版滑出效果 (无视一切干扰)
             if (textElements.length > 0) {
               tl.fromTo(textElements,
                 {
@@ -1107,33 +1279,37 @@
         }
 
         // ==========================================
-        // 模块 2：Doers DNA 区（回归原版延时锁定）
-        // 完全保留你之前认可的只进不出逻辑
+        // 模块 2：Doers DNA 区（完全回归 Webflow 原生动画）
+        // 撤回所有 GSAP 的强制克隆和接管，把 100% 的动画控制权还给 Webflow 原版引擎。
+        // 同时，部署一个轻量级的“隐形护卫”：只在你从下往上滑、且 Webflow 出现 bug 把元素变透明时，
+        // 悄悄把透明度恢复，确保无论怎么滑都不会白屏消失。
         // ==========================================
-        const items = document.querySelectorAll(".value-item, .value-divider");
-        
-        if (items.length > 0) {
-            const observer = new IntersectionObserver((entries, obs) => {
+        const doersItems = document.querySelectorAll(".value-item, .value-divider");
+        if (doersItems.length > 0) {
+            const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
+                        const el = entry.target;
+                        
+                        // 延迟 200ms，让 Webflow 的原生交互优先结算，不破坏原版丝滑感
                         setTimeout(() => {
-                            entry.target.style.setProperty('opacity', '1', 'important');
-                            entry.target.style.setProperty('visibility', 'visible', 'important');
-                            entry.target.style.setProperty('transform', 'none', 'important');
-                            
-                            const children = entry.target.querySelectorAll('.value-item__line, .value-icon svg, .value-text h4, .value-text p');
-                            children.forEach(child => {
-                                child.style.setProperty('opacity', '1', 'important');
-                                child.style.setProperty('visibility', 'visible', 'important');
-                                child.style.setProperty('transform', 'none', 'important');
+                            // 把当前卡片和它里面的横线、图标、文字全找出来
+                            const targets = [el, ...el.querySelectorAll('.value-item__line, .value-icon, .value-text h4, .value-text p')];
+                            targets.forEach(t => {
+                                // 如果发现 Webflow 的 Bug 导致元素卡在 opacity: 0，我们强行把它洗掉恢复可见！
+                                // 并且绝不碰 Transform，完美保留原版的形状和缩放！
+                                const currentOpacity = window.getComputedStyle(t).opacity;
+                                if (currentOpacity === '0' || t.style.opacity === '0') {
+                                    t.style.opacity = '1';
+                                    t.style.visibility = 'visible';
+                                }
                             });
-                        }, 1500); 
-                        obs.unobserve(entry.target);
+                        }, 200); 
                     }
                 });
-            }, { threshold: 0.15 });
+            }, { threshold: 0.1 });
 
-            items.forEach(item => observer.observe(item));
+            doersItems.forEach(item => observer.observe(item));
         }
 
         // 强制刷新所有动画坐标，防止高度坍塌
@@ -1389,23 +1565,57 @@
       });
     }
 
-    // 一键丝滑滚动到底部逻辑
-    const topContactBtn = document.querySelector('.nav--button .button-small');
-    const navContactLinks = Array.from(document.querySelectorAll('.nav-tag')).filter(el => el.textContent.includes('Contact'));
-    const footerElement = document.querySelector('.footer');
-
-    const scrollToBottom = (e) => {
-      e.preventDefault(); 
-      if (footerElement && typeof lenis !== 'undefined') {
-        lenis.scrollTo(footerElement, {
-          duration: 1.5, 
-          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
-        });
+    // === 【Vibecoding 终极防御】：彻底抹杀双系统冲突与 Hash 抖动 ===
+    // 拦截所有锚点，使用 Lenis 接管，并进行“金蝉脱壳”彻底欺骗 Webflow 原生引擎
+    const allAnchorLinks = document.querySelectorAll('a[href^="#"]');
+    allAnchorLinks.forEach(link => {
+      const targetId = link.getAttribute('href');
+      
+      // 【防抖核心 1】：篡改真实 href，让浏览器和 Webflow 引擎彻底把它们当成死链接，绝不触发原生跳转
+      if (targetId && targetId !== '#') {
+        link.setAttribute('data-target', targetId);
+        link.setAttribute('href', 'javascript:void(0);');
       }
-    };
 
-    if (topContactBtn) topContactBtn.addEventListener('click', scrollToBottom);
-    navContactLinks.forEach(link => link.addEventListener('click', scrollToBottom));
+      link.addEventListener('click', function (e) {
+        e.preventDefault(); 
+        e.stopImmediatePropagation(); // 【防抖核心 2】：斩断可能残留的其他原生点击事件冒泡
+        
+        const actualTargetId = this.getAttribute('data-target');
+        if (!actualTargetId) return;
+
+        const targetElement = document.querySelector(actualTargetId);
+        if (targetElement && typeof lenis !== 'undefined') {
+          
+          // 获取当前绝对距离
+          const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY;
+          const currentPosition = window.scrollY;
+          const distance = Math.abs(targetPosition - currentPosition);
+          
+          // 防撕裂算法：整体加长缓冲时间
+          const dynamicDuration = Math.min(4.0, 1.5 + (distance / 1500));
+
+          // 动态 offset 视差补偿
+          let offsetValue = -120; 
+          
+          if (actualTargetId === '#research') {
+              offsetValue = 0; 
+          } else if (actualTargetId === '#tech') {
+              offsetValue = -80; 
+          } else if (actualTargetId === '#contact') {
+              offsetValue = 0;
+          }
+
+          // 【防抖核心 3】：执行 Lenis，并加入 lock: true 锁定用户在滚动途中的误触干预
+          lenis.scrollTo(targetElement, {
+            duration: dynamicDuration,
+            offset: offsetValue,
+            lock: true, 
+            easing: (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2
+          });
+        }
+      });
+    });
 
     // === 【高级混合视觉】幽灵克隆 Logo 逻辑 ===
     // 将左侧 WILL 标志克隆到差值反色结界外部，以保持冰川物理材质
