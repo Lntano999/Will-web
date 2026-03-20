@@ -1454,16 +1454,18 @@
           } else if (actualTargetId === '#research') {
               offsetValue = 0; 
           } else if (actualTargetId === '#tech') {
-              offsetValue = 0; 
+              // 【微调】：下调一个滚轮长度 (约 100px)，让画面多往下滚动一些
+              offsetValue = 100; 
           } else if (actualTargetId === '#projects') {
               // 强迫症终极治愈：捕获页脚灰色背景的绝对顶点，强制屏幕的最下边界与之发生像素级吻合
+              // 【微调】：上调两个滚轮长度 (约 200px)，让屏幕提前刹车停在更高的地方
               const contactElement = document.querySelector('#contact');
               if (contactElement) {
                   const projectsTop = targetElement.getBoundingClientRect().top + window.scrollY;
                   const contactTop = contactElement.getBoundingClientRect().top + window.scrollY;
-                  offsetValue = contactTop - projectsTop - window.innerHeight;
+                  offsetValue = contactTop - projectsTop - window.innerHeight - 200;
               } else {
-                  offsetValue = 0;
+                  offsetValue = -200;
               }
           } else if (actualTargetId === '#contact') {
               offsetValue = 0;
