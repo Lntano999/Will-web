@@ -169,14 +169,17 @@
       opacity: 1 !important;
       height: 100% !important; /* 【核心修复】撑满父级确保垂直绝对居中 */
   }
-  .marquee__svg svg {
-      width: 6vw !important; /* 【核心修复】由于原图是宽幅长方形，这里按比例拉宽，避免被挤压成正方形 */
+  .marquee__svg svg,
+  .marquee__svg img {
+      width: 6vw !important; /* 维持宽幅长方形的最佳展示比例 */
       height: 3.5vw !important;
       display: block !important;
+      object-fit: contain !important; /* 【核心新增】：确保你放上的任何尺寸图片都不会被拉伸变形，而是等比缩放并居中 */
   }
   @media screen and (max-width: 479px) {
       .marquee__svg { margin: 0 6vw !important; }
-      .marquee__svg svg { width: 12vw !important; height: 7vw !important; }
+      .marquee__svg svg,
+      .marquee__svg img { width: 12vw !important; height: 7vw !important; }
   }
   
   .use-case__wrapper {
@@ -200,7 +203,13 @@
   /* 保护 Doers DNA 内部色彩 */
   .last-section.bg-white .nav-tag { color: #000000 !important; }
   .last-section.bg-white .value-text h4 { color: #000000 !important; }
-  .last-section.bg-white .value-text p { color: #666666 !important; }
+  .last-section.bg-white .value-text p { 
+      color: #666666 !important; 
+      /* 【核心修复】：强制引入两端对齐与中文标点自适应，彻底解决中英文混排导致的长短句换行碎片问题 */
+      text-align: justify !important;
+      text-justify: inter-ideograph !important;
+      line-height: 1.6 !important;
+  }
   .last-section.bg-white .value-item__line { background-color: #e5e5e5 !important; }
 
   /* 【回归原版】：已移除所有强制显示 CSS，将入场动画控制权完全交还给 Webflow 原版引擎 */
@@ -946,7 +955,8 @@
               </div>
               <div class="value-text">
                 <h4>Quant<br/>Infrastructure</h4>
-                <p>独立编写基于 yfinance 与 pandas 的自动化脚本，实现股票历史数据批量抓取与清洗。</p>
+                <!-- 【核心修复】：移除英文与中文之间的空格，避免浏览器在此处强行拆行断句 -->
+                <p>独立编写基于yfinance与pandas的自动化脚本，实现股票历史数据批量抓取与清洗。</p>
               </div>
               <div class="value-item__line top"></div>
               <div class="value-item__line bot"></div>
@@ -981,148 +991,29 @@
         <div class="marquee-content scroll-marquee">
           <div class="marquee__text clipping-text">ABOUT ME</div>
           <div class="marquee__svg w-embed">
-            <!-- 像素级 3D 穿插复刻：W-Quant 徽标 -->
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none" style="display:block;">
-              <!-- 1. 底层阴影/加粗轮廓 W -->
-              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#66a6ff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.15"/>
-              <!-- 2. 中层白色实体 W (制造厚度感) -->
-              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#66a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
-
-              <!-- 3. 背景细数据折线 (藏在最后面) -->
-              <path d="M 15 75 L 45 45 L 75 85 L 105 35 L 135 70 L 165 25 L 185 55" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M 15 75 L 45 45 L 75 85 L 105 35 L 135 70 L 165 25 L 185 55" stroke="#66a6ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
-              <!-- 背景折线节点 -->
-              <circle cx="15" cy="75" r="2.5" fill="#66a6ff"/>
-              <circle cx="45" cy="45" r="2.5" fill="#66a6ff"/>
-              <circle cx="75" cy="85" r="2.5" fill="#66a6ff"/>
-              <circle cx="105" cy="35" r="2.5" fill="#66a6ff"/>
-              <circle cx="135" cy="70" r="2.5" fill="#66a6ff"/>
-              <circle cx="165" cy="25" r="2.5" fill="#66a6ff"/>
-              <circle cx="185" cy="55" r="2.5" fill="#66a6ff"/>
-
-              <!-- 4. 前景粗数据折线 (带白色描边以实现"切断"W的视觉穿插3D效果) -->
-              <path d="M 20 95 L 40 65 L 60 95 L 95 40 L 115 75 L 155 15" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M 20 95 L 40 65 L 60 95 L 95 40 L 115 75 L 155 15" stroke="#66a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-              
-              <!-- 前景折线节点 (外白内蓝增强悬浮感) -->
-              <circle cx="20" cy="95" r="4.5" fill="#ffffff"/>
-              <circle cx="20" cy="95" r="2.5" fill="#66a6ff"/>
-              <circle cx="40" cy="65" r="4.5" fill="#ffffff"/>
-              <circle cx="40" cy="65" r="2.5" fill="#66a6ff"/>
-              <circle cx="60" cy="95" r="4.5" fill="#ffffff"/>
-              <circle cx="60" cy="95" r="2.5" fill="#66a6ff"/>
-              <circle cx="95" cy="40" r="4.5" fill="#ffffff"/>
-              <circle cx="95" cy="40" r="2.5" fill="#66a6ff"/>
-              <circle cx="115" cy="75" r="4.5" fill="#ffffff"/>
-              <circle cx="115" cy="75" r="2.5" fill="#66a6ff"/>
-              
-              <!-- 前景主箭头 -->
-              <polygon points="160,10 146,15 156,25" fill="#ffffff"/>
-              <polygon points="158,12 149,15 155,23" fill="#66a6ff"/>
-            </svg>
+            <!-- 替换为你的图片链接，将 src="marquee_logo.png" 改为你的实际图片名字 -->
+            <img src="marquee_logo.png" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1614064641913-a520faff3f00?w=200&h=100&fit=crop';" alt="Marquee Logo" loading="lazy" />
           </div>
         </div>
         <div class="marquee-content scroll-marquee">
           <div class="marquee__text clipping-text">ABOUT ME</div>
           <div class="marquee__svg w-embed">
-            <!-- 像素级 3D 穿插复刻：W-Quant 徽标 -->
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none" style="display:block;">
-              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#66a6ff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.15"/>
-              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#66a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
-              <path d="M 15 75 L 45 45 L 75 85 L 105 35 L 135 70 L 165 25 L 185 55" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M 15 75 L 45 45 L 75 85 L 105 35 L 135 70 L 165 25 L 185 55" stroke="#66a6ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
-              <circle cx="15" cy="75" r="2.5" fill="#66a6ff"/>
-              <circle cx="45" cy="45" r="2.5" fill="#66a6ff"/>
-              <circle cx="75" cy="85" r="2.5" fill="#66a6ff"/>
-              <circle cx="105" cy="35" r="2.5" fill="#66a6ff"/>
-              <circle cx="135" cy="70" r="2.5" fill="#66a6ff"/>
-              <circle cx="165" cy="25" r="2.5" fill="#66a6ff"/>
-              <circle cx="185" cy="55" r="2.5" fill="#66a6ff"/>
-              <path d="M 20 95 L 40 65 L 60 95 L 95 40 L 115 75 L 155 15" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M 20 95 L 40 65 L 60 95 L 95 40 L 115 75 L 155 15" stroke="#66a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="20" cy="95" r="4.5" fill="#ffffff"/>
-              <circle cx="20" cy="95" r="2.5" fill="#66a6ff"/>
-              <circle cx="40" cy="65" r="4.5" fill="#ffffff"/>
-              <circle cx="40" cy="65" r="2.5" fill="#66a6ff"/>
-              <circle cx="60" cy="95" r="4.5" fill="#ffffff"/>
-              <circle cx="60" cy="95" r="2.5" fill="#66a6ff"/>
-              <circle cx="95" cy="40" r="4.5" fill="#ffffff"/>
-              <circle cx="95" cy="40" r="2.5" fill="#66a6ff"/>
-              <circle cx="115" cy="75" r="4.5" fill="#ffffff"/>
-              <circle cx="115" cy="75" r="2.5" fill="#66a6ff"/>
-              <polygon points="160,10 146,15 156,25" fill="#ffffff"/>
-              <polygon points="158,12 149,15 155,23" fill="#66a6ff"/>
-            </svg>
+            <!-- 替换为你的图片链接 -->
+            <img src="marquee_logo.png" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1614064641913-a520faff3f00?w=200&h=100&fit=crop';" alt="Marquee Logo" loading="lazy" />
           </div>
         </div>
         <div class="marquee-content scroll-marquee">
           <div class="marquee__text clipping-text">ABOUT ME</div>
           <div class="marquee__svg w-embed">
-            <!-- 像素级 3D 穿插复刻：W-Quant 徽标 -->
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none" style="display:block;">
-              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#66a6ff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.15"/>
-              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#66a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
-              <path d="M 15 75 L 45 45 L 75 85 L 105 35 L 135 70 L 165 25 L 185 55" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M 15 75 L 45 45 L 75 85 L 105 35 L 135 70 L 165 25 L 185 55" stroke="#66a6ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
-              <circle cx="15" cy="75" r="2.5" fill="#66a6ff"/>
-              <circle cx="45" cy="45" r="2.5" fill="#66a6ff"/>
-              <circle cx="75" cy="85" r="2.5" fill="#66a6ff"/>
-              <circle cx="105" cy="35" r="2.5" fill="#66a6ff"/>
-              <circle cx="135" cy="70" r="2.5" fill="#66a6ff"/>
-              <circle cx="165" cy="25" r="2.5" fill="#66a6ff"/>
-              <circle cx="185" cy="55" r="2.5" fill="#66a6ff"/>
-              <path d="M 20 95 L 40 65 L 60 95 L 95 40 L 115 75 L 155 15" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M 20 95 L 40 65 L 60 95 L 95 40 L 115 75 L 155 15" stroke="#66a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="20" cy="95" r="4.5" fill="#ffffff"/>
-              <circle cx="20" cy="95" r="2.5" fill="#66a6ff"/>
-              <circle cx="40" cy="65" r="4.5" fill="#ffffff"/>
-              <circle cx="40" cy="65" r="2.5" fill="#66a6ff"/>
-              <circle cx="60" cy="95" r="4.5" fill="#ffffff"/>
-              <circle cx="60" cy="95" r="2.5" fill="#66a6ff"/>
-              <circle cx="95" cy="40" r="4.5" fill="#ffffff"/>
-              <circle cx="95" cy="40" r="2.5" fill="#66a6ff"/>
-              <circle cx="115" cy="75" r="4.5" fill="#ffffff"/>
-              <circle cx="115" cy="75" r="2.5" fill="#66a6ff"/>
-              <polygon points="160,10 146,15 156,25" fill="#ffffff"/>
-              <polygon points="158,12 149,15 155,23" fill="#66a6ff"/>
-            </svg>
+            <!-- 替换为你的图片链接 -->
+            <img src="marquee_logo.png" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1614064641913-a520faff3f00?w=200&h=100&fit=crop';" alt="Marquee Logo" loading="lazy" />
           </div>
         </div>
         <div class="marquee-content scroll-marquee">
           <div class="marquee__text clipping-text">ABOUT ME</div>
           <div class="marquee__svg w-embed">
-            <!-- 像素级 3D 穿插复刻：W-Quant 徽标 -->
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none" style="display:block;">
-              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#66a6ff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.15"/>
-              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M 30 35 L 65 105 L 100 45 L 135 105 L 170 35" stroke="#66a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
-              <path d="M 15 75 L 45 45 L 75 85 L 105 35 L 135 70 L 165 25 L 185 55" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M 15 75 L 45 45 L 75 85 L 105 35 L 135 70 L 165 25 L 185 55" stroke="#66a6ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
-              <circle cx="15" cy="75" r="2.5" fill="#66a6ff"/>
-              <circle cx="45" cy="45" r="2.5" fill="#66a6ff"/>
-              <circle cx="75" cy="85" r="2.5" fill="#66a6ff"/>
-              <circle cx="105" cy="35" r="2.5" fill="#66a6ff"/>
-              <circle cx="135" cy="70" r="2.5" fill="#66a6ff"/>
-              <circle cx="165" cy="25" r="2.5" fill="#66a6ff"/>
-              <circle cx="185" cy="55" r="2.5" fill="#66a6ff"/>
-              <path d="M 20 95 L 40 65 L 60 95 L 95 40 L 115 75 L 155 15" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M 20 95 L 40 65 L 60 95 L 95 40 L 115 75 L 155 15" stroke="#66a6ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="20" cy="95" r="4.5" fill="#ffffff"/>
-              <circle cx="20" cy="95" r="2.5" fill="#66a6ff"/>
-              <circle cx="40" cy="65" r="4.5" fill="#ffffff"/>
-              <circle cx="40" cy="65" r="2.5" fill="#66a6ff"/>
-              <circle cx="60" cy="95" r="4.5" fill="#ffffff"/>
-              <circle cx="60" cy="95" r="2.5" fill="#66a6ff"/>
-              <circle cx="95" cy="40" r="4.5" fill="#ffffff"/>
-              <circle cx="95" cy="40" r="2.5" fill="#66a6ff"/>
-              <circle cx="115" cy="75" r="4.5" fill="#ffffff"/>
-              <circle cx="115" cy="75" r="2.5" fill="#66a6ff"/>
-              <polygon points="160,10 146,15 156,25" fill="#ffffff"/>
-              <polygon points="158,12 149,15 155,23" fill="#66a6ff"/>
-            </svg>
+            <!-- 替换为你的图片链接 -->
+            <img src="marquee_logo.png" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1614064641913-a520faff3f00?w=200&h=100&fit=crop';" alt="Marquee Logo" loading="lazy" />
           </div>
         </div>
       </div>
