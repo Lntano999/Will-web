@@ -1,3 +1,4 @@
+<!-- © 2026 WILL. Quant Trading & Finance Research. All rights reserved. -->
 <html data-wf-domain="www.will-quant.dev" data-wf-page="68f77e4ac7ca6bd68b326cb4" data-wf-site="68f77e49c7ca6bd68b326c3d" lang="zh-CN">
 <head>
   <meta charset="utf-8"/>
@@ -14,7 +15,7 @@
   <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.15/dist/lenis.css">
 
   <style>
-    /* 全局字体覆盖 */
+    
     body {
       font-family: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
     }
@@ -32,7 +33,7 @@
       font-weight: 900;
       letter-spacing: -0.05em;
       color: currentColor;
-      /* 修复：防止大写字母顶部被意外裁切 */
+     
       line-height: 1.15 !important; 
       padding-top: 0.05em;
     }
@@ -48,10 +49,7 @@
       pointer-events: none;
   }
 
-  /* * hack: 使用 padding 技巧防止 text-overflow 被意外裁切
-   * (通俗解释：利用内边距撑开空间，防止文字在做切开动画时，被外层的“隐藏超出部分”规则切掉半个字)
-   * 这是适配 GSAP (一款强大的网页交互动画引擎) SplitText 文本切割动画的必须步骤 
-   */
+ 
   .div-hide {
       padding-top: 0.25em !important;
       margin-top: -0.25em !important;
@@ -74,7 +72,7 @@
       margin-bottom: -0.2em !important;
   }
 
-  /* 横向滚动区外层容器 */
+
   .horizontal-section {
       height: 100vh !important;
       min-height: 100vh !important;
@@ -83,7 +81,7 @@
       position: relative;
   }
 
-  /* 将横向滚动的顶部文字下压，防止被吸顶导航栏遮挡 */
+  
   .horizontal-section .h-slide .top {
       padding-top: 12vh !important; 
   }
@@ -92,12 +90,12 @@
       padding-top: 8vh !important; 
   }
 
-  /* 反转 Unicorn Studio 动态背景颜色 (实现黑底灰流) */
+ 
   .background {
       filter: invert(1) grayscale(1) brightness(0.85);
   }
 
-  /* 页面核心区块：层级 (z-index，控制谁叠在谁上面，数字越大越在顶层) 与重叠遮挡修复 */
+
   .last-section.bg-white,
   .item--marquee,
   .use-case__wrapper {
@@ -109,7 +107,7 @@
   }
 
   .last-section.bg-white {
-      padding-top: 8vh !important; /* 为吸顶导航栏预留安全区 */
+      padding-top: 8vh !important; 
       padding-bottom: 10vh !important; 
       z-index: 10 !important; 
   }
@@ -152,7 +150,7 @@
       width: auto !important;
   }
 
-  /* 跑马灯 SVG/图片 外层包裹容器 */
+ 
   .marquee__svg {
       margin: 0 4vw !important; 
       display: flex !important;
@@ -180,7 +178,7 @@
       z-index: 12 !important;
   }
 
-  /* 文字渐变与冰川背景蒙版裁切修复 */
+
   .clipping-text, .clipping-text * {
       background-image: url('https://cdn.prod.website-files.com/68f77e49c7ca6bd68b326c3d/6900c3d30f2eca17950257bd_Blizar%201.png') !important;
       background-size: cover !important;
@@ -191,25 +189,25 @@
       -webkit-text-fill-color: transparent !important;	
   }
 
-  /* 亮色背景区 (Doers DNA) 内部样式覆盖 */
+  
   .last-section.bg-white .nav-tag { color: #000000 !important; }
   .last-section.bg-white .value-text h4 { color: #000000 !important; }
   .last-section.bg-white .value-text p { 
       color: #666666 !important; 
-      /* 两端对齐：彻底修复中英文混排导致的换行破碎感 (让段落左右边缘像报纸排版一样绝对笔直) */
+      
       text-align: justify !important;
       text-justify: inter-ideograph !important;
       line-height: 1.6 !important;
   }
   .last-section.bg-white .value-item__line { background-color: #e5e5e5 !important; }
 
-  /* 项目展示卡片：黑字适配亮灰背景 */
+
   .use-case-h4 { color: #000000 !important; }
   .use-case-text { color: #666666 !important; line-height: 1.6 !important; margin-top: 8px !important; }
   .use-case__block { text-decoration: none !important; }
   .use-case__block:hover .use-case-h4 { color: #FA4838 !important; transition: color 0.3s ease; }
   
-  /* 项目卡片专属：纯手工绘制的上下边框线条及悬停展开逻辑 */
+
   .use-case__img-container {
       background-color: transparent !important; 
       border-radius: 0 !important; 
@@ -231,7 +229,7 @@
   
   .img-line.top {
       top: 0;
-      transform-origin: center !important; /* 动画从中心向两端延展 */
+      transform-origin: center !important; 
   }
   
   .img-line.bot {
@@ -243,17 +241,17 @@
       background-color: #FA4838 !important;
   }
   
-  /* 底部页脚：微信二维码悬浮弹窗 */
+
   .footer-contact-wrapper:hover .qr-popup {
     opacity: 1 !important;
     transform: translateY(0) !important;
   }
 
-  /* 全局导航栏重写 - 与 Webflow 臃肿的原有外层容器解耦 */
+  
   .navigation {
       position: static !important; 
       z-index: auto !important; 
-      /* 抹杀破坏 fixed 定位的父级格式化上下文 (BFC，即父级元素自带的独立渲染隔离区，去掉它才能让导航栏真正固定在屏幕视口上) */
+
       transform: none !important;
       transition: none !important;
       will-change: auto !important;
@@ -273,7 +271,7 @@
       z-index: 2147483647 !important;
       pointer-events: auto !important;
       mix-blend-mode: normal !important;
-      /* 强制可见，覆盖 Webflow 残留的隐藏脚本 */
+      
       opacity: 1 !important;
       visibility: visible !important;
   }
@@ -288,12 +286,11 @@
       filter: drop-shadow(0px 2px 8px rgba(0, 0, 0, 0.45)) !important;
   }
 
-  /* 隐藏用于支撑 DOM 结构的幽灵克隆体 */
+
   .ghost-logo {
       display: none !important;
   }
 
-  /* 2. 居中链接组 (基于 mix-blend-mode 差值混合模式实现背景反色，即深色背景变白字，浅色背景自动变黑字) */
   .navigation .nav--item {
       position: fixed !important;
       top: 2.5rem !important;
@@ -306,12 +303,12 @@
       align-items: center !important;
   }
 
-  /* 3. 右侧联系按钮组 */
+ 
   .navigation .nav--buttons {
       position: fixed !important;
       top: 2.5rem !important;
       right: 4vw !important;
-      /* 强制开启硬件加速 (调用电脑显卡 GPU 参与渲染)，修复滚动时文字出现的模糊虚影 */
+      
       transform: translateZ(0) !important;
       backface-visibility: hidden !important;
       -webkit-font-smoothing: antialiased !important;
@@ -349,7 +346,7 @@
       justify-content: center !important;
   }
 
-  /* 4. 移动端汉堡菜单 */
+
   .navigation .nav-burger {
       position: fixed !important;
       top: 2.5rem !important;
@@ -360,14 +357,14 @@
       mix-blend-mode: difference !important;
   }
 
-  /* 强制设定为白色字体，确保混合模式在亮色/暗色背景下均能完美反色 */
+  
   .navigation .nav-tag,
   .navigation .btn-s {
       background: none !important;
       color: #ffffff !important;
       -webkit-text-fill-color: #ffffff !important;
       filter: none !important;
-      /* 极致字体平滑与抗锯齿处理 (消除屏幕像素带来的边缘锯齿，让文字看起来极其清晰锐利) */
+
       -webkit-font-smoothing: antialiased !important;
       -moz-osx-font-smoothing: grayscale !important;
       text-rendering: optimizeLegibility !important;
@@ -391,8 +388,7 @@
       color: #ffffff !important;
       filter: none !important;
   }
-  
-  /* 核心理念/宣言文本排版样式 */
+ 
   .manifesto {
       font-size: clamp(20px, 2.5vw, 40px) !important; 
       font-weight: 300 !important; 
@@ -405,7 +401,7 @@
       color: transparent !important;
   }
 
-  /* 巨型标题排版优化：收紧行高 */
+
   .h-slide .bot h2 {
       line-height: 1.05 !important; 
   }
@@ -413,7 +409,7 @@
       gap: 0.5vw !important; 
   }
 
-  /* 项目展示区：锁定卡片图片展示比例 (严格 4:3) */
+ 
   .use-case__img-container {
       background-color: transparent !important; 
       border-radius: 0 !important; 
@@ -473,7 +469,7 @@
       display: inline-block;
   }
   
-  /* 采用伪元素 (CSS 中凭空创造的附属元素，不污染原有 HTML 结构) 绘制带冰川材质的自定义下划线 */
+ 
   .center-huge-logo::after {
       content: '';
       position: absolute;
@@ -486,10 +482,9 @@
       background-position: center;
   }
   
-  /* 彻底清理 Webflow 遗留的旧版干扰线条 */
+  
   .img-line { display: none !important; }
 
-  /* 高级通知组件：Apple 级高级灰毛玻璃质感 (Premium Frosted Glass，利用背景强力模糊和半透明实现的真实玻璃视觉效果) */
   .premium-toast {
       background: rgba(161, 161, 170, 0.15);
       backdrop-filter: blur(16px) saturate(180%);
@@ -527,14 +522,14 @@
       </div>
     </a>
     <div class="nav--item">
-      <!-- 居中锚点导航菜单 -->
+   
       <a href="#identity" class="nav-tag color-white nav-link">Identity - Research Path</a>
       <a href="#tech" class="nav-tag color-white nav-link">Tech Stack</a>
       <a href="#projects" class="nav-tag color-white nav-link">WILL.</a>
       <a href="#contact" class="nav-tag color-white nav-link">Contact</a>
     </div>
     <div class="nav--buttons">
-      <!-- 右侧装饰性 "want to" 文本排版块 -->
+     
       <div class="nav--lang" style="display: flex; align-items: center; margin-right: 0;">
         <div class="nav-tag color-white" style="display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; gap: 1px; text-transform: uppercase; font-size: 11px !important; text-align: center; cursor: default; letter-spacing: 0.05em; font-weight: 600;">
           <span>want</span>
@@ -629,7 +624,7 @@
       </div>
     </div>
     
-    <!-- 移动端：全屏下拉菜单面板 -->
+  
     <div class="nav-mobile-panel">
       <div class="div-block-9">
         <ul role="list" class="nav-mobile__list-link">
@@ -653,7 +648,7 @@
   <div data-us-project="tnAhw4e67txvvqrBP7oz" class="background"></div>
   
   <section class="section-home">
-    <!-- 隐藏的旧版游标按钮 -->
+  
     <a data-follow="btn" href="#" class="button-big w-inline-block">
       <div class="button-big__content"><div class="btn-b color-orange">View Resume</div></div>
       <div class="button-big__content circle-big">
@@ -665,10 +660,10 @@
       </div>
     </a>
     
-    <!-- 首屏横幅区 (Hero Section) -->
+   
     <div data-follow="area" data-w-id="f795206b-cfea-47c2-42e7-3d1c4abaf71f" class="container full-page home-hero">
       <div class="div-block home-margin follow-section">
-        <!-- 个人专属 Slogan 排版 -->
+       
         <p data-wf-target="[[[&quot;68f77e4ac7ca6bd68b326cb4&quot;,&quot;f795206b-cfea-47c2-42e7-3d1c4abaf727&quot;],[]]]" class="claim-m">
           06年新生代开发者。<br/>
           在代码的确定性与<br/>
@@ -799,7 +794,7 @@
           </div>
         </div>
       </div>
-      <!-- 横向滚动：包裹与位移脚本 -->
+     
       <div class="timeline-horizontal w-embed w-script">
         <script>
         window.addEventListener("load", () => {
@@ -856,7 +851,7 @@
         });
         </script>
       </div>
-      <!-- 横向滚动：内部文字排版与动效触发脚本 -->
+     
       <div class="horizontal-text w-embed w-script">
         <script>
         window.addEventListener("load", () => {
@@ -912,7 +907,7 @@
       <div class="section-values">
         <div class="container color-black">
           <div class="value-list">
-            <!-- 技术栈卡片 1：Python -->
+           
             <div class="value-item top-align">
               <div class="value-icon color-orange w-embed">
                 <svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 58 58" fill="currentColor"><path d="M28.7197 0C44.5813 0 57.4403 12.8582 57.4404 28.7197C57.4404 44.5813 44.5813 57.4404 28.7197 57.4404C12.8584 57.4402 6.5975e-05 44.5811 0 28.7197C0.000147413 12.8584 12.8584 0.000263891 28.7197 0ZM2.02051 29.7207C2.53478 43.6819 13.7585 54.9049 27.7197 55.4189V29.7207H2.02051ZM29.7197 55.4189C44.0135 54.8931 55.4404 43.1419 55.4404 28.7197C55.4403 14.2976 44.0134 2.54536 29.7197 2.01953V55.4189ZM27.7197 2.01953C13.7578 2.5335 2.53382 13.7586 2.02051 27.7207H27.7197V2.01953Z" fill="#FA4838"/></svg>
@@ -925,7 +920,7 @@
               <div class="value-item__line bot"></div>
             </div>
             <div class="value-divider"></div>
-            <!-- 技术栈卡片 2：C++ -->
+            
             <div class="value-item top-align">
               <div class="value-icon color-orange w-embed">
                 <svg xmlns="http://www.w3.org/2000/svg" width="58" height="57" viewBox="0 0 58 57" fill="none"><path d="M57.4502 56.8203H0V0H57.4502V56.8203ZM55.4502 28.7324C41.3566 29.2843 30.0444 40.689 29.6416 54.8203H55.4502V28.7324ZM27.8945 11.7305C23.74 22.0935 13.7552 29.4912 2 29.8633V54.8203H27.6348L27.8945 11.7305ZM29.6943 44.8613C33.8319 34.5384 43.7549 27.1556 55.4502 26.7295V2H29.9541L29.6943 44.8613ZM2 27.8613C16.0818 27.3823 27.4195 16.0714 27.9395 2H2V27.8613Z" fill="#FA4838"/></svg>
@@ -938,7 +933,7 @@
               <div class="value-item__line bot"></div>
             </div>
             <div class="value-divider"></div>
-            <!-- 项目经验卡片 1：量化基建 -->
+           
             <div class="value-item top-align">
               <div class="value-icon color-orange w-embed">
                 <svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 58 58" fill="none"><path d="M28.6201 0C36.6084 0.000185128 43.1235 6.30373 43.4648 14.208C51.321 14.601 57.5702 21.0961 57.5703 29.0498C57.5701 37.0143 51.3038 43.5138 43.4326 43.8906C42.8308 51.5453 36.4294 57.5692 28.6201 57.5693C20.8042 57.5691 14.3972 51.5351 13.8047 43.8711C6.09058 43.3296 0.00018935 36.9016 0 29.0498C0.00012607 21.2086 6.07408 14.7862 13.7734 14.2295C14.1039 6.31514 20.6246 0.000192842 28.6201 0ZM28.7852 34.2461C26.7838 39.607 21.7762 43.5007 15.8125 43.8779C16.4028 50.4327 21.9117 55.5691 28.6201 55.5693C35.3368 55.5692 40.8489 50.4199 41.4277 43.8535C35.6099 43.3561 30.7496 39.5077 28.7852 34.2461ZM43.418 16.209C42.897 21.9976 39.0574 26.8276 33.8154 28.7842C39.2156 30.7998 43.1282 35.8659 43.457 41.8867C50.2116 41.4999 55.5701 35.9013 55.5703 29.0498C55.5702 22.1851 50.191 16.5764 43.418 16.209ZM27.6914 29.8828C21.2982 30.3393 16.1987 35.4693 15.7881 41.875C22.1823 41.419 27.2817 36.2897 27.6914 29.8828ZM13.8232 16.2314C7.20596 16.7596 2.00013 22.2967 2 29.0498C2.00019 35.7895 7.18554 41.3175 13.7842 41.8643C14.1215 35.8537 18.0308 30.7976 23.4238 28.7842C18.189 26.8298 14.3521 22.0097 13.8232 16.2314ZM29.8789 29.9111C30.2945 36.1936 35.2216 41.2418 41.4502 41.8477C41.0342 35.5652 36.1078 30.5163 29.8789 29.9111ZM15.832 16.2256C16.4804 22.367 21.4518 27.2187 27.6465 27.6826C26.9973 21.5412 22.0271 16.6885 15.832 16.2256ZM41.4033 16.2549C35.3745 16.8635 30.5746 21.6368 29.9248 27.6533C35.9551 27.0457 40.754 22.2728 41.4033 16.2549ZM28.6201 2C21.7333 2.00019 16.1111 7.41392 15.7764 14.2178C21.7556 14.5815 26.7796 18.4811 28.7852 23.8525C30.7539 18.5803 35.6304 14.7267 41.4639 14.2422C41.1414 7.42689 35.5152 2.00018 28.6201 2Z" fill="#FA4838"/></svg>
@@ -951,7 +946,7 @@
               <div class="value-item__line bot"></div>
             </div>
             <div class="value-divider"></div>
-            <!-- 项目经验卡片 2：跨文化交流 -->
+         
             <div class="value-item top-align">
               <div class="value-icon color-orange w-embed">
                 <svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 58 58" fill="none"><path d="M28.8008 0C44.713 0.000263844 57.6005 12.899 57.6006 28.8008V29.8008H29.8008V57.6006H28.8008C12.8885 57.6005 0.00026382 44.7025 0 28.8008V27.8008H27.8008V0H28.8008ZM2.02148 29.8008C2.5353 43.8038 13.7894 55.0662 27.8008 55.5801V29.8008H2.02148ZM29.8008 27.8008H55.5801C55.0663 13.7978 43.8122 2.53536 29.8008 2.02148V27.8008Z" fill="#FA4838"/></svg>
@@ -1072,24 +1067,22 @@
       
       <div class="w-embed w-script">
         <script>
-      // 等待 DOM 加载完毕，绕过并覆盖 Webflow 原生动画引擎的干扰
+    
       window.addEventListener("load", () => {
         
-        // 项目展示卡片：入场交错渲染动画 (Staggered Entrance)
+       
         const originalProjectList = document.querySelector(".use-case__list");
         if (originalProjectList) {
-          // 克隆整个列表节点并替换，这是一种极客级的 Hack 技巧 (非正规但极其有效的编程奇技淫巧)，用于彻底抹杀 Webflow 绑定在旧节点上的原生事件监听器 (让原有动画彻底失效，由我们完全接管)
+         
           const clonedProjectList = originalProjectList.cloneNode(true);
           originalProjectList.parentNode.replaceChild(clonedProjectList, originalProjectList);
 
-          // 暴力清洗残留：移除所有 Webflow 为了隐藏元素而遗留的内联样式
           const allProjectElements = clonedProjectList.querySelectorAll("*");
           allProjectElements.forEach(el => {
               if (el.style.opacity === "0" || el.style.opacity === 0) el.style.opacity = "";
               if (el.style.transform) el.style.transform = "";
           });
 
-          // 重新构建纯粹的 GSAP 动画时间轴
           const containers = clonedProjectList.querySelectorAll(".use-case__img-container");
           containers.forEach((container) => {
             const mask = container.querySelector(".use-case__img-mask");
@@ -1113,12 +1106,11 @@
             });
 
             if (mask && img) {
-              // 图像遮罩效果：从正中心按比例向外围极速展开
+
               tl.fromTo(mask, { clipPath: "inset(50%)" }, { clipPath: "inset(0%)", duration: 2.5, ease: "power2.inOut" }, 0); 
               tl.fromTo(img, { scale: 1.4 }, { scale: 1, duration: 2.5, ease: "power2.inOut" }, 0);
             }
 
-            // 文本信息显现：采用带有倾斜角度的 clip-path 进行顺滑裁切推入
             if (textElements.length > 0) {
               tl.fromTo(textElements,
                 {
@@ -1141,19 +1133,17 @@
           });
         }
 
-        // Doers DNA 列表动画：引入原生的 Intersection Observer (交叉观察器，一种专门用来判断元素是否进入屏幕可视区域的高性能浏览器内置工具)，替代存在视差加载 bug 的 Webflow 旧版引擎
         const doersItems = document.querySelectorAll(".value-item, .value-divider");
         if (doersItems.length > 0) {
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const el = entry.target;
-                        
-                        // 给予 200ms 的缓冲，等待 Webflow 自身队列的优先级降权
+
                         setTimeout(() => {
                             const targets = [el, ...el.querySelectorAll('.value-item__line, .value-icon, .value-text h4, .value-text p')];
                             targets.forEach(t => {
-                                // 终极保险：监测并修复 Webflow 将元素永远锁死在 opacity 0 导致不可见的恶性 bug
+
                                 const currentOpacity = window.getComputedStyle(t).opacity;
                                 if (currentOpacity === '0' || t.style.opacity === '0') {
                                     t.style.opacity = '1';
@@ -1230,16 +1220,18 @@
               <div class="nav-tag hide color-white">Linkedin</div>
             </div>
           </a>
-          <a href="mailto:3400098970@qq.com" class="link-block w-inline-block">
+          <!-- 【微调】：移动端邮箱 - 屏蔽交互，强制小写 -->
+          <a href="javascript:void(0)" class="link-block w-inline-block" style="pointer-events: none;">
             <div class="div-hide">
               <div class="nav-tag color-white">Email</div>
-              <div class="nav-tag hide color-white">3400098970@qq.com</div>
+              <div class="nav-tag hide color-white" style="text-transform: lowercase !important;">3400098970@qq.com</div>
             </div>
           </a>
         </div>
-        <a href="mailto:3400098970@qq.com" class="link-block no-mobile w-inline-block">
+        <!-- 【微调】：桌面端邮箱 - 屏蔽交互，强制小写 -->
+        <a href="javascript:void(0)" class="link-block no-mobile w-inline-block" style="pointer-events: none;">
           <div class="div-hide">
-            <div class="nav-tag color-white first">3400098970@qq.com</div>
+            <div class="nav-tag color-white first" style="text-transform: lowercase !important;">3400098970@qq.com</div>
             <div class="nav-tag hide color-white two">Email me</div>
           </div>
         </a>
@@ -1360,7 +1352,6 @@
     }
   });
 
-  // 微信复制逻辑与 Apple 级高级动态 Toast 提示组件
   document.addEventListener('DOMContentLoaded', () => {
     const wechatBtn = document.getElementById('wechat-copy-btn');
     const toastContainer = document.getElementById('toast-container');
@@ -1368,16 +1359,14 @@
     function showToast(message) {
       const toast = document.createElement('div');
       toast.className = 'premium-toast';
-      
-      // 植入纯代码绘制的极简化 SVG 绿勾图标，彻底抛弃粗糙的 Emoji
+
       toast.innerHTML = `
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
         <span>${message}</span>
       `;
       
       toastContainer.appendChild(toast);
-      
-      // 触发强行重绘 (Reflow，强迫浏览器立刻刷新一次画面)，以此激活 CSS transition 从初态到终态的丝滑过渡动效
+
       toast.offsetHeight;
       toast.classList.add('show');
       
@@ -1386,7 +1375,7 @@
         setTimeout(() => {
           if (toast.parentNode) toast.parentNode.removeChild(toast);
         }, 600); 
-      }, 3000); // UI 黄金法则：让提示驻留 3 秒以保障信息获取
+      }, 3000); // 让提示驻留 3 秒以保障信息获取
     }
 
     if (wechatBtn) {
@@ -1409,12 +1398,10 @@
       });
     }
 
-    // 全局平滑滚动引擎接管 (基于 Lenis) 与锚点对齐纠偏算法
     const allAnchorLinks = document.querySelectorAll('a[href^="#"]');
     allAnchorLinks.forEach(link => {
       const targetId = link.getAttribute('href');
-      
-      // 全局劫持锚点 (Anchor，即点击后跳转到页面特定区块的链接) 行为，彻底封杀浏览器原生粗暴的“瞬间跳跃”体验
+
       if (targetId && targetId !== '#') {
         link.setAttribute('data-target', targetId);
         link.setAttribute('href', 'javascript:void(0);');
@@ -1433,8 +1420,7 @@
           const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY;
           const currentPosition = window.scrollY;
           const distance = Math.abs(targetPosition - currentPosition);
-          
-          // 【核心修复 1】：缩短全局滚动耗时，消除“慢动作”感
+
           // 基础时间降至 0.8 秒，最大耗时锁定在 1.8 秒以内，确保每一次跳转都干脆利落
           const dynamicDuration = Math.min(1.8, 0.8 + (distance / 3000));
 
@@ -1456,8 +1442,7 @@
               // 【微调】：下调一个滚轮长度 (约 100px)，让画面多往下滚动一些
               offsetValue = 100; 
           } else if (actualTargetId === '#projects') {
-              // 强迫症终极治愈：捕获页脚灰色背景的绝对顶点，强制屏幕的最下边界与之发生像素级吻合
-              // 【微调】：上调两个滚轮长度 (约 200px)，让屏幕提前刹车停在更高的地方
+             
               const contactElement = document.querySelector('#contact');
               if (contactElement) {
                   const projectsTop = targetElement.getBoundingClientRect().top + window.scrollY;
@@ -1470,20 +1455,18 @@
               offsetValue = 0;
           }
 
-          // 注入计算完毕的 offset 补偿量，执行平滑滚动，并锁定用户途中的误触操作
           lenis.scrollTo(targetElement, {
             duration: dynamicDuration,
             offset: offsetValue,
             lock: true, 
-            // 【核心修复 2】：升级为顶级 Expo Out (指数级缓出) 曲线
-            // 特点：前段极速爆发响应，尾段利用足足 60% 的时间进行“微像素级”的极度细腻滑行 (Apple 官网原生质感)
+            
             easing: (t) => t === 1 ? 1 : 1 - Math.pow(2, -12 * t)
           });
         }
       });
     });
 
-    // 幽灵 Logo 映射机制：为导航栏文字在全站所有复杂色彩上实现“自动反色混合 (mix-blend-mode)”提供定位锚支撑
+    
     const realLogo = document.querySelector('.nav--logo');
     if (realLogo) {
       const ghostLogo = realLogo.cloneNode(true);
