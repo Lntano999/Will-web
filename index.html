@@ -1150,22 +1150,25 @@
                         setTimeout(() => {
                             const targets = [el, ...el.querySelectorAll('.value-item__line, .value-icon, .value-text h4, .value-text p')];
                             targets.forEach(t => {
-
                                 const currentOpacity = window.getComputedStyle(t).opacity;
                                 if (currentOpacity === '0' || t.style.opacity === '0') {
+                                    t.style.transition = 'opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1), transform 1.5s cubic-bezier(0.16, 1, 0.3, 1)';
                                     t.style.opacity = '1';
                                     t.style.visibility = 'visible';
                                 }
                             });
-                        }, 200); 
+                        }, 150); 
+                        observer.unobserve(el);
                     }
                 });
-            }, { threshold: 0.1 });
+            }, { 
+                threshold: 0.4,
+                rootMargin: "0px 0px -15% 0px"
+            });
 
             doersItems.forEach(item => observer.observe(item));
         }
 
-        // 强行刷新全局的滚动计算实例，防止因动态渲染导致的坐标错位
         if (typeof ScrollTrigger !== "undefined") {
           ScrollTrigger.refresh();
         }
