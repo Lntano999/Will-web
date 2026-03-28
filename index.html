@@ -649,18 +649,25 @@
   
   <section class="section-home">
   
-    <a data-follow="btn" href="#" class="button-big w-inline-block">
-      <div class="button-big__content"><div class="btn-b color-orange">View Resume</div></div>
+    <a data-follow="btn" href="javascript:void(0);" class="button-big w-inline-block" style="cursor: default;">
+      <div class="button-big__content"><div class="btn-b color-orange">Scroll Down</div></div>
       <div class="button-big__content circle-big">
         <div class="button-big__svg w-embed">
-          <svg xmlns="http://www.w3.org/2000/svg" width="0.72vw" height="0.72vw" viewBox="0 0 8 8" fill="none">
-            <g><path d="M4 8L2.8656 6.8656L5.0016 4.7296L0 4.7296L1.54889e-07 3.2704L5.0016 3.2704L2.8656 1.1344L4 0L8 4L4 8Z" fill="#FA4838"/></g>
+          <style>
+            @keyframes bounce-down {
+              0%, 100% { transform: translateY(-15%); }
+              50% { transform: translateY(15%); }
+            }
+            .scroll-arrow { animation: bounce-down 1.5s infinite ease-in-out; }
+          </style>
+          <svg class="scroll-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FA4838" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="4" x2="12" y2="20"></line>
+            <polyline points="18 14 12 20 6 14"></polyline>
           </svg>
         </div>
       </div>
     </a>
     
-   
     <div data-follow="area" data-w-id="f795206b-cfea-47c2-42e7-3d1c4abaf71f" class="container full-page home-hero">
       <div class="div-block home-margin follow-section">
        
@@ -1040,7 +1047,7 @@
               </div>
               <p class="use-case-text">Personal Identity</p>
             </div>
-            <p class="use-case-text">我是唐嘉辰，William是我的英文名，当然，你完全可以称呼我Will。</p>
+            <p class="use-case-text">我是唐嘉辰，英文名是William，当然，你完全可以称呼我Will。</p>
           </a>
         </div>
         
@@ -1352,6 +1359,7 @@
     }
   });
 
+  // 微信复制逻辑与 Apple 级高级动态 Toast 提示组件
   document.addEventListener('DOMContentLoaded', () => {
     const wechatBtn = document.getElementById('wechat-copy-btn');
     const toastContainer = document.getElementById('toast-container');
@@ -1359,14 +1367,16 @@
     function showToast(message) {
       const toast = document.createElement('div');
       toast.className = 'premium-toast';
-
+      
+      // 植入纯代码绘制的极简化 SVG 绿勾图标，彻底抛弃粗糙的 Emoji
       toast.innerHTML = `
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
         <span>${message}</span>
       `;
       
       toastContainer.appendChild(toast);
-
+      
+      // 触发强行重绘 (Reflow，强迫浏览器立刻刷新一次画面)，以此激活 CSS transition 从初态到终态的丝滑过渡动效
       toast.offsetHeight;
       toast.classList.add('show');
       
@@ -1375,7 +1385,7 @@
         setTimeout(() => {
           if (toast.parentNode) toast.parentNode.removeChild(toast);
         }, 600); 
-      }, 3000); // 让提示驻留 3 秒以保障信息获取
+      }, 3000); // UI 黄金法则：让提示驻留 3 秒以保障信息获取
     }
 
     if (wechatBtn) {
@@ -1398,10 +1408,12 @@
       });
     }
 
+    // 全局平滑滚动引擎接管 (基于 Lenis) 与锚点对齐纠偏算法
     const allAnchorLinks = document.querySelectorAll('a[href^="#"]');
     allAnchorLinks.forEach(link => {
       const targetId = link.getAttribute('href');
-
+      
+      // 全局劫持锚点 (Anchor，即点击后跳转到页面特定区块的链接) 行为，彻底封杀浏览器原生粗暴的“瞬间跳跃”体验
       if (targetId && targetId !== '#') {
         link.setAttribute('data-target', targetId);
         link.setAttribute('href', 'javascript:void(0);');
@@ -1420,7 +1432,8 @@
           const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY;
           const currentPosition = window.scrollY;
           const distance = Math.abs(targetPosition - currentPosition);
-
+          
+          // 【核心修复 1】：缩短全局滚动耗时，消除“慢动作”感
           // 基础时间降至 0.8 秒，最大耗时锁定在 1.8 秒以内，确保每一次跳转都干脆利落
           const dynamicDuration = Math.min(1.8, 0.8 + (distance / 3000));
 
@@ -1439,34 +1452,35 @@
           } else if (actualTargetId === '#research') {
               offsetValue = 0; 
           } else if (actualTargetId === '#tech') {
-              // 【微调】：下调一个滚轮长度 (约 100px)，让画面多往下滚动一些
-              offsetValue = 100; 
+              offsetValue = 0; 
           } else if (actualTargetId === '#projects') {
-             
+              // 强迫症终极治愈：捕获页脚灰色背景的绝对顶点，强制屏幕的最下边界与之发生像素级吻合
               const contactElement = document.querySelector('#contact');
               if (contactElement) {
                   const projectsTop = targetElement.getBoundingClientRect().top + window.scrollY;
                   const contactTop = contactElement.getBoundingClientRect().top + window.scrollY;
-                  offsetValue = contactTop - projectsTop - window.innerHeight - 200;
+                  offsetValue = contactTop - projectsTop - window.innerHeight;
               } else {
-                  offsetValue = -200;
+                  offsetValue = 0;
               }
           } else if (actualTargetId === '#contact') {
               offsetValue = 0;
           }
 
+          // 注入计算完毕的 offset 补偿量，执行平滑滚动，并锁定用户途中的误触操作
           lenis.scrollTo(targetElement, {
             duration: dynamicDuration,
             offset: offsetValue,
             lock: true, 
-            
+            // 【核心修复 2】：升级为顶级 Expo Out (指数级缓出) 曲线
+            // 特点：前段极速爆发响应，尾段利用足足 60% 的时间进行“微像素级”的极度细腻滑行 (Apple 官网原生质感)
             easing: (t) => t === 1 ? 1 : 1 - Math.pow(2, -12 * t)
           });
         }
       });
     });
 
-    
+    // 幽灵 Logo 映射机制：为导航栏文字在全站所有复杂色彩上实现“自动反色混合 (mix-blend-mode)”提供定位锚支撑
     const realLogo = document.querySelector('.nav--logo');
     if (realLogo) {
       const ghostLogo = realLogo.cloneNode(true);
