@@ -189,12 +189,19 @@
       -webkit-text-fill-color: transparent !important;	
   }
 
-  
+  /* 核心修复：重设横向滚动蓝色标题大小，确保长单词不溢出换行 */
+  .h-slide .bot h2.home-h2 {
+      line-height: 1.0 !important; 
+      font-size: clamp(2.5rem, 6.5vw, 6.5rem) !important;
+      letter-spacing: -0.02em !important;
+      word-break: keep-all;
+      white-space: nowrap;
+  }
+
   .last-section.bg-white .nav-tag { color: #000000 !important; }
   .last-section.bg-white .value-text h4 { color: #000000 !important; }
   .last-section.bg-white .value-text p { 
       color: #666666 !important; 
-      
       text-align: justify !important;
       text-justify: inter-ideograph !important;
       line-height: 1.6 !important;
@@ -402,9 +409,6 @@
   }
 
 
-  .h-slide .bot h2 {
-      line-height: 1.05 !important; 
-  }
   .h-slide .bot.gap {
       gap: 0.5vw !important; 
   }
@@ -420,7 +424,7 @@
   
   .use-case__img-mask {
       width: 100% !important;
-      aspect-ratio: 4 / 3 !important; /* 严格物理锁定 4:3 比例 (不管屏幕怎么拉伸，图片框始终保持这个固定的宽高等比) */
+      aspect-ratio: 4 / 3 !important; 
       display: flex;
       align-items: center;
       justify-content: center;
@@ -523,9 +527,9 @@
     </a>
     <div class="nav--item">
    
-      <a href="#identity" class="nav-tag color-white nav-link">Identity - Research Path</a>
+      <a href="#identity" class="nav-tag color-white nav-link">Identity - Timeline</a>
       <a href="#tech" class="nav-tag color-white nav-link">Tech Stack</a>
-      <a href="#projects" class="nav-tag color-white nav-link">WILL.</a>
+      <a href="#projects" class="nav-tag color-white nav-link">Projects</a>
       <a href="#contact" class="nav-tag color-white nav-link">Contact</a>
     </div>
     <div class="nav--buttons">
@@ -628,9 +632,9 @@
     <div class="nav-mobile-panel">
       <div class="div-block-9">
         <ul role="list" class="nav-mobile__list-link">
-          <li class="nav-mobile__list-item"><a href="#identity" class="nav-mobile__link">Identity - Research Path</a></li>
+          <li class="nav-mobile__list-item"><a href="#identity" class="nav-mobile__link">Identity - Timeline</a></li>
           <li class="nav-mobile__list-item"><a href="#tech" class="nav-mobile__link">Tech Stack</a></li>
-          <li class="nav-mobile__list-item"><a href="#projects" class="nav-mobile__link">WILL.</a></li>
+          <li class="nav-mobile__list-item"><a href="#projects" class="nav-mobile__link">Projects</a></li>
           <li class="nav-mobile__list-item"><a href="#contact" class="nav-mobile__link">Contact</a></li>
         </ul>
       </div>
@@ -690,29 +694,29 @@
       <div class="h-line"></div>
       <div class="card-container">
         <div class="w-layout-grid grid-container no-padd">
-          <div><div class="div-hide"><div class="nav-tag split-tag">Identity</div></div></div>
+          <div><div class="div-hide"><div class="nav-tag split-tag">Academic Background</div></div></div>
           <div id="w-node-f795206b-cfea-47c2-42e7-3d1c4abaf737-8b326cb4">
-            <p class="manifesto">就读于深圳大学微众银行金融科技学院。<br/>具备极客精神，致力于底层架构的构建与数据流转，同时对资本市场保持极高的敬畏与好奇。</p>
+            <p class="manifesto">就读于深圳大学-微众银行金融科技学院，主攻金融科技专业。<br/>在严谨的学术训练体系下，深入钻研金融工程与计算机科学的交叉领域。</p>
           </div>
         </div>
         <div class="spacer"></div>
       </div>
       <div class="w-layout-grid grid-container no-padd horizontal-text-pin">
         <div id="w-node-f795206b-cfea-47c2-42e7-3d1c4abaf74e-8b326cb4" class="rel">
-          <div class="subtitle-in-text"><div class="nav-tag split-tag">Research</div></div>
-          <p class="manifesto"><span class="text-span-2"> </span>决定在金融与计算机的交叉地带侧重金融方向，以严谨的学术训练为基石。</p>
+          <div class="subtitle-in-text"><div class="nav-tag split-tag">Career Goal</div></div>
+          <p class="manifesto"><span class="text-span-2"> </span>具备强烈的学习能动性。职业目标直指<br/>量化交易研究与金融科技后端开发。</p>
         </div>
       </div>
     </div>
     
-    <!-- 横向滚动核心引擎区 (科研发展路径) -->
+    <!-- 横向滚动核心引擎区 (核心经历 Timeline) -->
     <div id="research" class="horizontal-section">
       <div class="horizontal-wrapper">
         <div class="track">
-          <!-- 幻灯片 1：基础阶段 -->
+          <!-- 幻灯片 1：独立开发与底层协议 -->
           <div class="h-slide">
             <div class="top">
-              <p class="claim-s split-timeline">自行系统学习金融学经典课程，<br/>深度阅读核心期刊与经典文献，<br/>建立扎实的金融市场直觉<br/>与量化思维。<br/></p>
+              <p class="claim-s split-timeline">作为独立开发者，全程采用 Vibecoding 模式与大语言模型协同，<br/>完成从底层逻辑到前端高级动效的重构。<br/>独立配置 Cloudflare 边缘节点，了解如何处理 A/CNAME 记录冲突，通过 Geo-DNS 调度与 308 永久重定向策略，<br/>实现国内根域名的毫秒级稳定解析与传输安全。</p>
               <div class="div-hide">
                 <div class="h-arrow w-embed">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"><path d="M16.0003 14.1421H11.9895V6.59024L3.14789 15.4319L0.568359 12.8524L9.41002 4.01071H1.85812V0H16.0003L16.0003 14.1421Z" fill="#FA4838"/></svg>
@@ -720,13 +724,14 @@
               </div>
             </div>
             <div class="bot col clipping-text gap">
-              <div class="nav-tag clipping-text split-timeline">Phase 1</div>
-              <h2 class="clipping-text split-timeline home-h2">Foundation</h2>
+              <div class="nav-tag clipping-text split-timeline">present</div>
+              <!-- 核心修复点：重设 clamp() 以自适应长单词 -->
+              <h2 class="clipping-text split-timeline home-h2">Vibe<br/>Coding</h2>
             </div>
           </div>
           <div class="h-slide side">
             <div class="slide-side__content">
-              <div class="nav-tag color-white split-horizontal">Path</div>
+              <div class="nav-tag color-white split-horizontal">Timeline</div>
               <div class="w-embed">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 58" fill="none" class="svg-draw">
                   <path d="M1.19006 0.969727C1.19006 31.7697 26.1601 56.7397 56.9601 56.7397" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
@@ -739,14 +744,14 @@
                 @media (max-width: 479px) { .svg-draw { width: 19.9vw !important; height: 19.9vw !important; } }
                 </style>
               </div>
-              <div class="nav-tag color-white split-horizontal">Path</div>
+              <div class="nav-tag color-white split-horizontal">Timeline</div>
             </div>
           </div>
           
-          <!-- Slide 2 -->
+          <!-- Slide 2: 科研带队与量化竞赛 -->
           <div class="h-slide">
             <div class="top">
-              <p class="claim-s split-horizontal">在建立完备的理论基础<br/>与代码能力后，主动寻求导师指导，<br/>尝试切入实际的金融科研项目，<br/>进行数据挖掘与因子有效性分析。</p>
+              <p class="claim-s split-horizontal">作为微众金融科技课题组导师小组组长，<br/>负责统筹 5 人团队运作，主动搭建协作沟通流体系。<br/>在深圳国际金融科技大赛中尝试担任队长参赛，<br/>主导以智能体 (AI Agent) 协同代替一般工作流为核心的前沿赛道，<br/>在真实场景中不断探索金融与技术的交叉边界。</p>
               <div class="div-hide">
                 <div class="h-arrow w-embed">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"><path d="M16.0003 14.1421H11.9895V6.59024L3.14789 15.4319L0.568359 12.8524L9.41002 4.01071H1.85812V0H16.0003L16.0003 14.1421Z" fill="#FA4838"/></svg>
@@ -754,13 +759,14 @@
               </div>
             </div>
             <div class="bot col clipping-text gap">
-              <div class="nav-tag clipping-text split-horizontal">Phase 2</div>
-              <h2 class="clipping-text split-reveal split-horizontal">Research Init</h2>
+              <div class="nav-tag clipping-text split-horizontal">present</div>
+              <!-- 核心修复点：FinTech Research 较长，动态字体确保不换行溢出 -->
+              <h2 class="clipping-text split-reveal split-horizontal home-h2">FinTech<br/>Research</h2>
             </div>
           </div>
           <div class="h-slide side">
             <div class="slide-side__content">
-              <div class="nav-tag color-white split-horizontal">Path</div>
+              <div class="nav-tag color-white split-horizontal">Timeline</div>
               <div class="w-embed">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 58" fill="none" class="svg-draw">
                   <path d="M14.75 56.44C22.3439 56.44 28.5 44.0293 28.5 28.72C28.5 13.4107 22.3439 1 14.75 1C7.15608 1 1 13.4107 1 28.72C1 44.0293 7.15608 56.44 14.75 56.44Z" stroke="white" stroke-width="0.5" stroke-miterlimit="10"/>
@@ -768,14 +774,14 @@
                   <path d="M42.72 56.44C50.3139 56.44 56.47 44.0293 56.47 28.72C56.47 13.4107 50.3139 1 42.72 1C35.1261 1 28.97 13.4107 28.97 28.72C28.97 44.0293 35.1261 56.44 42.72 56.44Z" stroke="white" stroke-width="0.5" stroke-miterlimit="10"/>
                 </svg>
               </div>
-              <div class="nav-tag color-white split-horizontal">Path</div>
+              <div class="nav-tag color-white split-horizontal">Timeline</div>
             </div>
           </div>
           
-          <!-- Slide 3 -->
+          <!-- Slide 3: 国际视野与软实力 -->
           <div class="h-slide">
             <div class="top">
-              <p class="claim-s split-horizontal">以就读顶尖院校的金融/量化方向<br/>研究生为核心目标，<br/>致力于成为学术与实务并重的<br/>量化研究员。</p>
+              <p class="claim-s split-horizontal">具备卓越的跨文化交流能力与跨领域沟通理解素养。<br/>曾荣获全英文演讲大赛一等奖，作为核心志愿者全流程主导法国留学生的校园接待与跨国生活指引。<br/>拥有极强的共情力与结构化表达能力，能够在高度多元化、跨维度的复杂协作语境下，迅速且精准地把握团队核心诉求，从而高效推动项目落地与共赢。</p>
               <div class="div-hide">
                 <div class="h-arrow w-embed">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"><path d="M16.0003 14.1421H11.9895V6.59024L3.14789 15.4319L0.568359 12.8524L9.41002 4.01071H1.85812V0H16.0003L16.0003 14.1421Z" fill="#FA4838"/></svg>
@@ -783,20 +789,21 @@
               </div>
             </div>
             <div class="bot col clipping-text gap">
-              <div class="nav-tag clipping-text split-horizontal">Phase 3</div>
-              <h2 class="clipping-text split-horizontal split-reveal">Grad<br/>School</h2>
+              <div class="nav-tag clipping-text split-horizontal">Soft Skills & Leadership</div>
+              <!-- 核心修复点 -->
+              <h2 class="clipping-text split-horizontal split-reveal home-h2">Global<br/>Vision</h2>
             </div>
           </div>
           <div class="h-slide side">
             <div class="slide-side__content">
-              <div class="nav-tag color-white split-horizontal">Path</div>
+              <div class="nav-tag color-white split-horizontal">Timeline</div>
               <div class="w-embed">
                 <svg xmlns="http://www.w3.org/2000/svg" class="svg-draw" viewBox="0 0 59 59" fill="none">
                   <path d="M28.92 28.92L28.65 56.83H1V1H56.84L57.06 28.9L28.92 28.92Z" stroke="white" stroke-width="1.5" stroke-miterlimit="10"/>
                   <path d="M56.5042 29.7143L28.9945 2.20459L1.48476 29.7143L28.9945 57.2241L56.5042 29.7143Z" stroke="white" stroke-width="1.5" stroke-miterlimit="10"/>
                 </svg>
               </div>
-              <div class="nav-tag color-white split-horizontal">Path</div>
+              <div class="nav-tag color-white split-horizontal">Timeline</div>
             </div>
           </div>
         </div>
@@ -907,7 +914,7 @@
     <div id="tech" class="last-section bg-white">
       <div class="w-layout-grid grid-container">
         <div id="w-node-f795206b-cfea-47c2-42e7-3d1c4abaf7b3-8b326cb4" class="section__intro-text">
-          <div class="nav-tag color-black split-tag">Doers DNA</div>
+          <div class="nav-tag color-black split-tag">Tech & Skills</div>
           <p class="manifesto clipping-text">Bridging the gap between<br/>theory and execution.</p>
         </div>
       </div>
@@ -921,7 +928,7 @@
               </div>
               <div class="value-text">
                 <h4>Python</h4>
-                <p>金融数据处理、量化策略回测与自动化脚本构建，为研究搭建高效底座。</p>
+                <p>专注于金融数据处理、量化策略回测与自动化脚本构建。能够独立运用yfinance与pandas等核心库实现历史市场数据的批量抓取、深度清洗与本地化存储。</p>
               </div>
               <div class="value-item__line top"></div>
               <div class="value-item__line bot"></div>
@@ -934,7 +941,7 @@
               </div>
               <div class="value-text">
                 <h4>C++</h4>
-                <p>算法实践开发与底层计算性能优化探索，追求代码执行的极致效率。</p>
+                <p>聚焦于金融核心算法的实践开发与底层计算性能的深度优化探索。</p>
               </div>
               <div class="value-item__line top"></div>
               <div class="value-item__line bot"></div>
@@ -946,8 +953,8 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 58 58" fill="none"><path d="M28.6201 0C36.6084 0.000185128 43.1235 6.30373 43.4648 14.208C51.321 14.601 57.5702 21.0961 57.5703 29.0498C57.5701 37.0143 51.3038 43.5138 43.4326 43.8906C42.8308 51.5453 36.4294 57.5692 28.6201 57.5693C20.8042 57.5691 14.3972 51.5351 13.8047 43.8711C6.09058 43.3296 0.00018935 36.9016 0 29.0498C0.00012607 21.2086 6.07408 14.7862 13.7734 14.2295C14.1039 6.31514 20.6246 0.000192842 28.6201 0ZM28.7852 34.2461C26.7838 39.607 21.7762 43.5007 15.8125 43.8779C16.4028 50.4327 21.9117 55.5691 28.6201 55.5693C35.3368 55.5692 40.8489 50.4199 41.4277 43.8535C35.6099 43.3561 30.7496 39.5077 28.7852 34.2461ZM43.418 16.209C42.897 21.9976 39.0574 26.8276 33.8154 28.7842C39.2156 30.7998 43.1282 35.8659 43.457 41.8867C50.2116 41.4999 55.5701 35.9013 55.5703 29.0498C55.5702 22.1851 50.191 16.5764 43.418 16.209ZM27.6914 29.8828C21.2982 30.3393 16.1987 35.4693 15.7881 41.875C22.1823 41.419 27.2817 36.2897 27.6914 29.8828ZM13.8232 16.2314C7.20596 16.7596 2.00013 22.2967 2 29.0498C2.00019 35.7895 7.18554 41.3175 13.7842 41.8643C14.1215 35.8537 18.0308 30.7976 23.4238 28.7842C18.189 26.8298 14.3521 22.0097 13.8232 16.2314ZM29.8789 29.9111C30.2945 36.1936 35.2216 41.2418 41.4502 41.8477C41.0342 35.5652 36.1078 30.5163 29.8789 29.9111ZM15.832 16.2256C16.4804 22.367 21.4518 27.2187 27.6465 27.6826C26.9973 21.5412 22.0271 16.6885 15.832 16.2256ZM41.4033 16.2549C35.3745 16.8635 30.5746 21.6368 29.9248 27.6533C35.9551 27.0457 40.754 22.2728 41.4033 16.2549ZM28.6201 2C21.7333 2.00019 16.1111 7.41392 15.7764 14.2178C21.7556 14.5815 26.7796 18.4811 28.7852 23.8525C30.7539 18.5803 35.6304 14.7267 41.4639 14.2422C41.1414 7.42689 35.5152 2.00018 28.6201 2Z" fill="#FA4838"/></svg>
               </div>
               <div class="value-text">
-                <h4>Quant<br/>Infrastructure</h4>
-                <p>独立编写基于yfinance与pandas的自动化脚本，实现股票历史数据批量抓取与清洗。</p>
+                <h4>Network & Deploy</h4>
+                <p>熟悉基于 Cloudflare 的全球边缘节点部署机制与Geo-DNS路由优化策略。理解DNS核心底层协议与永久重定向安全法则，拥有处理A/CNAME记录冲突的经验，可确保在复杂网络环境下数据传输的极致安全与毫秒级稳定解析。</p>
               </div>
               <div class="value-item__line top"></div>
               <div class="value-item__line bot"></div>
@@ -959,8 +966,8 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 58 58" fill="none"><path d="M28.8008 0C44.713 0.000263844 57.6005 12.899 57.6006 28.8008V29.8008H29.8008V57.6006H28.8008C12.8885 57.6005 0.00026382 44.7025 0 28.8008V27.8008H27.8008V0H28.8008ZM2.02148 29.8008C2.5353 43.8038 13.7894 55.0662 27.8008 55.5801V29.8008H2.02148ZM29.8008 27.8008H55.5801C55.0663 13.7978 43.8122 2.53536 29.8008 2.02148V27.8008Z" fill="#FA4838"/></svg>
               </div>
               <div class="value-text">
-                <h4>Cross-culture<br/>Communication</h4>
-                <p>全英文演讲大赛一等奖，曾在多元文化语境下全流程接待法国交换生，具备出色协作能力。</p>
+                <h4>Git & LaTeX</h4>
+                <p>熟练掌握GitHub版本控制体系与现代代码托管流程，有效保障复杂项目的敏捷迭代与团队高效协同。同时擅长运用LaTeX进行结构化的学术论文与专业技术文档排版，具备严谨的代码规范与强烈的系统化知识库沉淀意识。</p>
               </div>
               <div class="value-item__line top"></div>
               <div class="value-item__line bot"></div>
@@ -1377,7 +1384,6 @@
       
       toastContainer.appendChild(toast);
       
-      // 触发强行重绘 (Reflow，强迫浏览器立刻刷新一次画面)，以此激活 CSS transition 从初态到终态的丝滑过渡动效
       toast.offsetHeight;
       toast.classList.add('show');
       
@@ -1386,7 +1392,7 @@
         setTimeout(() => {
           if (toast.parentNode) toast.parentNode.removeChild(toast);
         }, 600); 
-      }, 3000); // UI 黄金法则：让提示驻留 3 秒以保障信息获取
+      }, 3000); 
     }
 
     if (wechatBtn) {
@@ -1414,7 +1420,6 @@
     allAnchorLinks.forEach(link => {
       const targetId = link.getAttribute('href');
       
-      // 全局劫持锚点 (Anchor，即点击后跳转到页面特定区块的链接) 行为，彻底封杀浏览器原生粗暴的“瞬间跳跃”体验
       if (targetId && targetId !== '#') {
         link.setAttribute('data-target', targetId);
         link.setAttribute('href', 'javascript:void(0);');
@@ -1434,14 +1439,11 @@
           const currentPosition = window.scrollY;
           const distance = Math.abs(targetPosition - currentPosition);
           
-          // 【核心修复 1】：缩短全局滚动耗时，消除“慢动作”感
-          // 基础时间降至 0.8 秒，最大耗时锁定在 1.8 秒以内，确保每一次跳转都干脆利落
           const dynamicDuration = Math.min(1.8, 0.8 + (distance / 3000));
 
           let offsetValue = -120; 
           
           if (actualTargetId === '#identity') {
-              // 精确抓取首屏那条标志性的横线 (h-line)，并计算视差，使屏幕最终精准停靠并将其推出版心之外
               const hLine = targetElement.querySelector('.h-line');
               if (hLine) {
                   const targetTop = targetElement.getBoundingClientRect().top + window.scrollY;
@@ -1455,7 +1457,6 @@
           } else if (actualTargetId === '#tech') {
               offsetValue = 0; 
           } else if (actualTargetId === '#projects') {
-              // 强迫症终极治愈：捕获页脚灰色背景的绝对顶点，强制屏幕的最下边界与之发生像素级吻合
               const contactElement = document.querySelector('#contact');
               if (contactElement) {
                   const projectsTop = targetElement.getBoundingClientRect().top + window.scrollY;
@@ -1468,20 +1469,16 @@
               offsetValue = 0;
           }
 
-          // 注入计算完毕的 offset 补偿量，执行平滑滚动，并锁定用户途中的误触操作
           lenis.scrollTo(targetElement, {
             duration: dynamicDuration,
             offset: offsetValue,
             lock: true, 
-            // 【核心修复 2】：升级为顶级 Expo Out (指数级缓出) 曲线
-            // 特点：前段极速爆发响应，尾段利用足足 60% 的时间进行“微像素级”的极度细腻滑行 (Apple 官网原生质感)
             easing: (t) => t === 1 ? 1 : 1 - Math.pow(2, -12 * t)
           });
         }
       });
     });
 
-    // 幽灵 Logo 映射机制：为导航栏文字在全站所有复杂色彩上实现“自动反色混合 (mix-blend-mode)”提供定位锚支撑
     const realLogo = document.querySelector('.nav--logo');
     if (realLogo) {
       const ghostLogo = realLogo.cloneNode(true);
