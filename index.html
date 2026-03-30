@@ -978,33 +978,24 @@
           </style>
         </div>
         <!-- 复制 4 份子模块，以支持纯 CSS 的无缝首尾循环播放 -->
-         /* 跑马灯无限滚动引擎设置 */
-  .marquee {
-      display: flex !important;
-      flex-wrap: nowrap !important;
-      width: max-content !important;
-      /* 将写死的 15s 替换为动态 CSS 变量，确保绝对匀速 */
-      animation: master-marquee var(--marquee-duration, 15s) linear infinite !important;
-      /* 提示浏览器开启 GPU 硬件加速 */
-      will-change: transform !important;
-  }
-
-  .marquee > .w-embed {
-      display: none !important; 
-  }
-
-  .scroll-marquee {
-      animation: none !important; 
-  }
-
-  /* 核心：将写死的 -25% 替换为 Pretext 计算出的精确像素宽度 */
-  @keyframes master-marquee {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(calc(-1 * var(--marquee-exact-width))); } 
-  }
-
-  .marquee-content {
-<!-- ... existing code ... -->
+        <div class="marquee-content scroll-marquee">
+          <div class="marquee__text clipping-text">ABOUT ME</div>
+          <div class="marquee__svg w-embed">
+            <img src="marquee_logo.png" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1614064641913-a520faff3f00?w=200&h=100&fit=crop';" alt="Marquee Logo" loading="lazy" />
+          </div>
+        </div>
+        <div class="marquee-content scroll-marquee">
+          <div class="marquee__text clipping-text">ABOUT ME</div>
+          <div class="marquee__svg w-embed">
+            <img src="marquee_logo.png" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1614064641913-a520faff3f00?w=200&h=100&fit=crop';" alt="Marquee Logo" loading="lazy" />
+          </div>
+        </div>
+        <div class="marquee-content scroll-marquee">
+          <div class="marquee__text clipping-text">ABOUT ME</div>
+          <div class="marquee__svg w-embed">
+            <img src="marquee_logo.png" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1614064641913-a520faff3f00?w=200&h=100&fit=crop';" alt="Marquee Logo" loading="lazy" />
+          </div>
+        </div>
         <div class="marquee-content scroll-marquee">
           <div class="marquee__text clipping-text">ABOUT ME</div>
           <div class="marquee__svg w-embed">
@@ -1013,46 +1004,6 @@
         </div>
       </div>
     </div>
-    
-    <!-- 【Pretext 跑马灯核心引擎接管】 -->
-    <script type="module">
-      // 1. 引入真库：由于你的本地项目是现代前端环境，这里的 import 语句可以直接被 Vite/Webpack 正确解析
-      import { prepare, layout } from '@chenglou/pretext';
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const marqueeContainer = document.querySelector('.marquee');
-        if (!marqueeContainer) return;
-
-        // 提取当前视口宽度，用于纯数学计算 (完美替代 clientWidth)
-        const vwInPx = window.innerWidth / 100;
-        const isMobile = window.innerWidth <= 479;
-        
-        // 2. 准备阶段 (Prepare)：定义文本和测量上下文
-        // 假设跑马灯字体为主力字体 Inter，字号需与你的 CSS (或 Webflow) 预设相匹配
-        const text = "ABOUT ME";
-        const fontSizePx = (isMobile ? 12 : 6) * vwInPx; 
-        const fontString = `900 ${fontSizePx}px "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif`;
-
-        // 3. 内存测算 (Layout)：完全脱离 DOM 的高速计算
-        const preparedData = prepare(text, fontString);
-        const textExactWidth = layout(preparedData).width;
-
-        // 计算 SVG 及左右 Margin 的像素总宽（根据你原本的 CSS 比例映射）
-        // 桌面端：SVG 6vw + 左右 margin 8vw = 14vw。移动端：SVG 12vw + margin 12vw = 24vw
-        const svgTotalWidthPx = (isMobile ? 24 : 14) * vwInPx;
-
-        // 计算单个无缝循环单元的确切总宽：文本宽 + 附属元素宽
-        const singleBlockExactWidth = textExactWidth + svgTotalWidthPx;
-
-        // 4. 驱动动画：动态设定匀速时间，不再依赖写死的秒数
-        const speedPixelsPerSecond = window.innerWidth * 0.1; // 物理基准速度：每秒滚动屏幕宽度的 10%
-        const exactDuration = singleBlockExactWidth / speedPixelsPerSecond;
-
-        // 5. 将计算好的死数值赋值给 CSS 变量，全程零重排
-        marqueeContainer.style.setProperty('--marquee-exact-width', `${singleBlockExactWidth}px`);
-        marqueeContainer.style.setProperty('--marquee-duration', `${exactDuration}s`);
-      });
-    </script>
     
     <!-- 个人履历与项目集锦展示区 (Projects/Works) -->
     <div id="projects" class="use-case__wrapper collection-list-wrapper-2 w-dyn-list">
@@ -1279,18 +1230,16 @@
               <div class="nav-tag hide color-white">Linkedin</div>
             </div>
           </a>
-          <!-- 【微调】：移动端邮箱 - 屏蔽交互，强制小写 -->
-          <a href="javascript:void(0)" class="link-block w-inline-block" style="pointer-events: none;">
+          <a href="mailto:hi@will-tech.xyz" class="link-block w-inline-block">
             <div class="div-hide">
               <div class="nav-tag color-white">Email</div>
               <div class="nav-tag hide color-white" style="text-transform: lowercase !important;">hi@will-tech.xyz</div>
             </div>
           </a>
         </div>
-        <!-- 【微调】：桌面端邮箱 - 屏蔽交互，强制小写 -->
-        <a href="javascript:void(0)" class="link-block no-mobile w-inline-block" style="pointer-events: none;">
+        <a href="mailto:hi@will-tech.xyz" class="link-block no-mobile w-inline-block">
           <div class="div-hide">
-            <div class="nav-tag color-white first" style="text-transform: lowercase !important;">3400098970@qq.com</div>
+            <div class="nav-tag color-white first" style="text-transform: lowercase !important;">hi@will-tech.xyz</div>
             <div class="nav-tag hide color-white two">Email me</div>
           </div>
         </a>
