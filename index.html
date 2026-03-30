@@ -1399,14 +1399,14 @@
       wechatBtn.addEventListener('click', (e) => {
         e.preventDefault();
         const textArea = document.createElement("textarea");
-        textArea.value = "jc3400098970";
+        textArea.value = "hi@will.xyz";
         textArea.style.position = "fixed";
         textArea.style.top = "-9999px";
         document.body.appendChild(textArea);
         textArea.select();
         try {
           document.execCommand('copy');
-          showToast('微信号 jc3400098970 已复制');
+          showToast('邮箱 hi@will.xyz 已复制');
         } catch (err) {
           showToast('复制失败，请重试');
         } finally {
