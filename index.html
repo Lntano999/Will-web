@@ -306,6 +306,7 @@
       mix-blend-mode: difference !important;
       display: flex !important;
       align-items: center !important;
+      gap: 6px !important;
   }
 
  
@@ -392,6 +393,161 @@
       fill: #ffffff !important;
       color: #ffffff !important;
       filter: none !important;
+  }
+
+  /* ═══ 主导航链接：羽化毛玻璃光晕 + 流体悬停 + elastic-bounce（Contact Me 按钮保持 Webflow 原版，不套用）═══ */
+  /*
+   * 悬停：整体 scale(1.05)；transition 使用 all 与题述贝塞尔，禁止 ease。
+   * ::before：椭圆径向 mask 消掉硬边，blur(12px) + 极弱 rgba 提亮，无矩形/药丸描边感。
+   */
+  .navigation a.nav-minimal {
+      position: relative !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0.42em 1em !important;
+      margin: 0 !important;
+      border: none !important;
+      border-radius: 9999px !important;
+      box-sizing: border-box !important;
+      outline: none !important;
+      cursor: pointer !important;
+      text-decoration: none !important;
+      isolation: isolate !important;
+      overflow: visible !important;
+      transform: scale(1) translateZ(0) !important;
+      background-color: transparent !important;
+      color: rgba(255, 255, 255, 0.88) !important;
+      -webkit-text-fill-color: rgba(255, 255, 255, 0.88) !important;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  /*
+   * 羽化层：径向渐变作 mask → 中心实、外缘透明，边缘呈雾气消散；不画 border / box-shadow，避免「框感」。
+   */
+  .navigation a.nav-minimal::before {
+      content: "" !important;
+      position: absolute !important;
+      left: 50% !important;
+      top: 50% !important;
+      width: 160% !important;
+      min-width: 120px !important;
+      height: 220% !important;
+      min-height: 2.75em !important;
+      transform: translate(-50%, -50%) scale(0.88) !important;
+      transform-origin: center center !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      z-index: -1 !important;
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+      -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%) !important;
+      mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%) !important;
+      -webkit-mask-repeat: no-repeat !important;
+      mask-repeat: no-repeat !important;
+      -webkit-mask-size: 100% 100% !important;
+      mask-size: 100% 100% !important;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .navigation a.nav-minimal:hover:not(.is-pressed):not(.is-elastic-play-hover):not(.is-elastic-play-rest)::before,
+  .navigation a.nav-minimal:focus-visible:not(.is-pressed):not(.is-elastic-play-hover):not(.is-elastic-play-rest)::before {
+      opacity: 1 !important;
+      transform: translate(-50%, -50%) scale(1) !important;
+  }
+
+  .navigation a.nav-minimal:hover:not(.is-pressed):not(.is-elastic-play-hover):not(.is-elastic-play-rest),
+  .navigation a.nav-minimal:focus-visible:not(.is-pressed):not(.is-elastic-play-hover):not(.is-elastic-play-rest) {
+      transform: scale(1.05) translateZ(0) !important;
+      color: #ffffff !important;
+      -webkit-text-fill-color: #ffffff !important;
+  }
+
+  /*
+   * 按下：严格 scale(0.95)，过渡短于 0.1s，短贝塞尔（非 ease）。
+   */
+  .navigation a.nav-minimal.is-pressed {
+      transform: scale(0.95) translateZ(0) !important;
+      transition: transform 0.09s cubic-bezier(0.33, 0, 0.67, 1) !important;
+  }
+
+  .navigation a.nav-minimal.is-pressed::before {
+      transition: opacity 0.09s cubic-bezier(0.33, 0, 0.67, 1), transform 0.09s cubic-bezier(0.33, 0, 0.67, 1) !important;
+  }
+
+  /*
+   * elastic-bounce：0.95 → 峰值 1.08（40%）→ 衰减振荡（75%）→ 稳态悬停 1.05；模拟阻尼约 17 的欠阻尼收敛。
+   */
+  @keyframes elastic-bounce {
+      0% {
+        transform: scale(0.95) translateZ(0);
+      }
+      40% {
+        transform: scale(1.08) translateZ(0);
+      }
+      75% {
+        transform: scale(1.02) translateZ(0);
+      }
+      100% {
+        transform: scale(1.05) translateZ(0);
+      }
+  }
+
+  @keyframes elastic-bounce-rest {
+      0% {
+        transform: scale(0.95) translateZ(0);
+      }
+      40% {
+        transform: scale(1.06) translateZ(0);
+      }
+      75% {
+        transform: scale(0.99) translateZ(0);
+      }
+      100% {
+        transform: scale(1) translateZ(0);
+      }
+  }
+
+  .navigation a.nav-minimal.is-elastic-play-hover {
+      animation: elastic-bounce 0.58s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+      transition: none !important;
+  }
+
+  /* 松手后仍在悬停分支：hover 选择器因播放类暂时不命中，单独维持光晕显隐 */
+  .navigation a.nav-minimal.is-elastic-play-hover::before {
+      opacity: 1 !important;
+      transform: translate(-50%, -50%) scale(1) !important;
+  }
+
+  .navigation a.nav-minimal.is-elastic-play-rest {
+      animation: elastic-bounce-rest 0.58s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+      transition: none !important;
+  }
+
+  .navigation a.nav-minimal.is-elastic-play-rest::before {
+      opacity: 0 !important;
+      transform: translate(-50%, -50%) scale(0.88) !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .navigation a.nav-minimal {
+      transition-duration: 0.01ms !important;
+    }
+    .navigation a.nav-minimal::before {
+      display: none !important;
+    }
+    .navigation a.nav-minimal:hover:not(.is-pressed),
+    .navigation a.nav-minimal:focus-visible:not(.is-pressed) {
+      transform: none !important;
+    }
+    .navigation a.nav-minimal.is-pressed {
+      transform: none !important;
+    }
+    .navigation a.nav-minimal.is-elastic-play-hover,
+    .navigation a.nav-minimal.is-elastic-play-rest {
+      animation: none !important;
+    }
   }
  
   .manifesto {
@@ -525,10 +681,10 @@
     </a>
     <div class="nav--item">
    
-      <a href="#identity" class="nav-tag color-white nav-link">Academic-Background</a>
-      <a href="#tech" class="nav-tag color-white nav-link">Tech Stack</a>
-      <a href="#WILL." class="nav-tag color-white nav-link">WILL.</a>
-      <a href="#contact" class="nav-tag color-white nav-link">Contact</a>
+      <a href="#identity" class="nav-tag color-white nav-link nav-minimal">Academic-Background</a>
+      <a href="#tech" class="nav-tag color-white nav-link nav-minimal">Tech Stack</a>
+      <a href="#WILL." class="nav-tag color-white nav-link nav-minimal">WILL.</a>
+      <a href="#contact" class="nav-tag color-white nav-link nav-minimal">Contact</a>
     </div>
     <div class="nav--buttons">
      
@@ -1502,6 +1658,58 @@
       requestAnimationFrame(syncPosition);
       setTimeout(syncPosition, 100);
     }
+
+    /* 导航：按下 scale(0.95) / 松手播放 elastic-bounce（@keyframes），由类名切换避免与悬停 transition 打架 */
+    (function initNavMinimalElastic() {
+      const root = document.querySelector('.navigation');
+      if (!root) return;
+      const nodes = root.querySelectorAll('a.nav-minimal');
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function wantsHoverBranch(el) {
+        return el.matches(':hover') || el.matches(':focus-visible');
+      }
+
+      function clearPlay(el) {
+        el.classList.remove('is-elastic-play-hover', 'is-elastic-play-rest');
+      }
+
+      nodes.forEach((el) => {
+        let down = false;
+
+        el.addEventListener('pointerdown', (ev) => {
+          if (ev.button !== 0) return;
+          down = true;
+          try {
+            el.setPointerCapture(ev.pointerId);
+          } catch (_) {}
+          clearPlay(el);
+          el.classList.add('is-pressed');
+        });
+
+        function onRelease(ev) {
+          if (!down) return;
+          down = false;
+          try {
+            el.releasePointerCapture(ev.pointerId);
+          } catch (_) {}
+          el.classList.remove('is-pressed');
+          if (reduce) return;
+          clearPlay(el);
+          void el.offsetWidth;
+          el.classList.add(wantsHoverBranch(el) ? 'is-elastic-play-hover' : 'is-elastic-play-rest');
+        }
+
+        el.addEventListener('pointerup', onRelease);
+        el.addEventListener('pointercancel', onRelease);
+        el.addEventListener('lostpointercapture', onRelease);
+
+        el.addEventListener('animationend', (ev) => {
+          if (ev.animationName !== 'elastic-bounce' && ev.animationName !== 'elastic-bounce-rest') return;
+          clearPlay(el);
+        });
+      });
+    })();
 
   });
   </script>
