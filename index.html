@@ -1586,6 +1586,28 @@
         const actualTargetId = this.getAttribute('data-target');
         if (!actualTargetId) return;
 
+        if (actualTargetId === '#WILL.' && typeof lenis !== 'undefined') {
+          const marqueeEl = document.querySelector('.item--marquee');
+          const projectsEl = document.getElementById('projects');
+          if (!marqueeEl || !projectsEl) return;
+          let wrapperElement = marqueeEl.parentElement;
+          while (wrapperElement && !wrapperElement.contains(projectsEl)) {
+            wrapperElement = wrapperElement.parentElement;
+          }
+          if (!wrapperElement) return;
+          const absoluteBottom = wrapperElement.getBoundingClientRect().bottom + window.scrollY;
+          const targetScrollY = absoluteBottom - window.innerHeight + 40 - 250;
+          const currentPosition = window.scrollY;
+          const distance = Math.abs(targetScrollY - currentPosition);
+          const dynamicDuration = Math.min(1.8, 0.8 + distance / 3000);
+          lenis.scrollTo(targetScrollY, {
+            duration: dynamicDuration,
+            lock: true,
+            easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -12 * t)),
+          });
+          return;
+        }
+
         const targetElement = document.querySelector(actualTargetId);
         if (targetElement && typeof lenis !== 'undefined') {
           
