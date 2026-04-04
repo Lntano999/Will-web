@@ -82,7 +82,10 @@
 
   
   .horizontal-section .h-slide .top {
-      padding-top: 12vh !important; 
+      padding-top: 12vh !important;
+      /* 避免红箭头贴齐视口右缘被 .horizontal-section overflow 裁切 */
+      padding-right: clamp(1.25rem, 3.5vw, 2.75rem) !important;
+      box-sizing: border-box !important;
   }
   
   .horizontal-text-pin {
@@ -204,17 +207,49 @@
       word-break: keep-all;
       white-space: nowrap;
   }
+  /* <br/> 双行标题（如 Global / Vision）：nowrap 会导致第二行在窄宽下被裁切 */
+  .h-slide:not(.side) .bot h2.home-h2 {
+      white-space: normal !important;
+  }
 
   .last-section.bg-white .nav-tag { color: #000000 !important; }
   .last-section.bg-white .value-text h4 { color: #000000 !important; }
-  .last-section.bg-white .value-text p { 
+  .last-section.bg-white .value-text p,
+  .last-section.bg-white .value-text .scroll-mask-block .reveal-text-line { 
       color: #666666 !important; 
       text-align: justify !important;
       text-justify: inter-ideograph !important;
       line-height: 1.6 !important;
+      -webkit-text-fill-color: #666666 !important;
   }
   .last-section.bg-white .value-item__line { background-color: #e5e5e5 !important; }
 
+  /* 滚动触发逐行 mask（非 hover）：初始隐藏，父级 .scroll-reveal-inview 后显现 */
+  .mask-line-container {
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+  }
+  .scroll-mask-block .reveal-text-line {
+    display: block;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1), opacity 1s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform, opacity;
+  }
+  .value-item.scroll-reveal-inview .scroll-mask-block .reveal-text-line {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  .scroll-mask-block .mask-line-container:nth-child(1) .reveal-text-line { transition-delay: 0s; }
+  .scroll-mask-block .mask-line-container:nth-child(2) .reveal-text-line { transition-delay: 0.15s; }
+  .scroll-mask-block .mask-line-container:nth-child(3) .reveal-text-line { transition-delay: 0.3s; }
+  .scroll-mask-block .mask-line-container:nth-child(4) .reveal-text-line { transition-delay: 0.45s; }
+  .scroll-mask-block .mask-line-container:nth-child(5) .reveal-text-line { transition-delay: 0.6s; }
+  .scroll-mask-block .mask-line-container:nth-child(6) .reveal-text-line { transition-delay: 0.75s; }
+  .scroll-mask-block .mask-line-container:nth-child(7) .reveal-text-line { transition-delay: 0.9s; }
+  .scroll-mask-block .mask-line-container:nth-child(8) .reveal-text-line { transition-delay: 1.05s; }
+  .scroll-mask-block .mask-line-container:nth-child(9) .reveal-text-line { transition-delay: 1.2s; }
+  .scroll-mask-block .mask-line-container:nth-child(10) .reveal-text-line { transition-delay: 1.35s; }
 
   .use-case-h4 { color: #000000 !important; }
   .use-case-text { color: #666666 !important; line-height: 1.6 !important; margin-top: 8px !important; }
@@ -940,7 +975,7 @@
             </div>
           </div>
           
-          <!-- Slide 3: 国际视野与软实力 -->
+          <!-- Slide 3: 与 Slide 2 相同用 split-horizontal + GSAP，避免最后一屏 IO 达不到 0.5 时整段文案与箭头永不播放 -->
           <div class="h-slide">
             <div class="top">
               <p class="claim-s split-horizontal">具备卓越的跨文化交流能力与跨领域沟通理解素养。<br/>曾荣获全英文演讲大赛一等奖，作为核心志愿者全流程主导法国留学生的校园接待与跨国生活指引。<br/>拥有极强的共情力与结构化表达能力，能够在高度多元化、跨维度的复杂协作语境下，迅速且精准地把握团队核心诉求，从而高效推动项目落地与共赢。</p>
@@ -1057,7 +1092,10 @@
           const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
               const slide = entry.target; const data  = slideDataMap.get(slide); if (!data) return;
-              if (!entry.isIntersecting || entry.intersectionRatio < 0.5) return;
+              if (!entry.isIntersecting) return;
+              /* 仅 threshold:[0.5] 时最后一屏常达不到 0.5，GSAP 永不执行 */
+              const minRatio = 0.12;
+              if (entry.intersectionRatio < minRatio) return;
               if (data.isFirst && !document.body.classList.contains("h-slide-1-ready")) { return; }
               if (data.played) return; data.played = true;
               if (data.lines && data.lines.length) { gsap.to(data.lines, { y: "0%", opacity: 1, duration: 0.7, ease: "power3.out", stagger: 0.05 }); }
@@ -1065,7 +1103,7 @@
               if (data.arrows && data.arrows.length) { gsap.to(data.arrows, { yPercent: 0, duration: 0.5, ease: "power3.out" }); }
               observer.unobserve(slide);
             });
-          }, { threshold: [0.5] });
+          }, { threshold: [0, 0.05, 0.1, 0.15, 0.25, 0.5, 0.75] });
           slideDataMap.forEach((_, slide) => observer.observe(slide));
         });
         </script>
@@ -1090,7 +1128,11 @@
               </div>
               <div class="value-text">
                 <h4>Python</h4>
-                <p>专注于金融数据处理、量化策略回测与自动化脚本构建。能够独立运用yfinance与pandas等核心库实现历史市场数据的批量抓取、深度清洗与本地化存储。</p>
+                <div class="scroll-mask-block">
+                  <div class="mask-line-container"><span class="reveal-text-line">专注于金融数据处理、量化策略回测与自动化脚本构建。</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">能够独立运用yfinance与pandas等核心库实现历史市场数据的批量抓取、</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">深度清洗与本地化存储。</span></div>
+                </div>
               </div>
               <div class="value-item__line top"></div>
               <div class="value-item__line bot"></div>
@@ -1103,7 +1145,9 @@
               </div>
               <div class="value-text">
                 <h4>C++</h4>
-                <p>聚焦于金融核心算法的实践开发与底层计算性能的深度优化探索。</p>
+                <div class="scroll-mask-block">
+                  <div class="mask-line-container"><span class="reveal-text-line">聚焦于金融核心算法的实践开发与底层计算性能的深度优化探索。</span></div>
+                </div>
               </div>
               <div class="value-item__line top"></div>
               <div class="value-item__line bot"></div>
@@ -1116,7 +1160,11 @@
               </div>
               <div class="value-text">
                 <h4>Network & Deploy</h4>
-                <p>熟悉基于 Cloudflare 的全球边缘节点部署机制与Geo-DNS路由优化策略。理解DNS核心底层协议与永久重定向安全法则，拥有处理A/CNAME记录冲突的经验，可确保在复杂网络环境下数据传输的极致安全与毫秒级稳定解析。</p>
+                <div class="scroll-mask-block">
+                  <div class="mask-line-container"><span class="reveal-text-line">熟悉基于 Cloudflare 的全球边缘节点部署机制与Geo-DNS路由优化策略。</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">理解DNS核心底层协议与永久重定向安全法则，拥有处理A/CNAME记录冲突的经验，</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">可确保在复杂网络环境下数据传输的极致安全与毫秒级稳定解析。</span></div>
+                </div>
               </div>
               <div class="value-item__line top"></div>
               <div class="value-item__line bot"></div>
@@ -1129,7 +1177,11 @@
               </div>
               <div class="value-text">
                 <h4>Git & LaTeX</h4>
-                <p>熟练掌握GitHub版本控制体系与现代代码托管流程，有效保障复杂项目的敏捷迭代与团队高效协同。同时擅长运用LaTeX进行结构化的学术论文与专业技术文档排版，具备严谨的代码规范与强烈的系统化知识库沉淀意识。</p>
+                <div class="scroll-mask-block">
+                  <div class="mask-line-container"><span class="reveal-text-line">熟练掌握GitHub版本控制体系与现代代码托管流程，有效保障复杂项目的敏捷迭代与团队高效协同。</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">同时擅长运用LaTeX进行结构化的学术论文与专业技术文档排版，</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">具备严谨的代码规范与强烈的系统化知识库沉淀意识。</span></div>
+                </div>
               </div>
               <div class="value-item__line top"></div>
               <div class="value-item__line bot"></div>
@@ -1315,9 +1367,10 @@
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const el = entry.target;
+                        el.classList.add('scroll-reveal-inview');
 
                         setTimeout(() => {
-                            const targets = [el, ...el.querySelectorAll('.value-item__line, .value-icon, .value-text h4, .value-text p')];
+                            const targets = [el, ...el.querySelectorAll('.value-item__line, .value-icon, .value-text h4, .value-text .scroll-mask-block')];
                             targets.forEach(t => {
                                 const currentOpacity = window.getComputedStyle(t).opacity;
                                 if (currentOpacity === '0' || t.style.opacity === '0') {
