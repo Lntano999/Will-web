@@ -224,6 +224,7 @@
   }
   .last-section.bg-white .value-item__line { background-color: #e5e5e5 !important; }
 
+
   /* 滚动触发逐行 mask（非 hover）：初始隐藏，父级 .scroll-reveal-inview 后显现 */
   .mask-line-container {
     overflow: hidden;
@@ -251,11 +252,17 @@
   .scroll-mask-block .mask-line-container:nth-child(8) .reveal-text-line { transition-delay: 0.7s; }
   .scroll-mask-block .mask-line-container:nth-child(9) .reveal-text-line { transition-delay: 0.8s; }
   .scroll-mask-block .mask-line-container:nth-child(10) .reveal-text-line { transition-delay: 0.9s; }
-  .scroll-mask-block .mask-line-container:nth-child(11) .reveal-text-line { transition-delay: 1.0; }
+  .scroll-mask-block .mask-line-container:nth-child(11) .reveal-text-line { transition-delay: 1.0s; }
   .scroll-mask-block .mask-line-container:nth-child(12) .reveal-text-line { transition-delay: 1.1s; }
   .scroll-mask-block .mask-line-container:nth-child(13) .reveal-text-line { transition-delay: 1.2s; }
   .scroll-mask-block .mask-line-container:nth-child(14) .reveal-text-line { transition-delay: 1.3s; }
   .scroll-mask-block .mask-line-container:nth-child(15) .reveal-text-line { transition-delay: 1.4s; }
+  .scroll-mask-block .mask-line-container:nth-child(16) .reveal-text-line { transition-delay: 1.5s; }
+  .scroll-mask-block .mask-line-container:nth-child(17) .reveal-text-line { transition-delay: 1.6s; }
+  .scroll-mask-block .mask-line-container:nth-child(18) .reveal-text-line { transition-delay: 1.7s; }
+  .scroll-mask-block .mask-line-container:nth-child(19) .reveal-text-line { transition-delay: 1.8s; }
+  .scroll-mask-block .mask-line-container:nth-child(20) .reveal-text-line { transition-delay: 1.9s; }
+  .scroll-mask-block .mask-line-container:nth-child(n+21) .reveal-text-line { transition-delay: 2.0s; }
 
   .use-case-h4 { color: #000000 !important; }
   .use-case-text { color: #666666 !important; line-height: 1.6 !important; margin-top: 8px !important; }
@@ -1105,20 +1112,33 @@
           const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
               const slide = entry.target; const data  = slideDataMap.get(slide); if (!data) return;
-              if (!entry.isIntersecting) return;
-              /* 仅 threshold:[0.5] 时最后一屏常达不到 0.5，GSAP 永不执行 */
               const minRatio = 0.12;
-              if (entry.intersectionRatio < minRatio) return;
-              if (data.isFirst && !document.body.classList.contains("h-slide-1-ready")) { return; }
-              if (data.played) return; data.played = true;
-              if (data.lines && data.lines.length) { gsap.to(data.lines, { y: "0%", opacity: 1, duration: 0.7, ease: "power3.out", stagger: 0.05 }); }
-              if (data.svgPaths && data.svgPaths.length) { gsap.to(data.svgPaths, { strokeDashoffset: 0, duration: 1.5, ease: "power3.inOut" }); }
-              if (data.arrows && data.arrows.length) { gsap.to(data.arrows, { yPercent: 0, duration: 0.5, ease: "power3.out" }); }
+              
+              if (!entry.isIntersecting || entry.intersectionRatio < minRatio) {
+                  /* 板块离开时移除文本触发类，同步执行 GSAP 图标和线条后退动画，实现上下游完全对齐 */
+                  slide.classList.remove("scroll-reveal-inview");
+                  if (data.played) {
+                      data.played = false;
+                      if (data.lines && data.lines.length) { gsap.to(data.lines, { y: "140%", opacity: 0, duration: 0.5, ease: "power3.in" }); }
+                      if (data.svgPaths && data.svgPaths.length) {
+                          data.svgPaths.forEach(path => {
+                              const length = path.getTotalLength();
+                              gsap.to(path, { strokeDashoffset: length, duration: 0.8, ease: "power3.inOut" });
+                          });
+                      }
+                      if (data.arrows && data.arrows.length) { gsap.to(data.arrows, { yPercent: 150, duration: 0.5, ease: "power3.in" }); }
+                  }
+                  return;
+              }
               
               /* 触发硬切割段落的 CSS 原生动画 */
               slide.classList.add("scroll-reveal-inview");
-              
-              observer.unobserve(slide);
+
+              if (data.isFirst && !document.body.classList.contains("h-slide-1-ready")) { return; }
+              if (data.played) return; data.played = true;
+              if (data.lines && data.lines.length) { gsap.to(data.lines, { y: "0%", opacity: 1, duration: 0.7, ease: "power3.out", stagger: 0.1 }); }
+              if (data.svgPaths && data.svgPaths.length) { gsap.to(data.svgPaths, { strokeDashoffset: 0, duration: 1.5, ease: "power3.inOut" }); }
+              if (data.arrows && data.arrows.length) { gsap.to(data.arrows, { yPercent: 0, duration: 0.5, ease: "power3.out" }); }
             });
           }, { threshold: [0, 0.05, 0.1, 0.15, 0.25, 0.5, 0.75] });
           slideDataMap.forEach((_, slide) => observer.observe(slide));
@@ -1403,24 +1423,100 @@
 
         const doersItems = document.querySelectorAll(".value-item, .value-divider");
         if (doersItems.length > 0) {
+            /* 全局 h4 样式守护快照表 */
+            const h4Snapshots = new Map();
+
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const el = entry.target;
+                    const el = entry.target;
+                    if (entry.isIntersecting && entry.intersectionRatio >= 0.1) {
                         el.classList.add('scroll-reveal-inview');
-
-                        setTimeout(() => {
-                            const targets = [el, ...el.querySelectorAll('.value-item__line, .value-icon, .value-text h4, .value-text .scroll-mask-block')];
-                            targets.forEach(t => {
-                                const currentOpacity = window.getComputedStyle(t).opacity;
-                                if (currentOpacity === '0' || t.style.opacity === '0') {
-                                    t.style.transition = 'opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1), transform 1.5s cubic-bezier(0.16, 1, 0.3, 1)';
-                                    t.style.opacity = '1';
-                                    t.style.visibility = 'visible';
-                                }
-                            });
-                        }, 150); 
                         observer.unobserve(el);
+
+                        /* 延迟 3 秒：等 Webflow IX2 进场动画完成后再启动防御 */
+                        setTimeout(() => {
+                            /* 收集所有需要保护的目标（含 .value-item 本体和所有深层子元素） */
+                            const allTargets = el.classList.contains('value-item')
+                                ? [el, ...el.querySelectorAll('.value-item__line, .value-icon, .value-icon svg, .value-text, .value-text h4, .value-text .div-hide, .value-text div')]
+                                : [el];
+                            
+                            /* 拍摄每个元素的完整 style 快照 */
+                            const snapshots = new Map();
+                            allTargets.forEach(child => {
+                                snapshots.set(child, child.getAttribute('style') || '');
+                            });
+
+                            /* 对 h4 单独存一份全局快照（供 setInterval 使用） */
+                            if (el.classList.contains('value-item')) {
+                                const h4 = el.querySelector('h4');
+                                if (h4) h4Snapshots.set(h4, h4.getAttribute('style') || '');
+                                const vt = el.querySelector('.value-text');
+                                if (vt) h4Snapshots.set(vt, vt.getAttribute('style') || '');
+                                /* 也收集 h4 内可能被 Webflow 动态创建的所有子 div */
+                                if (h4) {
+                                    h4.querySelectorAll('div, span').forEach(inner => {
+                                        h4Snapshots.set(inner, inner.getAttribute('style') || '');
+                                    });
+                                }
+                            }
+
+                            /* MutationObserver：监控 style 属性变化，subtree:true 捕获所有深度 */
+                            const styleGuard = new MutationObserver((mutations) => {
+                                mutations.forEach(m => {
+                                    const t = m.target;
+                                    const s = t.style;
+                                    if (!s) return;
+                                    const tag = t.tagName ? t.tagName.toLowerCase() : '';
+                                    const isH4 = tag === 'h4';
+                                    const isValueText = t.classList && t.classList.contains('value-text');
+                                    const isInsideH4 = !isH4 && t.closest && t.closest('h4');
+
+                                    /* h4 / .value-text / h4内部元素：完整快照还原 */
+                                    if (isH4 || isValueText || isInsideH4) {
+                                        const snap = snapshots.get(t) || h4Snapshots.get(t);
+                                        if (snap !== undefined) {
+                                            const curr = t.getAttribute('style') || '';
+                                            if (curr !== snap) {
+                                                t.setAttribute('style', snap);
+                                            }
+                                        }
+                                        return;
+                                    }
+
+                                    /* 其他元素：逐属性守护 */
+                                    if (s.width && s.width !== '100%' && s.width !== 'auto') {
+                                        if (t.classList && t.classList.contains('value-item__line')) {
+                                            s.setProperty('width', '100%', 'important');
+                                        }
+                                    }
+                                    if (s.opacity !== '' && s.opacity !== '1') {
+                                        s.setProperty('opacity', '1', 'important');
+                                    }
+                                    if (s.visibility === 'hidden') {
+                                        s.setProperty('visibility', 'visible', 'important');
+                                    }
+                                    if (s.transform && s.transform !== 'none' && s.transform !== '') {
+                                        s.setProperty('transform', 'none', 'important');
+                                    }
+                                    if (s.clipPath && s.clipPath !== 'none' && s.clipPath !== '') {
+                                        s.setProperty('clip-path', 'none', 'important');
+                                    }
+                                    if (s.height === '0' || s.height === '0px' || s.height === '0%') {
+                                        s.setProperty('height', 'auto', 'important');
+                                    }
+                                    if (s.maxHeight === '0' || s.maxHeight === '0px' || s.maxHeight === '0%') {
+                                        s.setProperty('max-height', 'none', 'important');
+                                    }
+                                    if (s.overflow === 'hidden') {
+                                        s.setProperty('overflow', 'visible', 'important');
+                                    }
+                                });
+                            });
+
+                            /* 在 .value-item 级别启用 subtree 监控，捕获所有深层子元素变化 */
+                            styleGuard.observe(el, { attributes: true, attributeFilter: ['style'], subtree: true });
+
+                        }, 3000);
                     }
                 });
             }, { 
@@ -1429,6 +1525,19 @@
             });
 
             doersItems.forEach(item => observer.observe(item));
+
+            /* 终极保险：每 500ms 巡检所有 h4 和 .value-text 的样式，
+               如果发现与快照不同则强制还原。
+               这是 MutationObserver 之外的最后一道防线。 */
+            setInterval(() => {
+                h4Snapshots.forEach((snap, el) => {
+                    if (!el.isConnected) return;
+                    const curr = el.getAttribute('style') || '';
+                    if (curr !== snap) {
+                        el.setAttribute('style', snap);
+                    }
+                });
+            }, 500);
         }
 
         if (typeof ScrollTrigger !== "undefined") {
