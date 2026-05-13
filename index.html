@@ -70,6 +70,11 @@
     .footer-bot-info .div-hide .clipping-text {
       overflow: visible !important;
     }
+    
+    /* 3. 解决最后一页底部边界截断句点的问题（让底部留出空间） */
+    .footer-bot-info .logo-footer {
+      margin-bottom: 1vh !important; /* 向上推一点，避免贴齐屏幕底边被物理裁切 */
+    }
   </style>
 
   <style>
@@ -82,23 +87,7 @@
       pointer-events: none;
   }
 
- 
-  .div-hide {
-      padding-top: 0.25em !important;
-      margin-top: -0.25em !important;
-      padding-bottom: 0.25em !important;
-      margin-bottom: -0.25em !important;
-      padding-right: 0.15em !important;
-      margin-right: -0.15em !important;
-  }
-  .manifesto, .claim-m, .claim-s, .split-timeline, .split-horizontal, .use-case-h4, .nav-tag, .btn-s {
-      padding-top: 0.25em !important;
-      margin-top: -0.25em !important;
-      padding-bottom: 0.25em !important;
-      margin-bottom: -0.25em !important;
-      line-height: 1.5 !important; 
-  }
-  
+
   .split-timeline div, .split-horizontal div, .manifesto div, .claim-m div, .claim-s div {
       padding-top: 0.2em !important;
       margin-top: -0.2em !important;
