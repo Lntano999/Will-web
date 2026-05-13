@@ -54,11 +54,9 @@
     }
 
     /* ====== Fix: 大号 WILL. 句点被裁切 ====== */
-    /*
-     * 根因: Webflow 的 .div-hide 有 overflow:hidden，
-     * 且 body line-height 是绝对值 20px，导致即使 font-size: 20vw，
-     * line-height 仍然只有 20px，句点被裁切到行框以外。
-     * 必须同时解决 overflow 和 line-height 两个问题。
+    /* 
+     * 仅修改 overflow 为 visible，允许大号句点自然溢出原始行框。
+     * 不要修改 line-height，否则会导致原始布局偏移（如 Hero WILL 的位置下移）。
      */
     
     /* 1. 让包裹大 logo 的 .div-hide 容器不裁切 */
@@ -67,18 +65,10 @@
       overflow: visible !important;
     }
     
-    /* 2. 大号 logo 文字: 强制 line-height 与 font-size 成比例 */
-    .test .div-hide .will-logo-text {
-      line-height: 1.3 !important;
-      overflow: visible !important;
-      padding-bottom: 0.05em;
-    }
-    
-    /* 3. Footer 大号 clipping-text: 同样修复 */
+    /* 2. 大号 logo 文字本身也允许溢出 */
+    .test .div-hide .will-logo-text,
     .footer-bot-info .div-hide .clipping-text {
-      line-height: 1.3 !important;
       overflow: visible !important;
-      padding-bottom: 0.05em;
     }
   </style>
 
@@ -1634,7 +1624,7 @@
         <p class="claim-s max-w-footer expertise-split">WILL.<br/>Quant Trading & Finance Research.</p>
         <div class="div-hide">
           <div class="logo-footer w-embed">
-            <div class="clipping-text" style="font-size: 18vw; font-weight: 900; line-height: 1.3; margin-left: -0.5vw; letter-spacing: -0.05em;"><span>WILL.</span></div>
+            <div class="clipping-text" style="font-size: 18vw; font-weight: 900; line-height: 0.85; margin-left: -0.5vw; letter-spacing: -0.05em;"><span>WILL.</span></div>
           </div>
         </div>
       </div>
