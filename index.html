@@ -73,7 +73,7 @@
     
     /* 3. 解决最后一页底部边界截断句点的问题（让底部留出空间） */
     .footer-bot-info .logo-footer {
-      margin-bottom: 1vh !important; /* 向上推一点，避免贴齐屏幕底边被物理裁切 */
+      margin-bottom: 3vw !important; /* 根据 vw 计算预留足够空间，防止 18vw 字体的底部溢出被物理裁切 */
     }
   </style>
 
