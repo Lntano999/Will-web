@@ -1,1 +1,6 @@
 Animation Lifecycle Debug Review.md
+# 依赖包 (绝对不上传)
+node_modules/
+
+# 智能体本地配置 (不上传)
+.claude/

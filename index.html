@@ -14,15 +14,10 @@
   <script type="text/javascript">!function(o,c){var n=c.documentElement,t=" w-mod-";n.className+=t+"js",("ontouchstart"in o||o.DocumentTouch&&c instanceof DocumentTouch)&&(n.className+=t+"touch")}(window,document);</script>
   <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.15/dist/lenis.css">
   
-  <!-- 引入 Google Fonts: Outfit (高端展示字体) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
   <style>
-    /* 覆盖所有原本使用 Almarena 字体的地方，改用顶级开源字体 Outfit */
+    /* 使用系统默认字体栈 (System Default Font Stack) */
     h1, h2, h3, h4, h5, h6, p, a, strong, button, input, textarea, li, ul, ol, .home-h2, .manifesto, .nav-tag, .btn-s, .will-logo-text, .center-huge-logo, .clipping-text, .use-case-h4, .value-text {
-      font-family: "Outfit", "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif !important;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", sans-serif !important;
     }
     
     /* 保护图标字体不被覆盖 */
@@ -31,7 +26,7 @@
     }
     
     body {
-      font-family: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", sans-serif;
     }
     
     .w-webflow-badge{
@@ -748,13 +743,197 @@
       opacity: 1;
       transform: translateY(0) scale(1);
   }
+
+  /* ══════════ Preloader ══════════ */
+  #preloader {
+      position: fixed;
+      inset: 0;
+      z-index: 2147483646;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 2.5rem 2.8rem;
+      font-family: "SF Mono", "Fira Code", "JetBrains Mono", "Cascadia Code", "Consolas", monospace;
+      color: rgba(255, 255, 255, 0.85);
+      overflow: hidden;
+      pointer-events: auto;
+  }
+  #preloader .pre-bg {
+      position: absolute;
+      inset: 0;
+      background: #060b11;
+      box-shadow:
+        inset 0 0 150px 50px rgba(0, 20, 70, 0.30),
+        inset 0 0 350px 100px rgba(0, 10, 45, 0.18);
+      z-index: -1;
+  }
+  #preloader .pre-top {
+      position: relative;
+      z-index: 1;
+      height: 20px;
+  }
+  #preloader .pre-counter__number,
+  #preloader .pre-ready span {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+  }
+  #preloader .pre-ready {
+      opacity: 0;
+      transform: translateY(6px);
+  }
+  #preloader .pre-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: 200px;
+      z-index: 1;
+  }
+  #preloader .pre-circles {
+      position: absolute;
+      inset: 0;
+  }
+  #preloader .pre-circles svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+  }
+  #preloader .pre-circles circle {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.35);
+      stroke-width: 0.6;
+  }
+  #preloader .pre-circle-progress circle {
+      stroke: rgba(255, 255, 255, 0.8);
+      stroke-width: 0.8;
+      stroke-dasharray: 615.75;
+      stroke-dashoffset: 615.75;
+      transform: rotate(-90deg);
+      transform-origin: center;
+      transition: none;
+  }
+  #preloader .pre-logo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      opacity: 0;
+  }
+  #preloader .pre-logo-text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      color: rgba(255, 255, 255, 0.9);
+  }
+  #preloader .pre-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      z-index: 1;
+      opacity: 0;
+      transform: translateY(8px);
+  }
+  #preloader .pre-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      color: rgba(255, 255, 255, 0.5);
+  }
+  #preloader .pre-meta--right {
+      align-items: flex-end;
+      flex-direction: row;
+      gap: 10px;
+  }
+  #preloader .pre-recs {
+      display: flex;
+      gap: 3px;
+  }
+  #preloader .pre-recs span {
+      display: block;
+      width: 7px;
+      height: 7px;
+      background: rgba(255, 255, 255, 0.45);
+  }
+  #preloader.is-leaving {
+      pointer-events: none;
+  }
+
+  /* 主内容在预加载期间隐藏，由 clip-path 圆形展开揭示 */
+  .page-reveal-wrapper {
+      clip-path: circle(0% at 50% 50%);
+      will-change: clip-path;
+  }
+  .page-reveal-wrapper.revealed {
+      clip-path: circle(150% at 50% 50%);
+  }
+
+  /* 导航在预加载期间隐藏 */
+  .navigation.pre-hidden .nav--item,
+  .navigation.pre-hidden .nav--buttons,
+  .navigation.pre-hidden .nav-burger {
+      opacity: 0 !important;
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  @media (max-width: 768px) {
+      #preloader { padding: 1.5rem 1.8rem; }
+      #preloader .pre-center { width: 160px; height: 160px; }
+      #preloader .pre-bottom { font-size: 9px; }
+  }
   </style>
 </head>
 <body>
+  <!-- ═══ Preloader 预加载遮罩层 ═══ -->
+  <div id="preloader">
+    <div class="pre-bg"></div>
+    <div class="pre-top">
+      <div class="pre-counter">
+        <span class="pre-counter__number">0</span>
+      </div>
+      <div class="pre-ready">
+        <span>READY</span>
+      </div>
+    </div>
+    <div class="pre-center">
+      <div class="pre-logo">
+        <span class="pre-logo-text">WILL.</span>
+      </div>
+      <div class="pre-circles">
+        <svg viewBox="0 0 200 200" class="pre-circle-progress">
+          <circle cx="100" cy="100" r="98" />
+        </svg>
+        <svg viewBox="0 0 200 200" class="pre-circle-dashed">
+          <circle cx="100" cy="100" r="88" style="stroke-dasharray: 2, 4;" />
+        </svg>
+      </div>
+    </div>
+    <div class="pre-bottom">
+      <div class="pre-meta pre-meta--left">
+        <span>WILL. PORTFOLIO</span>
+      </div>
+      <div class="pre-meta pre-meta--center">
+        <span>QUANT &amp; TECH</span>
+      </div>
+      <div class="pre-meta pre-meta--right">
+        <div class="pre-recs"><span></span><span></span><span></span></div>
+        <span>V-001</span>
+      </div>
+    </div>
+  </div>
+
   <!-- 全局 Toast 提示容器 -->
   <div id="toast-container" style="position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 2147483647; display: flex; flex-direction: column; gap: 12px; pointer-events: none; align-items: center;"></div>
 
-  <div data-wf--nav--variant="base" class="navigation">
+  <div data-wf--nav--variant="base" class="navigation pre-hidden">
     <a href="#" aria-current="page" class="nav--logo w-inline-block w--current">
       <div class="logo nav__link w-embed">
         <div class="will-logo-text">WILL.</div>
@@ -1670,13 +1849,16 @@
   <script src="https://cdn.prod.website-files.com/gsap/3.14.2/InertiaPlugin.min.js" type="text/javascript"></script>
   <script src="https://cdn.prod.website-files.com/gsap/3.14.2/Draggable.min.js" type="text/javascript"></script>
   <script type="text/javascript">gsap.registerPlugin(SplitText,ScrollTrigger,InertiaPlugin,Draggable);</script>
-  <script src="https://unpkg.com/lenis@1.3.15/dist/lenis.min.js"></script> 
+  <script src="https://unpkg.com/lenis@1.3.15/dist/lenis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@4.4.1/dist/bundles/anime.umd.min.js"></script>
 
   <script>
     const lenis = new Lenis();
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add((time) => { lenis.raf(time * 1000); });
     gsap.ticker.lagSmoothing(0);
+    /* 预加载期间阻止滚动 */
+    lenis.stop();
   </script>
 
   <script type="text/javascript">!function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.5.3/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();</script>
@@ -1970,5 +2152,185 @@
 
   });
   </script>
+
+  <!-- ═══ Preloader 动画引擎（anime.js v4 + GSAP 联合驱动）═══ -->
+  <script>
+  (function initPreloader() {
+    const preloader = document.getElementById('preloader');
+    if (!preloader) return;
+
+    const counterEl    = preloader.querySelector('.pre-counter__number');
+    const counterDiv   = preloader.querySelector('.pre-counter');
+    const readyEl      = preloader.querySelector('.pre-ready');
+    const logoEl       = preloader.querySelector('.pre-logo');
+    const bottomEl     = preloader.querySelector('.pre-bottom');
+    const progressCircle = preloader.querySelector('.pre-circle-progress circle');
+    const dashedCircle = preloader.querySelector('.pre-circle-dashed circle');
+    const circumference = 2 * Math.PI * 98; // ≈ 615.75
+    const nav = document.querySelector('.navigation');
+
+    /* 锁住页面滚动 */
+    document.body.style.overflow = 'hidden';
+
+    /* ─── Phase 0: 入场 ─── */
+    /* 底部元信息 + Logo 淡入 */
+    anime.animate(bottomEl, {
+      opacity: [0, 1],
+      translateY: [8, 0],
+      duration: 800,
+      ease: 'outQuart',
+      delay: 200,
+    });
+    anime.animate(logoEl, {
+      opacity: [0, 1],
+      scale: [0.8, 1],
+      duration: 600,
+      ease: 'outQuart',
+      delay: 300,
+    });
+    /* 虚线圆环旋转 */
+    anime.animate(dashedCircle, {
+      rotate: 360,
+      duration: 12000,
+      ease: 'linear',
+      loop: true,
+    });
+
+    /* ─── Phase 1: 计数器 0→100 + 圆环描绘（anime.js SVG 属性动画） ─── */
+    const counter = { value: 0 };
+    const LOAD_DURATION = 2200;
+
+    anime.animate(counter, {
+      value: 100,
+      duration: LOAD_DURATION,
+      ease: 'inOutQuad',
+      onUpdate: () => {
+        const v = Math.round(counter.value);
+        counterEl.textContent = v;
+        /* 同步圆环进度 */
+        const progress = v / 100;
+        progressCircle.style.strokeDashoffset = circumference * (1 - progress);
+      },
+      onComplete: () => {
+        startReadyPhase();
+      }
+    });
+
+    /* ─── Phase 2: READY + 自动退出 ─── */
+    function startReadyPhase() {
+      /* 计数器淡出 */
+      anime.animate(counterDiv, {
+        opacity: [1, 0],
+        translateY: [0, -8],
+        duration: 250,
+        ease: 'inQuad',
+        onComplete: () => {
+          counterDiv.style.display = 'none';
+        }
+      });
+
+      /* READY 文字淡入 */
+      anime.animate(readyEl, {
+        opacity: [0, 1],
+        translateY: [6, 0],
+        duration: 400,
+        ease: 'outQuart',
+        delay: 200,
+      });
+
+      /* Logo 缩放脉冲 */
+      anime.animate(logoEl, {
+        scale: [1, 1.06, 1],
+        duration: 500,
+        ease: 'inOutQuad',
+        delay: 200,
+      });
+
+      /* 等待 600ms 后自动开始退出 */
+      setTimeout(startExitTransition, 600);
+    }
+
+    /* ─── Phase 3: 退出过渡 — 圆形 clip-path 展开 + 主内容缩放入场 ─── */
+    function startExitTransition() {
+      preloader.classList.add('is-leaving');
+
+      /* 预加载层所有元素向外扩散消失 */
+      anime.animate([readyEl, logoEl, bottomEl], {
+        opacity: 0,
+        scale: 1.1,
+        duration: 400,
+        ease: 'inQuart',
+      });
+      anime.animate(preloader.querySelectorAll('.pre-circles svg'), {
+        opacity: 0,
+        scale: 1.3,
+        duration: 500,
+        ease: 'inQuart',
+      });
+
+      /* 背景从中心向外圆形扩散消失（clip-path） */
+      const exitTl = gsap.timeline({
+        delay: 0.3,
+        onComplete: finishPreloader
+      });
+
+      /* 预加载背景圆形收缩消失 */
+      exitTl.to(preloader.querySelector('.pre-bg'), {
+        clipPath: 'circle(0% at 50% 50%)',
+        duration: 0.9,
+        ease: 'power3.inOut',
+      });
+
+      /* 主页内容从远处「冲」向前，配合 scale 和轻微 blur */
+      const mainContent = document.querySelector('.section-home');
+      if (mainContent) {
+        /* 初始状态：缩小 + 轻微模糊 */
+        gsap.set(mainContent, {
+          scale: 0.92,
+          opacity: 0,
+          filter: 'blur(6px)',
+          transformOrigin: 'center center',
+        });
+
+        exitTl.to(mainContent, {
+          scale: 1,
+          opacity: 1,
+          filter: 'blur(0px)',
+          duration: 1.0,
+          ease: 'power2.out',
+        }, '-=0.6'); /* 与背景消失重叠 */
+      }
+    }
+
+    /* ─── 清理：移除预加载层，恢复页面正常状态 ─── */
+    function finishPreloader() {
+      preloader.remove();
+      document.body.style.overflow = '';
+
+      /* 恢复 Lenis 平滑滚动 */
+      if (typeof lenis !== 'undefined') {
+        lenis.start();
+      }
+
+      /* 刷新 GSAP ScrollTrigger 布局 */
+      if (typeof ScrollTrigger !== 'undefined') {
+        ScrollTrigger.refresh();
+      }
+
+      /* 导航栏渐入 */
+      if (nav) {
+        nav.classList.remove('pre-hidden');
+        anime.animate(nav.querySelectorAll('.nav--item, .nav--buttons, .nav-burger'), {
+          opacity: [0, 1],
+          translateY: [-12, 0],
+          duration: 800,
+          delay: anime.stagger(100),
+          ease: 'outQuart',
+        });
+      }
+    }
+  })();
+  </script>
+
 </body>
 </html>
