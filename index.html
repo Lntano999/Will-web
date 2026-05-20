@@ -68,7 +68,7 @@
     
     /* 3. 解决最后一页底部边界截断句点的问题（让底部留出空间） */
     .footer-bot-info .logo-footer {
-      margin-bottom: 3vw !important; /* 根据 vw 计算预留足够空间，防止 18vw 字体的底部溢出被物理裁切 */
+      /* 已恢复原始间距设计，不再强制上移 */
     }
   </style>
 
@@ -744,189 +744,246 @@
       transform: translateY(0) scale(1);
   }
 
-  /* ══════════ Preloader ══════════ */
+  /* ══════════ Preloader — Split-Curtain Terminal HUD ══════════ */
   #preloader {
       position: fixed;
       inset: 0;
       z-index: 2147483646;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 2.5rem 2.8rem;
       font-family: "SF Mono", "Fira Code", "JetBrains Mono", "Cascadia Code", "Consolas", monospace;
       color: rgba(255, 255, 255, 0.85);
       overflow: hidden;
       pointer-events: auto;
   }
-  #preloader .pre-bg {
+
+  /* ── 分幕结构：上下两半 ── */
+  .pre-curtain {
       position: absolute;
-      inset: 0;
-      background: #060b11;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      overflow: hidden;
+      will-change: transform;
+  }
+  .pre-curtain--top {
+      top: 0;
+      transform-origin: center top;
+  }
+  .pre-curtain--bot {
+      bottom: 0;
+      transform-origin: center bottom;
+  }
+  /* 每半幕都有独立背景层 */
+  .pre-curtain-bg {
+      position: absolute;
+      /* 每个半幕的背景是全屏高度，通过 overflow:hidden 裁切 */
+      left: 0;
+      width: 100%;
+      height: 200%; /* 两倍高使之铺满整个可视区 */
+      background: #060a10;
       box-shadow:
-        inset 0 0 150px 50px rgba(0, 20, 70, 0.30),
-        inset 0 0 350px 100px rgba(0, 10, 45, 0.18);
-      z-index: -1;
+        inset 0 0 180px 60px rgba(0, 18, 65, 0.28),
+        inset 0 0 400px 120px rgba(0, 8, 40, 0.15);
   }
-  #preloader .pre-top {
-      position: relative;
-      z-index: 1;
-      height: 20px;
-  }
-  #preloader .pre-counter__number,
-  #preloader .pre-ready span {
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-  }
-  #preloader .pre-ready {
-      opacity: 0;
-      transform: translateY(6px);
-  }
-  #preloader .pre-center {
+  .pre-curtain--top .pre-curtain-bg { top: 0; }
+  .pre-curtain--bot .pre-curtain-bg { bottom: 0; }
+
+  /* ── 精确居中的中心线装饰 ── */
+  .pre-seam {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 200px;
-      height: 200px;
-      z-index: 1;
+      width: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+      z-index: 5;
+      will-change: width;
   }
-  #preloader .pre-circles {
+
+  /* ── 绝对居中的圆环 + Logo ── */
+  .pre-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 180px;
+      height: 180px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+  .pre-circles {
       position: absolute;
       inset: 0;
   }
-  #preloader .pre-circles svg {
+  .pre-circles svg {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
   }
-  #preloader .pre-circles circle {
+  .pre-circles circle {
       fill: none;
-      stroke: rgba(255, 255, 255, 0.35);
-      stroke-width: 0.6;
+      stroke: rgba(255, 255, 255, 0.2);
+      stroke-width: 0.5;
   }
-  #preloader .pre-circle-progress circle {
-      stroke: rgba(255, 255, 255, 0.8);
-      stroke-width: 0.8;
-      stroke-dasharray: 615.75;
-      stroke-dashoffset: 615.75;
+  .pre-circle-progress circle {
+      stroke: rgba(255, 255, 255, 0.7);
+      stroke-width: 0.7;
+      stroke-dasharray: 565.49; /* 2π × 90 */
+      stroke-dashoffset: 565.49;
       transform: rotate(-90deg);
       transform-origin: center;
-      transition: none;
   }
-  #preloader .pre-logo {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+  .pre-logo {
       z-index: 2;
       opacity: 0;
   }
-  #preloader .pre-logo-text {
+  .pre-logo-text {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 900;
-      letter-spacing: -0.05em;
-      color: rgba(255, 255, 255, 0.9);
+      color: rgba(255, 255, 255, 0.92);
+      white-space: nowrap;
+      -webkit-font-smoothing: antialiased;
+      transform: translateZ(0);
   }
-  #preloader .pre-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      font-size: 10px;
-      letter-spacing: 0.08em;
+
+  /* ── 计数器：正中央偏上 ── */
+  .pre-counter-wrap {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+      margin-top: -140px; /* 调整相对位置 */
+      height: 20px;
+  }
+  .pre-counter__number {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-indent: 0.18em; /* 完美抵消排版中的右侧字距 */
       text-transform: uppercase;
-      z-index: 1;
+      color: rgba(255, 255, 255, 0.7);
+      -webkit-font-smoothing: antialiased;
+      will-change: transform, opacity;
+      transform: translateZ(0);
+  }
+  .pre-ready-text {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-indent: 0.22em; /* 完美抵消排版中的右侧字距 */
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.7);
       opacity: 0;
-      transform: translateY(8px);
+      white-space: nowrap;
+      -webkit-font-smoothing: antialiased;
+      will-change: transform, opacity;
+      transform: translateZ(0);
   }
-  #preloader .pre-meta {
+
+  /* ── 四角元信息（完美对称） ── */
+  .pre-corner {
+      position: absolute;
+      z-index: 10;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.35);
+      opacity: 0;
+  }
+  .pre-corner--tl { top: 2.4rem; left: 2.8rem; }
+  .pre-corner--tr { top: 2.4rem; right: 2.8rem; text-align: right; }
+  .pre-corner--bl { bottom: 2.4rem; left: 2.8rem; }
+  .pre-corner--br { bottom: 2.4rem; right: 2.8rem; text-align: right; }
+  .pre-corner .pre-recs {
       display: flex;
-      flex-direction: column;
       gap: 3px;
-      color: rgba(255, 255, 255, 0.5);
+      justify-content: flex-end;
   }
-  #preloader .pre-meta--right {
-      align-items: flex-end;
-      flex-direction: row;
-      gap: 10px;
-  }
-  #preloader .pre-recs {
-      display: flex;
-      gap: 3px;
-  }
-  #preloader .pre-recs span {
+  .pre-corner .pre-recs span {
       display: block;
-      width: 7px;
-      height: 7px;
-      background: rgba(255, 255, 255, 0.45);
-  }
-  #preloader.is-leaving {
-      pointer-events: none;
+      width: 6px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
   }
 
-  /* 主内容在预加载期间隐藏，由 clip-path 圆形展开揭示 */
-  .page-reveal-wrapper {
-      clip-path: circle(0% at 50% 50%);
-      will-change: clip-path;
-  }
-  .page-reveal-wrapper.revealed {
-      clip-path: circle(150% at 50% 50%);
-  }
+  /* ── 全局遮罩/过渡态 ── */
+  #preloader.is-leaving { pointer-events: none; }
 
-  /* 导航在预加载期间隐藏 */
-  .navigation.pre-hidden .nav--item,
-  .navigation.pre-hidden .nav--buttons,
-  .navigation.pre-hidden .nav-burger {
+  /* 导航在预加载期间完全隐藏 */
+  .navigation.pre-hidden {
       opacity: 0 !important;
+      pointer-events: none !important;
       transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
 
   @media (max-width: 768px) {
-      #preloader { padding: 1.5rem 1.8rem; }
-      #preloader .pre-center { width: 160px; height: 160px; }
-      #preloader .pre-bottom { font-size: 9px; }
+      .pre-center { width: 140px; height: 140px; }
+      .pre-counter-wrap { margin-top: -110px; }
+      .pre-corner { font-size: 8px; }
+      .pre-corner--tl, .pre-corner--bl { left: 1.5rem; }
+      .pre-corner--tr, .pre-corner--br { right: 1.5rem; }
+      .pre-corner--tl, .pre-corner--tr { top: 1.5rem; }
+      .pre-corner--bl, .pre-corner--br { bottom: 1.5rem; }
   }
   </style>
 </head>
 <body>
-  <!-- ═══ Preloader 预加载遮罩层 ═══ -->
+  <!-- ═══ Preloader — 上下分幕 + 居中对称 ═══ -->
   <div id="preloader">
-    <div class="pre-bg"></div>
-    <div class="pre-top">
-      <div class="pre-counter">
-        <span class="pre-counter__number">0</span>
-      </div>
-      <div class="pre-ready">
-        <span>READY</span>
-      </div>
+    <!-- 上半幕 -->
+    <div class="pre-curtain pre-curtain--top">
+      <div class="pre-curtain-bg"></div>
     </div>
+    <!-- 下半幕 -->
+    <div class="pre-curtain pre-curtain--bot">
+      <div class="pre-curtain-bg"></div>
+    </div>
+    <!-- 中心分缝线 -->
+    <div class="pre-seam"></div>
+
+    <!-- 中心圆环 + Logo -->
     <div class="pre-center">
       <div class="pre-logo">
-        <span class="pre-logo-text">WILL.</span>
+        <span class="pre-logo-text">Hi</span>
       </div>
       <div class="pre-circles">
         <svg viewBox="0 0 200 200" class="pre-circle-progress">
-          <circle cx="100" cy="100" r="98" />
+          <circle cx="100" cy="100" r="90" />
         </svg>
         <svg viewBox="0 0 200 200" class="pre-circle-dashed">
-          <circle cx="100" cy="100" r="88" style="stroke-dasharray: 2, 4;" />
+          <circle cx="100" cy="100" r="80" style="stroke-dasharray: 2, 5;" />
         </svg>
       </div>
     </div>
-    <div class="pre-bottom">
-      <div class="pre-meta pre-meta--left">
-        <span>WILL. PORTFOLIO</span>
-      </div>
-      <div class="pre-meta pre-meta--center">
-        <span>QUANT &amp; TECH</span>
-      </div>
-      <div class="pre-meta pre-meta--right">
-        <div class="pre-recs"><span></span><span></span><span></span></div>
-        <span>V-001</span>
-      </div>
+
+    <!-- 计数器（居中偏上） -->
+    <div class="pre-counter-wrap">
+      <span class="pre-counter__number">0</span>
+      <span class="pre-ready-text">READY</span>
+    </div>
+
+    <!-- 四角元信息 -->
+    <div class="pre-corner pre-corner--tl">WILL. PORTFOLIO</div>
+    <div class="pre-corner pre-corner--tr">2026</div>
+    <div class="pre-corner pre-corner--bl">QUANT &amp; TECH</div>
+    <div class="pre-corner pre-corner--br">
+      <div class="pre-recs"><span></span><span></span><span></span></div>
     </div>
   </div>
 
@@ -2153,180 +2210,255 @@
   });
   </script>
 
-  <!-- ═══ Preloader 动画引擎（anime.js v4 + GSAP 联合驱动）═══ -->
+  <!-- ═══ Preloader 动画引擎 v2（Split-Curtain + Zoom Reveal）═══ -->
   <script>
   (function initPreloader() {
     const preloader = document.getElementById('preloader');
     if (!preloader) return;
 
-    const counterEl    = preloader.querySelector('.pre-counter__number');
-    const counterDiv   = preloader.querySelector('.pre-counter');
-    const readyEl      = preloader.querySelector('.pre-ready');
-    const logoEl       = preloader.querySelector('.pre-logo');
-    const bottomEl     = preloader.querySelector('.pre-bottom');
+    /* ── DOM 引用 ── */
+    const curtainTop  = preloader.querySelector('.pre-curtain--top');
+    const curtainBot  = preloader.querySelector('.pre-curtain--bot');
+    const seam        = preloader.querySelector('.pre-seam');
+    const centerEl    = preloader.querySelector('.pre-center');
+    const logoEl      = preloader.querySelector('.pre-logo');
+    const counterWrap = preloader.querySelector('.pre-counter-wrap');
+    const counterEl   = preloader.querySelector('.pre-counter__number');
+    const readyEl     = preloader.querySelector('.pre-ready-text');
     const progressCircle = preloader.querySelector('.pre-circle-progress circle');
-    const dashedCircle = preloader.querySelector('.pre-circle-dashed circle');
-    const circumference = 2 * Math.PI * 98; // ≈ 615.75
-    const nav = document.querySelector('.navigation');
+    const dashedSvg   = preloader.querySelector('.pre-circle-dashed');
+    const corners     = preloader.querySelectorAll('.pre-corner');
+    const nav         = document.querySelector('.navigation');
+    const circumference = 2 * Math.PI * 90; // ≈ 565.49
 
-    /* 锁住页面滚动 */
-    document.body.style.overflow = 'hidden';
+    /* ════════════════════════════════════════════
+       Phase 0: 入场 — 所有元素从虚无中浮现
+       anime.js 作用: stagger 四角元信息、Logo 弹性入场
+    ════════════════════════════════════════════ */
 
-    /* ─── Phase 0: 入场 ─── */
-    /* 底部元信息 + Logo 淡入 */
-    anime.animate(bottomEl, {
+    /* 四角元信息 stagger 淡入（anime.js stagger 核心应用） */
+    anime.animate(corners, {
       opacity: [0, 1],
-      translateY: [8, 0],
-      duration: 800,
+      translateY: [(el, i) => i < 2 ? -10 : 10, 0],
+      duration: 700,
+      delay: anime.stagger(80, { start: 300 }),
       ease: 'outQuart',
-      delay: 200,
     });
+
+    /* 中心分缝线展开 */
+    anime.animate(seam, {
+      width: ['0px', '60px'],
+      duration: 600,
+      delay: 200,
+      ease: 'outQuart',
+    });
+
+    /* Logo 弹性入场 */
     anime.animate(logoEl, {
       opacity: [0, 1],
-      scale: [0.8, 1],
-      duration: 600,
-      ease: 'outQuart',
-      delay: 300,
+      scale: [0.6, 1],
+      duration: 800,
+      delay: 400,
+      ease: 'outBack',
     });
-    /* 虚线圆环旋转 */
-    anime.animate(dashedCircle, {
-      rotate: 360,
-      duration: 12000,
+
+    /* 虚线圆环持续旋转装饰 */
+    anime.animate(dashedSvg, {
+      rotate: [0, 360],
+      duration: 20000,
       ease: 'linear',
       loop: true,
     });
 
-    /* ─── Phase 1: 计数器 0→100 + 圆环描绘（anime.js SVG 属性动画） ─── */
+    /* ════════════════════════════════════════════
+       Phase 1: 计数器 0→100 + 圆环描绘
+       anime.js 作用: JS 对象属性动画驱动计数器,
+       onUpdate 回调同步 SVG strokeDashoffset
+    ════════════════════════════════════════════ */
     const counter = { value: 0 };
-    const LOAD_DURATION = 2200;
+    const LOAD_DURATION = 2400;
 
     anime.animate(counter, {
       value: 100,
       duration: LOAD_DURATION,
-      ease: 'inOutQuad',
+      ease: 'inOutCubic',
       onUpdate: () => {
         const v = Math.round(counter.value);
-        counterEl.textContent = v;
-        /* 同步圆环进度 */
-        const progress = v / 100;
-        progressCircle.style.strokeDashoffset = circumference * (1 - progress);
+        counterEl.textContent = String(v).padStart(3, '0');
+        /* 同步圆环 */
+        progressCircle.style.strokeDashoffset =
+          circumference * (1 - v / 100);
       },
-      onComplete: () => {
-        startReadyPhase();
-      }
+      onComplete: startReadyPhase,
     });
 
-    /* ─── Phase 2: READY + 自动退出 ─── */
+    /* ════════════════════════════════════════════
+       Phase 2: READY 状态 → 自动退出
+       anime.js 作用: 交叉淡入淡出 + Logo 脉冲
+    ════════════════════════════════════════════ */
     function startReadyPhase() {
       /* 计数器淡出 */
-      anime.animate(counterDiv, {
+      anime.animate(counterEl, {
         opacity: [1, 0],
-        translateY: [0, -8],
-        duration: 250,
+        translateY: [0, -6],
+        duration: 200,
         ease: 'inQuad',
-        onComplete: () => {
-          counterDiv.style.display = 'none';
-        }
+        onComplete: () => { counterEl.style.display = 'none'; }
       });
-
-      /* READY 文字淡入 */
+      /* READY 文字交叉淡入 */
       anime.animate(readyEl, {
         opacity: [0, 1],
-        translateY: [6, 0],
+        translateY: [5, 0],
         duration: 400,
+        delay: 150,
         ease: 'outQuart',
-        delay: 200,
       });
-
-      /* Logo 缩放脉冲 */
+      /* Logo 微脉冲 */
       anime.animate(logoEl, {
-        scale: [1, 1.06, 1],
+        scale: [1, 1.08, 1],
         duration: 500,
+        delay: 150,
         ease: 'inOutQuad',
-        delay: 200,
+      });
+      /* 分缝线收窄暗示即将分裂 */
+      anime.animate(seam, {
+        width: ['60px', '100vw'],
+        opacity: [1, 0.6],
+        duration: 800,
+        delay: 400,
+        ease: 'inOutQuart',
       });
 
-      /* 等待 600ms 后自动开始退出 */
-      setTimeout(startExitTransition, 600);
+      setTimeout(startExitTransition, 700);
     }
 
-    /* ─── Phase 3: 退出过渡 — 圆形 clip-path 展开 + 主内容缩放入场 ─── */
+    /* ════════════════════════════════════════════
+       Phase 3: 分幕退出 — 上下对开 + 内容由远及近
+       GSAP 作用: 高精度 timeline 编排分幕位移 + 内容缩放
+       anime.js 作用: 中心元素消散动画（圆环/Logo/角标）
+    ════════════════════════════════════════════ */
     function startExitTransition() {
       preloader.classList.add('is-leaving');
 
-      /* 预加载层所有元素向外扩散消失 */
-      anime.animate([readyEl, logoEl, bottomEl], {
+      /* 中心所有装饰元素向外扩散消失（anime.js） */
+      anime.animate([logoEl, counterWrap], {
         opacity: 0,
-        scale: 1.1,
-        duration: 400,
+        scale: 0.8,
+        duration: 350,
         ease: 'inQuart',
       });
       anime.animate(preloader.querySelectorAll('.pre-circles svg'), {
         opacity: 0,
-        scale: 1.3,
-        duration: 500,
+        scale: 1.4,
+        duration: 400,
         ease: 'inQuart',
       });
+      /* 四角同时收缩消失 */
+      anime.animate(corners, {
+        opacity: 0,
+        duration: 250,
+        ease: 'inQuad',
+      });
+      /* 分缝线闪烁消失 */
+      anime.animate(seam, {
+        opacity: 0,
+        duration: 300,
+        ease: 'inQuad',
+      });
 
-      /* 背景从中心向外圆形扩散消失（clip-path） */
+      /* ── GSAP Timeline: 分幕对开 + 统一退远 + 延迟蒙版展现 ── */
+      const background = document.querySelector('.background');
+      const sectionHome = document.querySelector('.section-home');
+      const heroClaim = document.querySelector('.claim-m');
+      const heroLogo = document.querySelector('.test.w-embed');
+
+      /* 初始隐藏：将大 Logo 和右侧段落藏起来，准备稍后的蒙版滑入 */
+      /* 使用 -20% 给左右下流出冗余空间，防止句号 . 被裁切 */
+      if (heroLogo) gsap.set(heroLogo, { opacity: 0, y: 50, clipPath: 'inset(100% -20% -20% -20%)' });
+      if (heroClaim) gsap.set(heroClaim, { opacity: 0, y: 30 });
+
+      /* 初始放大：设定背景、主结构、导航栏放大 1.12 倍 */
+      if (background) gsap.set(background, { scale: 1.12, transformOrigin: 'center center' });
+      if (sectionHome) gsap.set(sectionHome, { scale: 1.12, transformOrigin: 'center center' });
+      if (nav) {
+        nav.classList.remove('pre-hidden');
+        nav.style.opacity = '1';
+        gsap.set(nav, { scale: 1.12, transformOrigin: 'top center' });
+        /* 导航栏内部子元素先隐藏，准备随背景退远时错落入场 */
+        gsap.set(nav.querySelectorAll('.nav--logo, .nav--item, .nav--buttons, .nav-burger'), { opacity: 0, y: -15 });
+      }
+
       const exitTl = gsap.timeline({
-        delay: 0.3,
-        onComplete: finishPreloader
+        delay: 0.25,
+        onComplete: finishPreloader,
       });
 
-      /* 预加载背景圆形收缩消失 */
-      exitTl.to(preloader.querySelector('.pre-bg'), {
-        clipPath: 'circle(0% at 50% 50%)',
-        duration: 0.9,
-        ease: 'power3.inOut',
-      });
+      /* 1. 上下幕帘对开 */
+      exitTl.to(curtainTop, { yPercent: -100, duration: 1.2, ease: 'power3.inOut' }, 0);
+      exitTl.to(curtainBot, { yPercent: 100, duration: 1.2, ease: 'power3.inOut' }, 0);
 
-      /* 主页内容从远处「冲」向前，配合 scale 和轻微 blur */
-      const mainContent = document.querySelector('.section-home');
-      if (mainContent) {
-        /* 初始状态：缩小 + 轻微模糊 */
-        gsap.set(mainContent, {
-          scale: 0.92,
-          opacity: 0,
-          filter: 'blur(6px)',
-          transformOrigin: 'center center',
-        });
+      /* 2. 统一由远及近：背景、导航栏、主框架平滑缩小至正常大小 */
+      const zoomElements = [];
+      if (background) zoomElements.push(background);
+      if (sectionHome) zoomElements.push(sectionHome);
+      if (nav) zoomElements.push(nav);
 
-        exitTl.to(mainContent, {
+      if (zoomElements.length > 0) {
+        exitTl.to(zoomElements, {
           scale: 1,
+          duration: 1.6,
+          ease: 'power3.out',
+          clearProps: 'scale,transformOrigin' /* 核心修复：动画结束后清除 transform，防止破坏页面的 position: fixed/sticky */
+        }, 0.15); /* 幕帘刚开始拉开 0.15s 后同步进行 */
+      }
+
+      /* 3. 导航项：随着场景退远，依次错落浮现 */
+      if (nav) {
+        exitTl.to(nav.querySelectorAll('.nav--logo, .nav--item, .nav--buttons, .nav-burger'), {
           opacity: 1,
-          filter: 'blur(0px)',
-          duration: 1.0,
-          ease: 'power2.out',
-        }, '-=0.6'); /* 与背景消失重叠 */
+          y: 0,
+          duration: 0.8,
+          stagger: 0.08,
+          ease: 'power3.out',
+          clearProps: 'all' /* 归还原本 CSS 的控制权 */
+        }, 0.3); 
+      }
+
+      /* 4. 重头戏文本蒙版出场：在背景即将恢复正常大小时 (约第 0.8s) 触发 */
+      if (heroLogo) {
+        exitTl.to(heroLogo, {
+          opacity: 1,
+          y: 0,
+          clipPath: 'inset(-20% -20% -20% -20%)', /* 舒展蒙版边界，彻底解决动画期间边缘被切的问题 */
+          duration: 1.2,
+          ease: 'power4.out',
+          clearProps: 'all' /* 彻底清除蒙版与位移残留 */
+        }, 0.8);
+      }
+
+      if (heroClaim) {
+        exitTl.to(heroClaim, {
+          opacity: 1,
+          y: 0,
+          duration: 1.2,
+          ease: 'power3.out',
+          clearProps: 'all'
+        }, 1.0);
       }
     }
 
-    /* ─── 清理：移除预加载层，恢复页面正常状态 ─── */
+    /* ════════════════════════════════════════════
+       清理: 移除 DOM，恢复滚动 & ScrollTrigger
+    ════════════════════════════════════════════ */
     function finishPreloader() {
       preloader.remove();
-      document.body.style.overflow = '';
 
-      /* 恢复 Lenis 平滑滚动 */
-      if (typeof lenis !== 'undefined') {
-        lenis.start();
-      }
+      /* 恢复 Lenis */
+      if (typeof lenis !== 'undefined') lenis.start();
 
-      /* 刷新 GSAP ScrollTrigger 布局 */
+      /* 刷新 ScrollTrigger */
       if (typeof ScrollTrigger !== 'undefined') {
         ScrollTrigger.refresh();
-      }
-
-      /* 导航栏渐入 */
-      if (nav) {
-        nav.classList.remove('pre-hidden');
-        anime.animate(nav.querySelectorAll('.nav--item, .nav--buttons, .nav-burger'), {
-          opacity: [0, 1],
-          translateY: [-12, 0],
-          duration: 800,
-          delay: anime.stagger(100),
-          ease: 'outQuart',
-        });
       }
     }
   })();
