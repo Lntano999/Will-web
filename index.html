@@ -71,9 +71,10 @@
       overflow: visible !important;
     }
     
-    /* 3. 解决最后一页底部边界截断句点的问题（让底部留出空间） */
-    .footer-bot-info .logo-footer {
-      /* 已恢复原始间距设计，不再强制上移 */
+    /* 3. 将最后一页下半部分贴底，并防止字体下沉框产生额外滚动条 */
+    #contact.footer {
+      padding-bottom: 0 !important;
+      overflow: hidden !important;
     }
   </style>
 
