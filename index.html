@@ -6,6 +6,15 @@
 <!DOCTYPE html>
 <html data-wf-domain="will-tech.xyz" data-wf-page="68f77e4ac7ca6bd68b326cb4" data-wf-site="68f77e49c7ca6bd68b326c3d" class="w-mod-js w-mod-ix wf-inter-n4-active wf-inter-n6-active wf-inter-n5-active wf-active">
 <head>
+  <script>
+    /* 极早期禁用滚动恢复并回顶，防止浏览器在 DOM 解析完前擅自恢复位置 */
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+    /* 绝不操作 overflow！滚动条始终存在，预加载页是纯视觉蒙版。
+       滚动阻止由 Lenis.stop() 完成，不会产生任何布局偏移。 */
+  </script>
   <meta charset="utf-8"/>
   <title>WILL. | Web Developer & Researcher</title>
   <meta content="WILL. - Next Generation Web Developer & Quantitative Researcher" name="description"/>
@@ -20,6 +29,14 @@
   <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.15/dist/lenis.css">
   
   <style>
+    /* 覆盖 Lenis 的 .lenis-stopped { overflow: clip } 规则。
+       同时锁定 html.lenis 在所有状态下都保持 overflow-y: scroll，
+       确保 lenis.stop() ↔ lenis.start() 切换时滚动条槽位始终存在，
+       彻底消除任何微小的布局偏移。 */
+    html.lenis,
+    html.lenis.lenis-stopped {
+        overflow-y: scroll !important;
+    }
     /* 使用系统默认字体栈 (System Default Font Stack) */
     h1, h2, h3, h4, h5, h6, p, a, strong, button, input, textarea, li, ul, ol, .home-h2, .manifesto, .nav-tag, .btn-s, .will-logo-text, .center-huge-logo, .clipping-text, .use-case-h4, .value-text {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", sans-serif !important;
@@ -944,8 +961,6 @@
       .pre-corner { font-size: 8px; }
       .pre-corner--tl, .pre-corner--bl { left: 1.5rem; }
       .pre-corner--tr, .pre-corner--br { right: 1.5rem; }
-      .pre-corner--tl, .pre-corner--tr { top: 1.5rem; }
-      .pre-corner--bl, .pre-corner--br { bottom: 1.5rem; }
   }
   </style>
 </head>
@@ -1916,12 +1931,38 @@
   <script src="https://cdn.jsdelivr.net/npm/animejs@4.4.1/dist/bundles/anime.umd.min.js"></script>
 
   <script>
+    /* 1. 禁用浏览器默认的滚动恢复 */
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+
+    /* 2. 清除 URL 中的锚点（避免 Webflow 脚本或浏览器强制跳转） */
+    if (window.location.hash) {
+      window.history.replaceState('', document.title, window.location.pathname + window.location.search);
+    }
+
+    /* 3. 页面即将卸载（刷新）时，提前把坐标归零，欺骗部分浏览器的缓存机制 */
+    window.addEventListener('beforeunload', function() {
+      window.scrollTo(0, 0);
+    });
+
+    /* 4. 极早期同步重置 */
+    window.scrollTo(0, 0);
+
     const lenis = new Lenis();
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add((time) => { lenis.raf(time * 1000); });
     gsap.ticker.lagSmoothing(0);
-    /* 预加载期间阻止滚动 */
+    
+    /* 预加载期间阻止滚动，并重置 lenis 内部状态 */
+    lenis.scrollTo(0, { immediate: true });
     lenis.stop();
+
+    /* 5. DOM 完全加载时最终保险，杜绝下半截出现空白冻结 */
+    document.addEventListener("DOMContentLoaded", () => {
+      window.scrollTo(0, 0);
+      lenis.scrollTo(0, { immediate: true });
+    });
   </script>
 
   <script type="text/javascript">!function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.5.3/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();</script>
@@ -2399,6 +2440,7 @@
         onComplete: finishPreloader,
       });
 
+
       /* 1. 上下幕帘对开 */
       exitTl.to(curtainTop, { yPercent: -100, duration: 1.2, ease: 'power3.inOut' }, 0);
       exitTl.to(curtainBot, { yPercent: 100, duration: 1.2, ease: 'power3.inOut' }, 0);
@@ -2459,8 +2501,11 @@
     function finishPreloader() {
       preloader.remove();
 
-      /* 恢复 Lenis */
-      if (typeof lenis !== 'undefined') lenis.start();
+      /* 恢复 Lenis 平滑滚动 */
+      if (typeof lenis !== 'undefined') {
+        lenis.scrollTo(0, { immediate: true });
+        lenis.start();
+      }
 
       /* 刷新 ScrollTrigger */
       if (typeof ScrollTrigger !== 'undefined') {
