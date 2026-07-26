@@ -30,6 +30,16 @@ test("all horizontal slides share one one-shot reveal lifecycle", async () => {
     /querySelectorAll\("\.split-timeline,\s*\.split-horizontal"\)/,
     "the shared slide controller should collect first and later slide targets",
   );
+  assert.match(
+    html,
+    /if\s*\(\s*!data\s*\|\|\s*data\.played\s*\)\s*return/,
+    "played slides must be guarded from replay",
+  );
+  assert.equal(
+    html.match(/data\.played\s*=\s*true/g)?.length,
+    1,
+    "the horizontal controller should mark each slide played in one place",
+  );
   assert.doesNotMatch(
     html,
     /\bsplitPlayed\b/,
@@ -40,9 +50,29 @@ test("all horizontal slides share one one-shot reveal lifecycle", async () => {
     /data\.played\s*=\s*false/,
     "played slides must not reset when they leave the viewport",
   );
+  assert.doesNotMatch(
+    html,
+    /classList\.remove\(\s*["']scroll-reveal-inview["']\s*\)/,
+    "revealed slides must stay visible after leaving the viewport",
+  );
   assert.match(
     html,
     /horizontal:first-ready/,
     "the wrapper timeline should only signal first-slide readiness",
+  );
+  assert.match(
+    html,
+    /dispatchEvent\(\s*new CustomEvent\("horizontal:first-ready"\)\s*\)/,
+    "the wrapper timeline should dispatch first-slide readiness",
+  );
+  assert.match(
+    html,
+    /addEventListener\("horizontal:first-ready"/,
+    "the shared slide controller should listen for first-slide readiness",
+  );
+  assert.match(
+    html,
+    /if\s*\(\s*!entry\.isIntersecting\s*\|\|\s*entry\.intersectionRatio\s*<\s*minRatio\s*\)\s*return;/,
+    "observer exit and low-ratio updates must return without hiding or resetting",
   );
 });
