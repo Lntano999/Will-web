@@ -115,6 +115,11 @@ test("horizontal reveals progressively enhance and honor reduced motion", async 
     /slideDataMap\.forEach\(\(_, slide\) => showSlideFinal\(slide\)\)/,
     "fallback and reduced-motion handling should finalize every registered slide",
   );
+  assert.match(
+    html,
+    /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{[\s\S]*?\.horizontal-section\s+\.scroll-mask-block\s+\.reveal-text-line\s*\{[^}]*transform:\s*translateY\(0\)[^}]*opacity:\s*1[^}]*transition:\s*none[^}]*transition-delay:\s*0s[^}]*animation:\s*none/s,
+    "reduced-motion horizontal waterfall lines should be immediately visible without transitions",
+  );
 });
 
 test("homepage and footer white copy use the one-shot line controller", async () => {

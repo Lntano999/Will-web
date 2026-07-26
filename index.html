@@ -321,6 +321,16 @@
   .scroll-mask-block .mask-line-container:nth-child(20) .reveal-text-line { transition-delay: 1.9s; }
   .scroll-mask-block .mask-line-container:nth-child(n+21) .reveal-text-line { transition-delay: 2.0s; }
 
+  @media (prefers-reduced-motion: reduce) {
+    .horizontal-section .scroll-mask-block .reveal-text-line {
+      transform: translateY(0) !important;
+      opacity: 1 !important;
+      transition: none !important;
+      transition-delay: 0s !important;
+      animation: none !important;
+    }
+  }
+
   .use-case-h4 { color: #000000 !important; }
   .use-case-text { color: #666666 !important; line-height: 1.6 !important; margin-top: 8px !important; }
   .use-case__block { text-decoration: none !important; }
