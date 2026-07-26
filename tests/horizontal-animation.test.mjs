@@ -76,3 +76,33 @@ test("all horizontal slides share one one-shot reveal lifecycle", async () => {
     "observer exit and low-ratio updates must return without hiding or resetting",
   );
 });
+
+test("homepage and footer white copy use the one-shot line controller", async () => {
+  const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+
+  assert.match(
+    html,
+    /class="claim-m one-shot-white-reveal"/,
+    "the homepage claim should opt into the shared controller",
+  );
+  assert.match(
+    html,
+    /class="claim-m expertise-split one-shot-white-reveal"/,
+    "the footer claim should opt into the shared controller",
+  );
+  assert.match(
+    html,
+    /window\.oneShotWhiteReveals/,
+    "the preloader and observer should share reveal instances",
+  );
+  assert.match(
+    html,
+    /observer\.unobserve\(entry\.target\)/,
+    "the footer observer should stop after the first reveal",
+  );
+  assert.doesNotMatch(
+    html,
+    /gsap\.set\(heroClaim,\s*\{\s*opacity:\s*0,\s*y:\s*30\s*\}\)/,
+    "the old root-level hero animation must not compete with line masks",
+  );
+});

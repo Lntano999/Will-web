@@ -1176,7 +1176,7 @@
     <div data-follow="area" data-w-id="f795206b-cfea-47c2-42e7-3d1c4abaf71f" class="container full-page home-hero">
       <div class="div-block home-margin follow-section">
        
-        <p data-wf-target="[[[&quot;68f77e4ac7ca6bd68b326cb4&quot;,&quot;f795206b-cfea-47c2-42e7-3d1c4abaf727&quot;],[]]]" class="claim-m">
+        <p data-wf-target="[[[&quot;68f77e4ac7ca6bd68b326cb4&quot;,&quot;f795206b-cfea-47c2-42e7-3d1c4abaf727&quot;],[]]]" class="claim-m one-shot-white-reveal">
           新生代开发者。<br/>
           在代码的确定性与<br/>
           资本市场的随机性之间<br/>
@@ -1853,7 +1853,7 @@
   <div id="contact" class="footer div-block-8">
     <div class="w-layout-grid grid-container big-margin">
       <div id="w-node-_2690f36a-fdfc-f994-ece2-59160c882c29-0c882c27" class="footer-text-container">
-        <div class="claim-m expertise-split">Discussing Quant,<br/>Tech, or potential<br/>Opportunities?</div>
+        <div class="claim-m expertise-split one-shot-white-reveal">Discussing Quant,<br/>Tech, or potential<br/>Opportunities?</div>
         
         <div class="footer-contact-wrapper" style="position: relative; display: inline-block;">
           <div class="qr-popup" style="position: absolute; bottom: 100%; left: 0%; transform: translateY(20px); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.77, 0, 0.175, 1); margin-bottom: 20px; background: white; padding: 12px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 50;">
@@ -2275,6 +2275,73 @@
   });
   </script>
 
+  <script>
+  (function initOneShotWhiteReveals() {
+    const targets = {
+      hero: document.querySelector(".home-hero .one-shot-white-reveal"),
+      footer: document.querySelector("#contact .one-shot-white-reveal")
+    };
+
+    function createReveal(element) {
+      if (!element || typeof SplitText === "undefined" || typeof gsap === "undefined") {
+        return null;
+      }
+
+      const split = new SplitText(element, {
+        type: "lines",
+        mask: "lines",
+        linesClass: "one-shot-white-line"
+      });
+      const lines = split.lines;
+      let played = false;
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (reducedMotion) {
+        gsap.set(lines, { y: "0%", opacity: 1 });
+        played = true;
+      } else {
+        gsap.set(lines, { y: "140%", opacity: 0 });
+      }
+
+      function play(timeline, position) {
+        if (played) return;
+        played = true;
+        const vars = {
+          y: "0%",
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+          stagger: 0.08
+        };
+        if (timeline) timeline.to(lines, vars, position);
+        else gsap.to(lines, vars);
+      }
+
+      return { element, lines, play, get played() { return played; } };
+    }
+
+    const hero = createReveal(targets.hero);
+    const footer = createReveal(targets.footer);
+    window.oneShotWhiteReveals = { hero, footer };
+
+    if (footer && !footer.played) {
+      if (typeof IntersectionObserver === "undefined") {
+        footer.play();
+        return;
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting || entry.intersectionRatio < 0.25) return;
+          footer.play();
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: [0, 0.1, 0.25, 0.5] });
+      observer.observe(footer.element);
+    }
+  })();
+  </script>
+
   <!-- ═══ Preloader 动画引擎 v2（Split-Curtain + Zoom Reveal）═══ -->
   <script>
   (function initPreloader() {
@@ -2434,13 +2501,13 @@
       /* ── GSAP Timeline: 分幕对开 + 统一退远 + 延迟蒙版展现 ── */
       const background = document.querySelector('.background');
       const sectionHome = document.querySelector('.section-home');
-      const heroClaim = document.querySelector('.claim-m');
+      const heroClaim = document.querySelector(".home-hero .claim-m");
+      const heroReveal = window.oneShotWhiteReveals?.hero;
       const heroLogo = document.querySelector('.test.w-embed');
 
       /* 初始隐藏：将大 Logo 和右侧段落藏起来，准备稍后的蒙版滑入 */
       /* 使用 -20% 给左右下流出冗余空间，防止句号 . 被裁切 */
       if (heroLogo) gsap.set(heroLogo, { opacity: 0, y: 50, clipPath: 'inset(100% -20% -20% -20%)' });
-      if (heroClaim) gsap.set(heroClaim, { opacity: 0, y: 30 });
 
       /* 初始放大：设定背景、主结构、导航栏放大 1.12 倍 */
       if (background) gsap.set(background, { scale: 1.12, transformOrigin: 'center center' });
@@ -2502,14 +2569,21 @@
         }, 0.8);
       }
 
-      if (heroClaim) {
-        exitTl.to(heroClaim, {
-          opacity: 1,
-          y: 0,
-          duration: 1.2,
-          ease: 'power3.out',
-          clearProps: 'all'
-        }, 1.0);
+      if (heroReveal) {
+        heroReveal.play(exitTl, 1.0);
+      } else if (heroClaim) {
+        exitTl.fromTo(
+          heroClaim,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1.2,
+            ease: "power3.out",
+            clearProps: "all"
+          },
+          1.0
+        );
       }
     }
 
