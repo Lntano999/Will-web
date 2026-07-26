@@ -1,0 +1,26 @@
+<h2>首尾页白字的蒙版如何回放？</h2>
+<p class="subtitle">横向三组会统一为：进入播放、离开重置、从任意方向再次进入都重播。</p>
+
+<div class="cards">
+  <div class="card" data-choice="repeat" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:28px;background:#111;color:#fff;min-height:170px;display:flex;align-items:flex-end">
+      <div style="overflow:hidden;font-size:26px;line-height:1.18">
+        <div style="transform:translateY(0)">Discussing Quant,<br>Tech, or potential<br>Opportunities?</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A · 每次进入都重播（推荐）</h3>
+      <p>离开视口后恢复到蒙版下方；向上或向下再次进入时，逐行重新出现。全站交互语义统一。</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="once" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:28px;background:#111;color:#fff;min-height:170px;display:flex;align-items:flex-end">
+      <div style="font-size:26px;line-height:1.18">Discussing Quant,<br>Tech, or potential<br>Opportunities?</div>
+    </div>
+    <div class="card-body">
+      <h3>B · 每页只播放一次</h3>
+      <p>首次进入时逐行出现，之后保持显示；横向三组仍会反向重播，但首尾页更安静。</p>
+    </div>
+  </div>
+</div>
