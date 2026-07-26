@@ -106,3 +106,23 @@ test("homepage and footer white copy use the one-shot line controller", async ()
     "the old root-level hero animation must not compete with line masks",
   );
 });
+
+test("the footer wordmark reserves period space without opening footer overflow", async () => {
+  const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+
+  assert.match(
+    html,
+    /class="clipping-text footer-wordmark"/,
+    "the large footer mark should have a scoped class",
+  );
+  assert.match(
+    html,
+    /#contact\s+\.footer-wordmark\s*\{[^}]*padding-bottom:\s*0\.08em/s,
+    "the footer mark should reserve local descent space",
+  );
+  assert.match(
+    html,
+    /#contact\.footer\s*\{[^}]*overflow:\s*hidden\s*!important/s,
+    "footer overflow containment must remain enabled",
+  );
+});
