@@ -77,6 +77,46 @@ test("all horizontal slides share one one-shot reveal lifecycle", async () => {
   );
 });
 
+test("horizontal reveals progressively enhance and honor reduced motion", async () => {
+  const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+
+  assert.match(
+    html,
+    /body\.h-horizontal-split-ready\s+\.h-slide\s+\.bot\.col\.clipping-text/,
+    "horizontal root backgrounds should only clear after SplitText setup succeeds",
+  );
+  assert.doesNotMatch(
+    html,
+    /(?:^|\n)\s*\.h-slide\s+\.bot\.col\.clipping-text\s*,/,
+    "horizontal root backgrounds must not clear without the enhancement class",
+  );
+  assert.match(
+    html,
+    /if\s*\(typeof SplitText\s*!==\s*"function"\)[\s\S]*?new SplitText/,
+    "the horizontal controller should check SplitText before registering masks",
+  );
+  assert.match(
+    html,
+    /prefers-reduced-motion:\s*reduce[\s\S]*?typeof IntersectionObserver[\s\S]*?if\s*\(!prefersReducedMotion\s*&&\s*canObserve\)[\s\S]*?gsap\.set\(data\.lines,\s*\{\s*y:\s*"140%"/,
+    "motion preference and observer support should be checked before lines are hidden",
+  );
+  assert.match(
+    html,
+    /slides\.forEach\(slide => slide\.classList\.add\("scroll-reveal-inview"\)\)/,
+    "the unenhanced fallback should reveal every horizontal slide",
+  );
+  assert.match(
+    html,
+    /function showSlideFinal\(slide\)[\s\S]*?gsap\.set\(data\.lines,[\s\S]*?gsap\.set\(data\.svgPaths,[\s\S]*?gsap\.set\(data\.arrows,/,
+    "registered fallback slides should expose text, paths, and arrows without animation",
+  );
+  assert.match(
+    html,
+    /slideDataMap\.forEach\(\(_, slide\) => showSlideFinal\(slide\)\)/,
+    "fallback and reduced-motion handling should finalize every registered slide",
+  );
+});
+
 test("homepage and footer white copy use the one-shot line controller", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 
