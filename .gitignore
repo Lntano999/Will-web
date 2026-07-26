@@ -4,3 +4,6 @@ node_modules/
 
 # 智能体本地配置 (不上传)
 .claude/
+
+# Codex isolated implementation worktrees
+.worktrees/
