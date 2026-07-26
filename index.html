@@ -1326,26 +1326,21 @@
           const textPin  = document.querySelector(".horizontal-text-pin");
           if (!section || !wrapper || !track) return;
           const isMobile = window.matchMedia("(max-width: 479px)").matches;
-          const splitElems = document.querySelectorAll(".split-timeline");
-          let allLines = []; let splitPlayed = false;
-          if (splitElems.length && typeof SplitText !== "undefined") {
-            const splits = [];
-            splitElems.forEach(el => { const split = new SplitText(el, { type: "lines", mask: "lines", linesClass: "split-text-line" }); splits.push(split); });
-            allLines = splits.flatMap(s => s.lines);
-            gsap.set(allLines, { y: "140%", opacity: 0 });
-          }
-          const firstSlide  = section.querySelector(".h-slide");
-          const firstArrows = firstSlide?.querySelectorAll(".h-arrow");
-          if (firstArrows?.length) { gsap.set(firstArrows, { yPercent: 150 }); }
-          function playIntroAnim() {
-            if (splitPlayed) return; splitPlayed = true;
-            document.body.classList.add("h-slide-1-ready"); 
-            if (allLines.length) { gsap.to(allLines, { y: "0%", opacity: 1, duration: 0.7, ease: "power3.out", stagger: 0.05 }); }
-            if (firstArrows?.length) { gsap.to(firstArrows, { yPercent: 0, duration: 0.7, ease: "power3.out" }); }
+          let firstSlideUnlocked = false;
+          function unlockFirstSlide() {
+            if (firstSlideUnlocked) return;
+            firstSlideUnlocked = true;
+            document.body.classList.add("h-slide-1-ready");
+            window.dispatchEvent(new CustomEvent("horizontal:first-ready"));
           }
           if (isMobile) {
             gsap.set(wrapper, { scale: 1, x: 0, y: 0 }); gsap.set(track, { x: 0 });
-            ScrollTrigger.create({ trigger: section, start: "top 80%", once: true, onEnter: playIntroAnim });
+            ScrollTrigger.create({
+              trigger: section,
+              start: "top 80%",
+              once: true,
+              onEnter: unlockFirstSlide
+            });
             return;
           }
           const getTotalDistance = () => track.scrollWidth - window.innerWidth;
@@ -1355,10 +1350,10 @@
             scrollTrigger: { trigger: section, start: "top top", end: () => "+=" + (getTotalDistance() + window.innerHeight * 0.5), scrub: true, pin: true, anticipatePin: 1, invalidateOnRefresh: true },
             defaults: { ease: "none" }
           });
-          
+
           tl.addLabel("scaleStart");
           tl.to(wrapper, { scale: 1, x: "50vw", duration: 0.3 });
-          tl.call(playIntroAnim, null, ">");
+          tl.call(unlockFirstSlide, null, ">");
           tl.addLabel("scaleEnd");
           tl.to(wrapper, { x: "0vw", duration: 0.2 });
           tl.to(track, { x: () => -getTotalDistance(), duration: 0.5 });
@@ -1380,7 +1375,7 @@
           const slides = gsap.utils.toArray(".h-slide"); if (!slides.length) return;
           const slideDataMap = new Map();
           slides.forEach((slide, index) => {
-            const targets  = slide.querySelectorAll(".split-horizontal");
+            const targets  = slide.querySelectorAll(".split-timeline, .split-horizontal");
             const svgPaths = slide.querySelectorAll(".svg-draw path");
             const arrows   = slide.querySelectorAll(".h-arrow");
             const isFirst  = index === 0;
@@ -1400,36 +1395,50 @@
             slideDataMap.set(slide, { lines, svgPaths, arrows, isFirst, played: false });
           });
           if (!slideDataMap.size) return;
+
+          function playSlide(slide) {
+            const data = slideDataMap.get(slide);
+            if (!data || data.played) return;
+            if (data.isFirst && !document.body.classList.contains("h-slide-1-ready")) return;
+
+            data.played = true;
+            slide.classList.add("scroll-reveal-inview");
+
+            if (data.lines.length) {
+              gsap.to(data.lines, {
+                y: "0%",
+                opacity: 1,
+                duration: 0.7,
+                ease: "power3.out",
+                stagger: 0.1
+              });
+            }
+            if (data.svgPaths.length) {
+              gsap.to(data.svgPaths, {
+                strokeDashoffset: 0,
+                duration: 1.5,
+                ease: "power3.inOut"
+              });
+            }
+            if (data.arrows.length) {
+              gsap.to(data.arrows, {
+                yPercent: 0,
+                duration: 0.5,
+                ease: "power3.out"
+              });
+            }
+          }
+
+          window.addEventListener("horizontal:first-ready", () => {
+            const firstSlide = slides[0];
+            if (firstSlide) playSlide(firstSlide);
+          });
+
           const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-              const slide = entry.target; const data  = slideDataMap.get(slide); if (!data) return;
               const minRatio = 0.12;
-              
-              if (!entry.isIntersecting || entry.intersectionRatio < minRatio) {
-                  /* 板块离开时移除文本触发类，同步执行 GSAP 图标和线条后退动画，实现上下游完全对齐 */
-                  slide.classList.remove("scroll-reveal-inview");
-                  if (data.played) {
-                      data.played = false;
-                      if (data.lines && data.lines.length) { gsap.to(data.lines, { y: "140%", opacity: 0, duration: 0.5, ease: "power3.in" }); }
-                      if (data.svgPaths && data.svgPaths.length) {
-                          data.svgPaths.forEach(path => {
-                              const length = path.getTotalLength();
-                              gsap.to(path, { strokeDashoffset: length, duration: 0.8, ease: "power3.inOut" });
-                          });
-                      }
-                      if (data.arrows && data.arrows.length) { gsap.to(data.arrows, { yPercent: 150, duration: 0.5, ease: "power3.in" }); }
-                  }
-                  return;
-              }
-              
-              /* 触发硬切割段落的 CSS 原生动画 */
-              slide.classList.add("scroll-reveal-inview");
-
-              if (data.isFirst && !document.body.classList.contains("h-slide-1-ready")) { return; }
-              if (data.played) return; data.played = true;
-              if (data.lines && data.lines.length) { gsap.to(data.lines, { y: "0%", opacity: 1, duration: 0.7, ease: "power3.out", stagger: 0.1 }); }
-              if (data.svgPaths && data.svgPaths.length) { gsap.to(data.svgPaths, { strokeDashoffset: 0, duration: 1.5, ease: "power3.inOut" }); }
-              if (data.arrows && data.arrows.length) { gsap.to(data.arrows, { yPercent: 0, duration: 0.5, ease: "power3.out" }); }
+              if (!entry.isIntersecting || entry.intersectionRatio < minRatio) return;
+              playSlide(entry.target);
             });
           }, { threshold: [0, 0.05, 0.1, 0.15, 0.25, 0.5, 0.75] });
           slideDataMap.forEach((_, slide) => observer.observe(slide));
