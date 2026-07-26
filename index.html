@@ -93,6 +93,27 @@
       padding-bottom: 0 !important;
       overflow: hidden !important;
     }
+
+    #contact .footer-wordmark {
+      display: block;
+      transform: translateY(-0.08em);
+      transform-origin: left bottom;
+    }
+
+    /* 首尾白字使用固定行盒，避免 SplitText 在运行时重排文字。 */
+    .one-shot-white-mask {
+      display: block;
+      overflow: hidden;
+      padding-top: 0.12em;
+      margin-top: -0.12em;
+      padding-bottom: 0.12em;
+      margin-bottom: -0.12em;
+    }
+
+    .one-shot-white-line {
+      display: block;
+      will-change: transform, opacity;
+    }
   </style>
 
   <style>
@@ -242,9 +263,9 @@
   }
 
   /* SplitText 蒙版层只负责裁切；蓝色纹理仅由内部移动行绘制。 */
-  .h-slide .bot.col.clipping-text,
-  .clipping-text.split-timeline,
-  .clipping-text.split-horizontal {
+  body.h-horizontal-split-ready .h-slide .bot.col.clipping-text,
+  body.h-horizontal-split-ready .clipping-text.split-timeline,
+  body.h-horizontal-split-ready .clipping-text.split-horizontal {
       background-image: none !important;
       -webkit-background-clip: border-box !important;
       background-clip: border-box !important;
@@ -314,6 +335,16 @@
   .scroll-mask-block .mask-line-container:nth-child(19) .reveal-text-line { transition-delay: 1.8s; }
   .scroll-mask-block .mask-line-container:nth-child(20) .reveal-text-line { transition-delay: 1.9s; }
   .scroll-mask-block .mask-line-container:nth-child(n+21) .reveal-text-line { transition-delay: 2.0s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .horizontal-section .scroll-mask-block .reveal-text-line {
+      transform: translateY(0) !important;
+      opacity: 1 !important;
+      transition: none !important;
+      transition-delay: 0s !important;
+      animation: none !important;
+    }
+  }
 
   .use-case-h4 { color: #000000 !important; }
   .use-case-text { color: #666666 !important; line-height: 1.6 !important; margin-top: 8px !important; }
@@ -1176,11 +1207,11 @@
     <div data-follow="area" data-w-id="f795206b-cfea-47c2-42e7-3d1c4abaf71f" class="container full-page home-hero">
       <div class="div-block home-margin follow-section">
        
-        <p data-wf-target="[[[&quot;68f77e4ac7ca6bd68b326cb4&quot;,&quot;f795206b-cfea-47c2-42e7-3d1c4abaf727&quot;],[]]]" class="claim-m">
-          新生代开发者。<br/>
-          在代码的确定性与<br/>
-          资本市场的随机性之间<br/>
-          寻找最优解。
+        <p data-wf-target="[[[&quot;68f77e4ac7ca6bd68b326cb4&quot;,&quot;f795206b-cfea-47c2-42e7-3d1c4abaf727&quot;],[]]]" class="claim-m one-shot-white-reveal">
+          <span class="one-shot-white-mask"><span class="one-shot-white-line">新生代开发者。</span></span>
+          <span class="one-shot-white-mask"><span class="one-shot-white-line">在代码的确定性与</span></span>
+          <span class="one-shot-white-mask"><span class="one-shot-white-line">资本市场的随机性之间</span></span>
+          <span class="one-shot-white-mask"><span class="one-shot-white-line">寻找最优解。</span></span>
         </p>
       </div>
       <div data-wf-target="[[[&quot;68f77e4ac7ca6bd68b326cb4&quot;,&quot;6efb697d-d0ab-36b3-30f7-aca4aff8ec9f&quot;],[]]]" class="test w-embed">
@@ -1330,22 +1361,51 @@
           let allLines = []; let splitPlayed = false;
           if (splitElems.length && typeof SplitText !== "undefined") {
             const splits = [];
-            splitElems.forEach(el => { const split = new SplitText(el, { type: "lines", mask: "lines", linesClass: "split-text-line" }); splits.push(split); });
-            allLines = splits.flatMap(s => s.lines);
+            splitElems.forEach(el => {
+              const split = new SplitText(el, {
+                type: "lines",
+                mask: "lines",
+                linesClass: "split-text-line"
+              });
+              splits.push(split);
+            });
+            allLines = splits.flatMap(split => split.lines);
             gsap.set(allLines, { y: "140%", opacity: 0 });
           }
-          const firstSlide  = section.querySelector(".h-slide");
+          const firstSlide = section.querySelector(".h-slide");
           const firstArrows = firstSlide?.querySelectorAll(".h-arrow");
-          if (firstArrows?.length) { gsap.set(firstArrows, { yPercent: 150 }); }
+          if (firstArrows?.length) {
+            gsap.set(firstArrows, { yPercent: 150 });
+          }
           function playIntroAnim() {
-            if (splitPlayed) return; splitPlayed = true;
-            document.body.classList.add("h-slide-1-ready"); 
-            if (allLines.length) { gsap.to(allLines, { y: "0%", opacity: 1, duration: 0.7, ease: "power3.out", stagger: 0.05 }); }
-            if (firstArrows?.length) { gsap.to(firstArrows, { yPercent: 0, duration: 0.7, ease: "power3.out" }); }
+            if (splitPlayed) return;
+            splitPlayed = true;
+            document.body.classList.add("h-slide-1-ready");
+            if (allLines.length) {
+              gsap.to(allLines, {
+                y: "0%",
+                opacity: 1,
+                duration: 0.7,
+                ease: "power3.out",
+                stagger: 0.05
+              });
+            }
+            if (firstArrows?.length) {
+              gsap.to(firstArrows, {
+                yPercent: 0,
+                duration: 0.7,
+                ease: "power3.out"
+              });
+            }
           }
           if (isMobile) {
             gsap.set(wrapper, { scale: 1, x: 0, y: 0 }); gsap.set(track, { x: 0 });
-            ScrollTrigger.create({ trigger: section, start: "top 80%", once: true, onEnter: playIntroAnim });
+            ScrollTrigger.create({
+              trigger: section,
+              start: "top 80%",
+              once: true,
+              onEnter: playIntroAnim
+            });
             return;
           }
           const getTotalDistance = () => track.scrollWidth - window.innerWidth;
@@ -1355,7 +1415,7 @@
             scrollTrigger: { trigger: section, start: "top top", end: () => "+=" + (getTotalDistance() + window.innerHeight * 0.5), scrub: true, pin: true, anticipatePin: 1, invalidateOnRefresh: true },
             defaults: { ease: "none" }
           });
-          
+
           tl.addLabel("scaleStart");
           tl.to(wrapper, { scale: 1, x: "50vw", duration: 0.3 });
           tl.call(playIntroAnim, null, ">");
@@ -1378,58 +1438,133 @@
         <script>
         window.addEventListener("load", () => {
           const slides = gsap.utils.toArray(".h-slide"); if (!slides.length) return;
+          const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+          function revealSlidesImmediately() {
+            slides.forEach(slide => slide.classList.add("scroll-reveal-inview"));
+            const splitLines = document.querySelectorAll(".horizontal-section .split-text-line");
+            const svgPaths = document.querySelectorAll(".horizontal-section .svg-draw path");
+            const arrows = document.querySelectorAll(".horizontal-section .h-arrow");
+            if (splitLines.length) gsap.set(splitLines, { y: "0%", opacity: 1 });
+            if (svgPaths.length) gsap.set(svgPaths, { strokeDashoffset: 0 });
+            if (arrows.length) gsap.set(arrows, { yPercent: 0 });
+          }
+
+          if (typeof SplitText !== "function" || typeof IntersectionObserver === "undefined") {
+            revealSlidesImmediately();
+            return;
+          }
+
           const slideDataMap = new Map();
-          slides.forEach((slide, index) => {
-            const targets  = slide.querySelectorAll(".split-horizontal");
-            const svgPaths = slide.querySelectorAll(".svg-draw path");
-            const arrows   = slide.querySelectorAll(".h-arrow");
-            const isFirst  = index === 0;
-            if (!targets.length && !svgPaths.length && !arrows.length) return;
-            let lines = [];
-            if (targets.length) {
-              const splits = [];
-              targets.forEach((el) => { const split = new SplitText(el, { type: "lines", mask: "lines", linesClass: "split-text-line" }); splits.push(split); });
-              lines = splits.flatMap(s => s.lines); gsap.set(lines, { y: "140%", opacity: 0 });
+          const registeredSplits = [];
+
+          try {
+            slides.forEach((slide, index) => {
+              const targets  = slide.querySelectorAll(".split-horizontal");
+              const svgPaths = slide.querySelectorAll(".svg-draw path");
+              const arrows   = slide.querySelectorAll(".h-arrow");
+              const isFirst  = index === 0;
+              if (!targets.length && !svgPaths.length && !arrows.length) return;
+              let lines = [];
+              if (targets.length) {
+                const splits = [];
+                targets.forEach((el) => {
+                  const split = new SplitText(el, {
+                    type: "lines",
+                    mask: "lines",
+                    linesClass: "split-text-line"
+                  });
+                  splits.push(split);
+                  registeredSplits.push(split);
+                });
+                lines = splits.flatMap(split => split.lines);
+                if (!prefersReducedMotion) {
+                  gsap.set(lines, { y: "140%", opacity: 0 });
+                }
+              }
+              if (svgPaths.length && !prefersReducedMotion) {
+                svgPaths.forEach(path => {
+                  const length = path.getTotalLength();
+                  gsap.set(path, {
+                    stroke: "#ffffff",
+                    strokeWidth: 1,
+                    fill: "none",
+                    strokeDasharray: length,
+                    strokeDashoffset: length
+                  });
+                });
+              }
+              if (arrows.length && !prefersReducedMotion) {
+                gsap.set(arrows, { yPercent: 150 });
+              }
+              slideDataMap.set(slide, { lines, svgPaths, arrows, isFirst, played: false });
+            });
+
+            if (!slideDataMap.size) {
+              revealSlidesImmediately();
+              return;
             }
-            if (svgPaths.length) {
-              svgPaths.forEach(path => {
-                const length = path.getTotalLength(); gsap.set(path, { stroke: "#ffffff", strokeWidth: 1, fill: "none", strokeDasharray: length, strokeDashoffset: length });
-              });
-            }
-            if (arrows.length) { gsap.set(arrows, { yPercent: 150 }); }
-            slideDataMap.set(slide, { lines, svgPaths, arrows, isFirst, played: false });
-          });
-          if (!slideDataMap.size) return;
+
+            document.body.classList.add("h-horizontal-split-ready");
+          } catch {
+            registeredSplits.forEach((split) => {
+              try { split.revert(); } catch {}
+            });
+            revealSlidesImmediately();
+            return;
+          }
+
+          if (prefersReducedMotion) {
+            slideDataMap.forEach((data, slide) => {
+              data.played = true;
+              slide.classList.add("scroll-reveal-inview");
+              if (data.lines.length) gsap.set(data.lines, { y: "0%", opacity: 1 });
+              if (data.svgPaths.length) gsap.set(data.svgPaths, { strokeDashoffset: 0 });
+              if (data.arrows.length) gsap.set(data.arrows, { yPercent: 0 });
+            });
+            return;
+          }
+
           const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-              const slide = entry.target; const data  = slideDataMap.get(slide); if (!data) return;
+              const slide = entry.target;
+              const data = slideDataMap.get(slide);
+              if (!data) return;
               const minRatio = 0.12;
-              
+
               if (!entry.isIntersecting || entry.intersectionRatio < minRatio) {
-                  /* 板块离开时移除文本触发类，同步执行 GSAP 图标和线条后退动画，实现上下游完全对齐 */
-                  slide.classList.remove("scroll-reveal-inview");
-                  if (data.played) {
-                      data.played = false;
-                      if (data.lines && data.lines.length) { gsap.to(data.lines, { y: "140%", opacity: 0, duration: 0.5, ease: "power3.in" }); }
-                      if (data.svgPaths && data.svgPaths.length) {
-                          data.svgPaths.forEach(path => {
-                              const length = path.getTotalLength();
-                              gsap.to(path, { strokeDashoffset: length, duration: 0.8, ease: "power3.inOut" });
-                          });
-                      }
-                      if (data.arrows && data.arrows.length) { gsap.to(data.arrows, { yPercent: 150, duration: 0.5, ease: "power3.in" }); }
-                  }
-                  return;
+                return;
               }
-              
-              /* 触发硬切割段落的 CSS 原生动画 */
+
+              /* 保留原版瀑布触发顺序；离开后不再移除，因此只播放一次。 */
               slide.classList.add("scroll-reveal-inview");
 
-              if (data.isFirst && !document.body.classList.contains("h-slide-1-ready")) { return; }
-              if (data.played) return; data.played = true;
-              if (data.lines && data.lines.length) { gsap.to(data.lines, { y: "0%", opacity: 1, duration: 0.7, ease: "power3.out", stagger: 0.1 }); }
-              if (data.svgPaths && data.svgPaths.length) { gsap.to(data.svgPaths, { strokeDashoffset: 0, duration: 1.5, ease: "power3.inOut" }); }
-              if (data.arrows && data.arrows.length) { gsap.to(data.arrows, { yPercent: 0, duration: 0.5, ease: "power3.out" }); }
+              if (data.isFirst && !document.body.classList.contains("h-slide-1-ready")) return;
+              if (data.played) return;
+              data.played = true;
+              if (data.lines.length) {
+                gsap.to(data.lines, {
+                  y: "0%",
+                  opacity: 1,
+                  duration: 0.7,
+                  ease: "power3.out",
+                  stagger: 0.1
+                });
+              }
+              if (data.svgPaths.length) {
+                gsap.to(data.svgPaths, {
+                  strokeDashoffset: 0,
+                  duration: 1.5,
+                  ease: "power3.inOut"
+                });
+              }
+              if (data.arrows.length) {
+                gsap.to(data.arrows, {
+                  yPercent: 0,
+                  duration: 0.5,
+                  ease: "power3.out"
+                });
+              }
             });
           }, { threshold: [0, 0.05, 0.1, 0.15, 0.25, 0.5, 0.75] });
           slideDataMap.forEach((_, slide) => observer.observe(slide));
@@ -1844,7 +1979,11 @@
   <div id="contact" class="footer div-block-8">
     <div class="w-layout-grid grid-container big-margin">
       <div id="w-node-_2690f36a-fdfc-f994-ece2-59160c882c29-0c882c27" class="footer-text-container">
-        <div class="claim-m expertise-split">Discussing Quant,<br/>Tech, or potential<br/>Opportunities?</div>
+        <div class="claim-m expertise-split one-shot-white-reveal">
+          <span class="one-shot-white-mask"><span class="one-shot-white-line">Discussing Quant,</span></span>
+          <span class="one-shot-white-mask"><span class="one-shot-white-line">Tech, or potential</span></span>
+          <span class="one-shot-white-mask"><span class="one-shot-white-line">Opportunities?</span></span>
+        </div>
         
         <div class="footer-contact-wrapper" style="position: relative; display: inline-block;">
           <div class="qr-popup" style="position: absolute; bottom: 100%; left: 0%; transform: translateY(20px); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.77, 0, 0.175, 1); margin-bottom: 20px; background: white; padding: 12px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 50;">
@@ -1879,7 +2018,7 @@
         <p class="claim-s max-w-footer expertise-split">WILL.<br/>Quant Trading & Finance Research.</p>
         <div class="div-hide">
           <div class="logo-footer w-embed">
-            <div class="clipping-text" style="font-size: 18vw; font-weight: 900; line-height: 0.85; margin-left: -0.5vw; letter-spacing: -0.05em;"><span>WILL.</span></div>
+            <div class="clipping-text footer-wordmark" style="font-size: 18vw; font-weight: 900; line-height: 0.85; margin-left: -0.5vw; letter-spacing: -0.05em;"><span>WILL.</span></div>
           </div>
         </div>
       </div>
@@ -2266,6 +2405,69 @@
   });
   </script>
 
+  <script>
+  (function initOneShotWhiteReveals() {
+    const targets = {
+      hero: document.querySelector(".home-hero .one-shot-white-reveal"),
+      footer: document.querySelector("#contact .one-shot-white-reveal")
+    };
+
+    function createReveal(element) {
+      if (!element || typeof gsap === "undefined") {
+        return null;
+      }
+
+      const lines = Array.from(element.querySelectorAll(".one-shot-white-line"));
+      if (!lines.length) return null;
+      let played = false;
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (reducedMotion) {
+        gsap.set(lines, { y: "0%", opacity: 1 });
+        played = true;
+      } else {
+        gsap.set(lines, { y: "120%", opacity: 0 });
+      }
+
+      function play(timeline, position) {
+        if (played) return;
+        played = true;
+        const vars = {
+          y: "0%",
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+          stagger: 0.08
+        };
+        if (timeline) timeline.to(lines, vars, position);
+        else gsap.to(lines, vars);
+      }
+
+      return { element, lines, play, get played() { return played; } };
+    }
+
+    const hero = createReveal(targets.hero);
+    const footer = createReveal(targets.footer);
+    window.oneShotWhiteReveals = { hero, footer };
+
+    if (footer && !footer.played) {
+      if (typeof IntersectionObserver === "undefined") {
+        footer.play();
+        return;
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting || entry.intersectionRatio < 0.25) return;
+          footer.play();
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: [0, 0.1, 0.25, 0.5] });
+      observer.observe(footer.element);
+    }
+  })();
+  </script>
+
   <!-- ═══ Preloader 动画引擎 v2（Split-Curtain + Zoom Reveal）═══ -->
   <script>
   (function initPreloader() {
@@ -2425,13 +2627,13 @@
       /* ── GSAP Timeline: 分幕对开 + 统一退远 + 延迟蒙版展现 ── */
       const background = document.querySelector('.background');
       const sectionHome = document.querySelector('.section-home');
-      const heroClaim = document.querySelector('.claim-m');
+      const heroClaim = document.querySelector(".home-hero .claim-m");
+      const heroReveal = window.oneShotWhiteReveals?.hero;
       const heroLogo = document.querySelector('.test.w-embed');
 
       /* 初始隐藏：将大 Logo 和右侧段落藏起来，准备稍后的蒙版滑入 */
       /* 使用 -20% 给左右下流出冗余空间，防止句号 . 被裁切 */
       if (heroLogo) gsap.set(heroLogo, { opacity: 0, y: 50, clipPath: 'inset(100% -20% -20% -20%)' });
-      if (heroClaim) gsap.set(heroClaim, { opacity: 0, y: 30 });
 
       /* 初始放大：设定背景、主结构、导航栏放大 1.12 倍 */
       if (background) gsap.set(background, { scale: 1.12, transformOrigin: 'center center' });
@@ -2493,14 +2695,21 @@
         }, 0.8);
       }
 
-      if (heroClaim) {
-        exitTl.to(heroClaim, {
-          opacity: 1,
-          y: 0,
-          duration: 1.2,
-          ease: 'power3.out',
-          clearProps: 'all'
-        }, 1.0);
+      if (heroReveal) {
+        heroReveal.play(exitTl, 1.0);
+      } else if (heroClaim) {
+        exitTl.fromTo(
+          heroClaim,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1.2,
+            ease: "power3.out",
+            clearProps: "all"
+          },
+          1.0
+        );
       }
     }
 
