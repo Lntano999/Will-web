@@ -96,8 +96,23 @@
 
     #contact .footer-wordmark {
       display: block;
-      box-sizing: border-box;
-      padding-bottom: 0.08em;
+      transform: translateY(-0.08em);
+      transform-origin: left bottom;
+    }
+
+    /* 首尾白字使用固定行盒，避免 SplitText 在运行时重排文字。 */
+    .one-shot-white-mask {
+      display: block;
+      overflow: hidden;
+      padding-top: 0.12em;
+      margin-top: -0.12em;
+      padding-bottom: 0.12em;
+      margin-bottom: -0.12em;
+    }
+
+    .one-shot-white-line {
+      display: block;
+      will-change: transform, opacity;
     }
   </style>
 
@@ -1193,10 +1208,10 @@
       <div class="div-block home-margin follow-section">
        
         <p data-wf-target="[[[&quot;68f77e4ac7ca6bd68b326cb4&quot;,&quot;f795206b-cfea-47c2-42e7-3d1c4abaf727&quot;],[]]]" class="claim-m one-shot-white-reveal">
-          新生代开发者。<br/>
-          在代码的确定性与<br/>
-          资本市场的随机性之间<br/>
-          寻找最优解。
+          <span class="one-shot-white-mask"><span class="one-shot-white-line">新生代开发者。</span></span>
+          <span class="one-shot-white-mask"><span class="one-shot-white-line">在代码的确定性与</span></span>
+          <span class="one-shot-white-mask"><span class="one-shot-white-line">资本市场的随机性之间</span></span>
+          <span class="one-shot-white-mask"><span class="one-shot-white-line">寻找最优解。</span></span>
         </p>
       </div>
       <div data-wf-target="[[[&quot;68f77e4ac7ca6bd68b326cb4&quot;,&quot;6efb697d-d0ab-36b3-30f7-aca4aff8ec9f&quot;],[]]]" class="test w-embed">
@@ -1342,12 +1357,46 @@
           const textPin  = document.querySelector(".horizontal-text-pin");
           if (!section || !wrapper || !track) return;
           const isMobile = window.matchMedia("(max-width: 479px)").matches;
-          let firstSlideUnlocked = false;
-          function unlockFirstSlide() {
-            if (firstSlideUnlocked) return;
-            firstSlideUnlocked = true;
+          const splitElems = document.querySelectorAll(".split-timeline");
+          let allLines = []; let splitPlayed = false;
+          if (splitElems.length && typeof SplitText !== "undefined") {
+            const splits = [];
+            splitElems.forEach(el => {
+              const split = new SplitText(el, {
+                type: "lines",
+                mask: "lines",
+                linesClass: "split-text-line"
+              });
+              splits.push(split);
+            });
+            allLines = splits.flatMap(split => split.lines);
+            gsap.set(allLines, { y: "140%", opacity: 0 });
+          }
+          const firstSlide = section.querySelector(".h-slide");
+          const firstArrows = firstSlide?.querySelectorAll(".h-arrow");
+          if (firstArrows?.length) {
+            gsap.set(firstArrows, { yPercent: 150 });
+          }
+          function playIntroAnim() {
+            if (splitPlayed) return;
+            splitPlayed = true;
             document.body.classList.add("h-slide-1-ready");
-            window.dispatchEvent(new CustomEvent("horizontal:first-ready"));
+            if (allLines.length) {
+              gsap.to(allLines, {
+                y: "0%",
+                opacity: 1,
+                duration: 0.7,
+                ease: "power3.out",
+                stagger: 0.05
+              });
+            }
+            if (firstArrows?.length) {
+              gsap.to(firstArrows, {
+                yPercent: 0,
+                duration: 0.7,
+                ease: "power3.out"
+              });
+            }
           }
           if (isMobile) {
             gsap.set(wrapper, { scale: 1, x: 0, y: 0 }); gsap.set(track, { x: 0 });
@@ -1355,7 +1404,7 @@
               trigger: section,
               start: "top 80%",
               once: true,
-              onEnter: unlockFirstSlide
+              onEnter: playIntroAnim
             });
             return;
           }
@@ -1369,7 +1418,7 @@
 
           tl.addLabel("scaleStart");
           tl.to(wrapper, { scale: 1, x: "50vw", duration: 0.3 });
-          tl.call(unlockFirstSlide, null, ">");
+          tl.call(playIntroAnim, null, ">");
           tl.addLabel("scaleEnd");
           tl.to(wrapper, { x: "0vw", duration: 0.2 });
           tl.to(track, { x: () => -getTotalDistance(), duration: 0.5 });
@@ -1389,11 +1438,9 @@
         <script>
         window.addEventListener("load", () => {
           const slides = gsap.utils.toArray(".h-slide"); if (!slides.length) return;
-          const reducedMotionQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
-          const prefersReducedMotion = reducedMotionQuery?.matches === true;
-          const canObserve = typeof IntersectionObserver !== "undefined";
+          const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-          function revealSlidesWithoutAnimation() {
+          function revealSlidesImmediately() {
             slides.forEach(slide => slide.classList.add("scroll-reveal-inview"));
             const splitLines = document.querySelectorAll(".horizontal-section .split-text-line");
             const svgPaths = document.querySelectorAll(".horizontal-section .svg-draw path");
@@ -1403,8 +1450,8 @@
             if (arrows.length) gsap.set(arrows, { yPercent: 0 });
           }
 
-          if (typeof SplitText !== "function") {
-            revealSlidesWithoutAnimation();
+          if (typeof SplitText !== "function" || typeof IntersectionObserver === "undefined") {
+            revealSlidesImmediately();
             return;
           }
 
@@ -1413,46 +1460,49 @@
 
           try {
             slides.forEach((slide, index) => {
-              const targets  = slide.querySelectorAll(".split-timeline, .split-horizontal");
+              const targets  = slide.querySelectorAll(".split-horizontal");
               const svgPaths = slide.querySelectorAll(".svg-draw path");
               const arrows   = slide.querySelectorAll(".h-arrow");
               const isFirst  = index === 0;
               if (!targets.length && !svgPaths.length && !arrows.length) return;
-              const lines = [];
-              targets.forEach((el) => {
-                const split = new SplitText(el, {
-                  type: "lines",
-                  mask: "lines",
-                  linesClass: "split-text-line"
+              let lines = [];
+              if (targets.length) {
+                const splits = [];
+                targets.forEach((el) => {
+                  const split = new SplitText(el, {
+                    type: "lines",
+                    mask: "lines",
+                    linesClass: "split-text-line"
+                  });
+                  splits.push(split);
+                  registeredSplits.push(split);
                 });
-                registeredSplits.push(split);
-                lines.push(...split.lines);
-              });
+                lines = splits.flatMap(split => split.lines);
+                if (!prefersReducedMotion) {
+                  gsap.set(lines, { y: "140%", opacity: 0 });
+                }
+              }
+              if (svgPaths.length && !prefersReducedMotion) {
+                svgPaths.forEach(path => {
+                  const length = path.getTotalLength();
+                  gsap.set(path, {
+                    stroke: "#ffffff",
+                    strokeWidth: 1,
+                    fill: "none",
+                    strokeDasharray: length,
+                    strokeDashoffset: length
+                  });
+                });
+              }
+              if (arrows.length && !prefersReducedMotion) {
+                gsap.set(arrows, { yPercent: 150 });
+              }
               slideDataMap.set(slide, { lines, svgPaths, arrows, isFirst, played: false });
             });
 
             if (!slideDataMap.size) {
-              revealSlidesWithoutAnimation();
+              revealSlidesImmediately();
               return;
-            }
-
-            if (!prefersReducedMotion && canObserve) {
-              slideDataMap.forEach((data) => {
-                if (data.lines.length) gsap.set(data.lines, { y: "140%", opacity: 0 });
-                if (data.svgPaths.length) {
-                  data.svgPaths.forEach(path => {
-                    const length = path.getTotalLength();
-                    gsap.set(path, {
-                      stroke: "#ffffff",
-                      strokeWidth: 1,
-                      fill: "none",
-                      strokeDasharray: length,
-                      strokeDashoffset: length
-                    });
-                  });
-                }
-                if (data.arrows.length) gsap.set(data.arrows, { yPercent: 150 });
-              });
             }
 
             document.body.classList.add("h-horizontal-split-ready");
@@ -1460,72 +1510,61 @@
             registeredSplits.forEach((split) => {
               try { split.revert(); } catch {}
             });
-            revealSlidesWithoutAnimation();
+            revealSlidesImmediately();
             return;
           }
 
-          function markSlideVisible(slide, data) {
-            data.played = true;
-            slide.classList.add("scroll-reveal-inview");
-          }
-
-          function playSlide(slide) {
-            const data = slideDataMap.get(slide);
-            if (!data || data.played) return;
-            if (data.isFirst && !document.body.classList.contains("h-slide-1-ready")) return;
-
-            markSlideVisible(slide, data);
-
-            if (data.lines.length) {
-              gsap.to(data.lines, {
-                y: "0%",
-                opacity: 1,
-                duration: 0.7,
-                ease: "power3.out",
-                stagger: 0.1
-              });
-            }
-            if (data.svgPaths.length) {
-              gsap.to(data.svgPaths, {
-                strokeDashoffset: 0,
-                duration: 1.5,
-                ease: "power3.inOut"
-              });
-            }
-            if (data.arrows.length) {
-              gsap.to(data.arrows, {
-                yPercent: 0,
-                duration: 0.5,
-                ease: "power3.out"
-              });
-            }
-          }
-
-          function showSlideFinal(slide) {
-            const data = slideDataMap.get(slide);
-            if (!data || data.played) return;
-
-            markSlideVisible(slide, data);
-            if (data.lines.length) gsap.set(data.lines, { y: "0%", opacity: 1 });
-            if (data.svgPaths.length) gsap.set(data.svgPaths, { strokeDashoffset: 0 });
-            if (data.arrows.length) gsap.set(data.arrows, { yPercent: 0 });
-          }
-
-          if (prefersReducedMotion || !canObserve) {
-            slideDataMap.forEach((_, slide) => showSlideFinal(slide));
+          if (prefersReducedMotion) {
+            slideDataMap.forEach((data, slide) => {
+              data.played = true;
+              slide.classList.add("scroll-reveal-inview");
+              if (data.lines.length) gsap.set(data.lines, { y: "0%", opacity: 1 });
+              if (data.svgPaths.length) gsap.set(data.svgPaths, { strokeDashoffset: 0 });
+              if (data.arrows.length) gsap.set(data.arrows, { yPercent: 0 });
+            });
             return;
           }
-
-          window.addEventListener("horizontal:first-ready", () => {
-            const firstSlide = slides[0];
-            if (firstSlide) playSlide(firstSlide);
-          });
 
           const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
+              const slide = entry.target;
+              const data = slideDataMap.get(slide);
+              if (!data) return;
               const minRatio = 0.12;
-              if (!entry.isIntersecting || entry.intersectionRatio < minRatio) return;
-              playSlide(entry.target);
+
+              if (!entry.isIntersecting || entry.intersectionRatio < minRatio) {
+                return;
+              }
+
+              /* 保留原版瀑布触发顺序；离开后不再移除，因此只播放一次。 */
+              slide.classList.add("scroll-reveal-inview");
+
+              if (data.isFirst && !document.body.classList.contains("h-slide-1-ready")) return;
+              if (data.played) return;
+              data.played = true;
+              if (data.lines.length) {
+                gsap.to(data.lines, {
+                  y: "0%",
+                  opacity: 1,
+                  duration: 0.7,
+                  ease: "power3.out",
+                  stagger: 0.1
+                });
+              }
+              if (data.svgPaths.length) {
+                gsap.to(data.svgPaths, {
+                  strokeDashoffset: 0,
+                  duration: 1.5,
+                  ease: "power3.inOut"
+                });
+              }
+              if (data.arrows.length) {
+                gsap.to(data.arrows, {
+                  yPercent: 0,
+                  duration: 0.5,
+                  ease: "power3.out"
+                });
+              }
             });
           }, { threshold: [0, 0.05, 0.1, 0.15, 0.25, 0.5, 0.75] });
           slideDataMap.forEach((_, slide) => observer.observe(slide));
@@ -1940,7 +1979,11 @@
   <div id="contact" class="footer div-block-8">
     <div class="w-layout-grid grid-container big-margin">
       <div id="w-node-_2690f36a-fdfc-f994-ece2-59160c882c29-0c882c27" class="footer-text-container">
-        <div class="claim-m expertise-split one-shot-white-reveal">Discussing Quant,<br/>Tech, or potential<br/>Opportunities?</div>
+        <div class="claim-m expertise-split one-shot-white-reveal">
+          <span class="one-shot-white-mask"><span class="one-shot-white-line">Discussing Quant,</span></span>
+          <span class="one-shot-white-mask"><span class="one-shot-white-line">Tech, or potential</span></span>
+          <span class="one-shot-white-mask"><span class="one-shot-white-line">Opportunities?</span></span>
+        </div>
         
         <div class="footer-contact-wrapper" style="position: relative; display: inline-block;">
           <div class="qr-popup" style="position: absolute; bottom: 100%; left: 0%; transform: translateY(20px); opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.77, 0, 0.175, 1); margin-bottom: 20px; background: white; padding: 12px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 50;">
@@ -2370,16 +2413,12 @@
     };
 
     function createReveal(element) {
-      if (!element || typeof SplitText === "undefined" || typeof gsap === "undefined") {
+      if (!element || typeof gsap === "undefined") {
         return null;
       }
 
-      const split = new SplitText(element, {
-        type: "lines",
-        mask: "lines",
-        linesClass: "one-shot-white-line"
-      });
-      const lines = split.lines;
+      const lines = Array.from(element.querySelectorAll(".one-shot-white-line"));
+      if (!lines.length) return null;
       let played = false;
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -2387,7 +2426,7 @@
         gsap.set(lines, { y: "0%", opacity: 1 });
         played = true;
       } else {
-        gsap.set(lines, { y: "140%", opacity: 0 });
+        gsap.set(lines, { y: "120%", opacity: 0 });
       }
 
       function play(timeline, position) {
