@@ -231,14 +231,23 @@
   }
 
 
-  .clipping-text, .clipping-text * {
+  .clipping-text, .clipping-text .split-text-line {
       background-image: url('https://cdn.prod.website-files.com/68f77e49c7ca6bd68b326c3d/6900c3d30f2eca17950257bd_Blizar%201.png') !important;
       background-size: cover !important;
       background-position: center !important;
       -webkit-background-clip: text !important;
       background-clip: text !important;
       color: transparent !important;
-      -webkit-text-fill-color: transparent !important;	
+      -webkit-text-fill-color: transparent !important;
+  }
+
+  /* SplitText 蒙版层只负责裁切；蓝色纹理仅由内部移动行绘制。 */
+  .h-slide .bot.col.clipping-text,
+  .clipping-text.split-timeline,
+  .clipping-text.split-horizontal {
+      background-image: none !important;
+      -webkit-background-clip: border-box !important;
+      background-clip: border-box !important;
   }
 
  
@@ -1321,7 +1330,7 @@
           let allLines = []; let splitPlayed = false;
           if (splitElems.length && typeof SplitText !== "undefined") {
             const splits = [];
-            splitElems.forEach(el => { const split = new SplitText(el, { type: "lines", mask: "lines" }); splits.push(split); });
+            splitElems.forEach(el => { const split = new SplitText(el, { type: "lines", mask: "lines", linesClass: "split-text-line" }); splits.push(split); });
             allLines = splits.flatMap(s => s.lines);
             gsap.set(allLines, { y: "140%", opacity: 0 });
           }
@@ -1379,7 +1388,7 @@
             let lines = [];
             if (targets.length) {
               const splits = [];
-              targets.forEach((el) => { const split = new SplitText(el, { type: "lines", mask: "lines" }); splits.push(split); });
+              targets.forEach((el) => { const split = new SplitText(el, { type: "lines", mask: "lines", linesClass: "split-text-line" }); splits.push(split); });
               lines = splits.flatMap(s => s.lines); gsap.set(lines, { y: "140%", opacity: 0 });
             }
             if (svgPaths.length) {
