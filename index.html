@@ -114,6 +114,30 @@
       display: block;
       will-change: transform, opacity;
     }
+
+    .evidence-link {
+      display: inline-flex;
+      width: fit-content;
+      margin-top: 1rem;
+      color: #fa4838;
+      font-size: clamp(0.75rem, 0.9vw, 0.95rem);
+      font-weight: 700;
+      line-height: 1.3;
+      text-decoration: none;
+      border-bottom: 1px solid currentColor;
+    }
+
+    .evidence-link:focus-visible {
+      outline: 2px solid #fa4838;
+      outline-offset: 4px;
+    }
+
+    @media (max-width: 479px) {
+      .evidence-link {
+        font-size: 3.48vw;
+        margin-top: 4vw;
+      }
+    }
   </style>
 
   <style>
@@ -295,6 +319,56 @@
       -webkit-text-fill-color: #666666 !important;
   }
   .last-section.bg-white .value-item__line { background-color: #e5e5e5 !important; }
+
+  /* Skills 以本地状态类完成一次性进场，不再依赖全局样式巡检。 */
+  .w-mod-js .value-icon {
+    opacity: 0;
+    transform: translateY(1.25rem) scale(0.9);
+    transition:
+      opacity 0.7s ease,
+      transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: calc(var(--reveal-order, 0) * 80ms);
+    will-change: transform, opacity;
+  }
+
+  .w-mod-js .value-item__line {
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: calc(var(--reveal-order, 0) * 80ms);
+    will-change: transform;
+  }
+
+  .w-mod-js .value-divider {
+    transform: scaleY(0);
+    transform-origin: center top;
+    transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: calc(var(--reveal-order, 0) * 80ms + 80ms);
+    will-change: transform;
+  }
+
+  .value-item.scroll-reveal-inview .value-icon {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .value-item.scroll-reveal-inview .value-item__line {
+    transform: scaleX(1);
+  }
+
+  .value-divider.scroll-reveal-inview {
+    transform: scaleY(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .w-mod-js .value-icon,
+    .w-mod-js .value-item__line,
+    .w-mod-js .value-divider {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
 
 
   /* 滚动触发逐行 mask（非 hover）：初始隐藏，父级 .scroll-reveal-inview 后显现 */
@@ -1246,10 +1320,10 @@
     <div id="research" class="horizontal-section">
       <div class="horizontal-wrapper">
         <div class="track">
-          <!-- 幻灯片 1：独立开发与底层协议 -->
-          <div class="h-slide">
+          <!-- Build -->
+          <div class="h-slide" data-experience="build">
             <div class="top">
-              <p class="claim-s split-timeline">作为独立开发者，全程采用 Vibecoding 模式与大语言模型协同，<br/>完成从底层逻辑到前端高级动效的重构。<br/>独立配置 Cloudflare 边缘节点，了解如何处理 A/CNAME 记录冲突，通过 Geo-DNS 调度与 308 永久重定向策略，<br/>实现国内根域名的毫秒级稳定解析与传输安全。</p>
+              <p class="claim-s split-timeline">独立完成个人网站重构与上线，<br/>以大语言模型协同推进开发，<br/>从交互动效、响应式适配，<br/>到 Cloudflare 边缘部署与域名解析，<br/>走通从构想到交付的开发链路。</p>
               <div class="div-hide">
                 <div class="h-arrow w-embed">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"><path d="M16.0003 14.1421H11.9895V6.59024L3.14789 15.4319L0.568359 12.8524L9.41002 4.01071H1.85812V0H16.0003L16.0003 14.1421Z" fill="#FA4838"/></svg>
@@ -1257,19 +1331,19 @@
               </div>
             </div>
             <div class="bot col clipping-text gap">
-              <div class="nav-tag clipping-text split-timeline">present</div>
-              <h2 class="clipping-text split-timeline home-h2">Vibe<br/>Coding</h2>
+              <div class="nav-tag clipping-text split-timeline">Build &amp; Deploy</div>
+              <h2 class="clipping-text split-timeline home-h2">Build<br/>Ship</h2>
             </div>
           </div>
-          <div class="h-slide side">
+          <div class="h-slide side" data-experience-divider="build">
             <div class="slide-side__content">
               <div class="nav-tag color-white split-horizontal">Timeline</div>
               <div class="w-embed">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 58" fill="none" class="svg-draw">
-                  <path d="M1.19006 0.969727C1.19006 31.7697 26.1601 56.7397 56.9601 56.7397" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
-                  <path d="M56.8401 1.0498C26.0401 1.0498 1.07007 26.0198 1.07007 56.8198" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
-                  <path d="M0.940063 56.6997C31.7401 56.6997 56.7101 31.7297 56.7101 0.929688" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
-                  <path d="M56.69 1H1V56.69H56.69V1Z" stroke="white" stroke-width="1.5" stroke-miterlimit="10"/>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 58" fill="none" class="svg-draw" aria-hidden="true" focusable="false">
+                  <path d="M1 1H57V57H1V1Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path d="M21 21H37V37H21V21Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path d="M1 1L21 21M57 1L37 21M57 57L37 37M1 57L21 37" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path d="M29 1V21M57 29H37M29 57V37M1 29H21" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
                 </svg>
                 <style>
                 .svg-draw { width: 5.556vw !important; height: 5.556vw !important; }
@@ -1279,11 +1353,19 @@
               <div class="nav-tag color-white split-horizontal">Timeline</div>
             </div>
           </div>
-          
-          <!-- Slide 2: 科研带队与量化竞赛 -->
-          <div class="h-slide">
+
+          <!-- Model -->
+          <div class="h-slide" data-experience="model">
             <div class="top">
-              <p class="claim-s split-horizontal">作为微众金融科技课题组导师小组组长，<br/>负责统筹 5 人团队运作，主动搭建协作沟通流体系。<br/>在深圳国际金融科技大赛中尝试担任队长参赛，<br/>主导以智能体协同代替一般工作流为核心的前沿赛道，<br/>在真实场景中不断探索金融与技术的交叉边界。</p>
+              <div class="scroll-mask-block claim-s">
+                <div class="mask-line-container"><span class="reveal-text-line">大一担任队长参加</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">电工杯数学建模大赛，</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">组织问题拆解、模型构建、</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">结果检验与论文表达，</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">获全国三等奖。</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">同时担任课题组导师小组组长，</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">统筹 5 人协作与沟通。</span></div>
+              </div>
               <div class="div-hide">
                 <div class="h-arrow w-embed">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"><path d="M16.0003 14.1421H11.9895V6.59024L3.14789 15.4319L0.568359 12.8524L9.41002 4.01071H1.85812V0H16.0003L16.0003 14.1421Z" fill="#FA4838"/></svg>
@@ -1291,37 +1373,76 @@
               </div>
             </div>
             <div class="bot col clipping-text gap">
-              <div class="nav-tag clipping-text split-horizontal">present</div>
-              <h2 class="clipping-text split-reveal split-horizontal home-h2">FinTech<br/>Research</h2>
+              <div class="nav-tag clipping-text split-horizontal">Mathematics &amp; Leadership</div>
+              <h2 class="clipping-text split-reveal split-horizontal home-h2">Model<br/>Lead</h2>
             </div>
           </div>
-          <div class="h-slide side">
+          <div class="h-slide side" data-experience-divider="model">
             <div class="slide-side__content">
               <div class="nav-tag color-white split-horizontal">Timeline</div>
               <div class="w-embed">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 58" fill="none" class="svg-draw">
-                  <path d="M14.75 56.44C22.3439 56.44 28.5 44.0293 28.5 28.72C28.5 13.4107 22.3439 1 14.75 1C7.15608 1 1 13.4107 1 28.72C1 44.0293 7.15608 56.44 14.75 56.44Z" stroke="white" stroke-width="0.5" stroke-miterlimit="10"/>
-                  <path d="M28.73 56.44C36.3239 56.44 42.48 44.0293 42.48 28.72C42.48 13.4107 36.3239 1 28.73 1C21.1361 1 14.98 13.4107 14.98 28.72C14.98 44.0293 21.1361 56.44 28.73 56.44Z" stroke="white" stroke-width="0.5" stroke-miterlimit="10"/>
-                  <path d="M42.72 56.44C50.3139 56.44 56.47 44.0293 56.47 28.72C56.47 13.4107 50.3139 1 42.72 1C35.1261 1 28.97 13.4107 28.97 28.72C28.97 44.0293 35.1261 56.44 42.72 56.44Z" stroke="white" stroke-width="0.5" stroke-miterlimit="10"/>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 58" fill="none" class="svg-draw" aria-hidden="true" focusable="false">
+                  <path d="M1 1H57V57H1V1Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path d="M7 29H51M29 7V51" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path d="M7 43C15 16 43 16 51 43" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path d="M7 15C15 42 43 42 51 15" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
                 </svg>
               </div>
               <div class="nav-tag color-white split-horizontal">Timeline</div>
             </div>
           </div>
-          
-          <!-- Slide 3: 经过硬切割处理的 Last Slide -->
-          <div class="h-slide">
+
+          <!-- Field -->
+          <div class="h-slide" data-experience="field">
             <div class="top">
               <div class="scroll-mask-block claim-s">
-                <div class="mask-line-container"><span class="reveal-text-line">具备卓越的跨文化交流能力</span></div>
-                <div class="mask-line-container"><span class="reveal-text-line">与跨领域沟通理解素养。</span></div>
-                <div class="mask-line-container"><span class="reveal-text-line">曾荣获全英文演讲大赛一等奖，</span></div>
-                <div class="mask-line-container"><span class="reveal-text-line">作为核心志愿者全流程主导法国</span></div>
-                <div class="mask-line-container"><span class="reveal-text-line">留学生的校园接待与跨国生活指引。</span></div>
-                <div class="mask-line-container"><span class="reveal-text-line">拥有极强的共情力与结构化表达能力，</span></div>
-                <div class="mask-line-container"><span class="reveal-text-line">能够在高度多元化、跨维度的复杂</span></div>
-                <div class="mask-line-container"><span class="reveal-text-line">协作语境下，迅速且精准地把握团队</span></div>
-                <div class="mask-line-container"><span class="reveal-text-line">核心诉求，从而高效推动项目落地与共赢。</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">参与省级“南粤大地写论文”</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">赴陆丰开展县域发展调研，</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">随院长领衔的跨学科团队</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">开展为期 11 天的</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">沉浸式蹲点调研。</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">除一线走访与访谈外，</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">共同负责调研日志撰写、</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">PPT 文书制作，</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">及新闻稿初稿撰写。</span></div>
+              </div>
+              <a class="evidence-link" href="https://static.nfnews.com/content/202607/25/c12659862.html?colID=0&amp;firstColID=24357&amp;appversion=13800&amp;from=weChatMessage&amp;enterColumnId=&amp;date=&amp;layer=3" target="_blank" rel="noopener noreferrer" aria-label="查看陆丰县域发展调研的南方+公开报道（在新窗口打开）">查看南方+公开报道 ↗</a>
+              <div class="div-hide">
+                <div class="h-arrow w-embed">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"><path d="M16.0003 14.1421H11.9895V6.59024L3.14789 15.4319L0.568359 12.8524L9.41002 4.01071H1.85812V0H16.0003L16.0003 14.1421Z" fill="#FA4838"/></svg>
+                </div>
+              </div>
+            </div>
+            <div class="bot col clipping-text gap">
+              <div class="nav-tag clipping-text split-horizontal">County Development</div>
+              <h2 class="clipping-text split-reveal split-horizontal home-h2">Field<br/>Research</h2>
+            </div>
+          </div>
+          <div class="h-slide side" data-experience-divider="field">
+            <div class="slide-side__content">
+              <div class="nav-tag color-white split-horizontal">Timeline</div>
+              <div class="w-embed">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 58" fill="none" class="svg-draw" aria-hidden="true" focusable="false">
+                  <path d="M1 1H57V57H1V1Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path d="M19.67 1V57M38.33 1V57" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path d="M1 19.67H57M1 38.33H57" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path d="M29 35C32.3137 35 35 32.3137 35 29C35 25.6863 32.3137 23 29 23C25.6863 23 23 25.6863 23 29C23 32.3137 25.6863 35 29 35Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                </svg>
+              </div>
+              <div class="nav-tag color-white split-horizontal">Timeline</div>
+            </div>
+          </div>
+
+          <!-- Speak -->
+          <div class="h-slide" data-experience="speak">
+            <div class="top">
+              <div class="scroll-mask-block claim-s">
+                <div class="mask-line-container"><span class="reveal-text-line">英语口语表达偏向英式英语，</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">获青衿文化桥英语演讲比赛一等奖，</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">及 CN Story 广东省二等奖。</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">曾参与法国留学生校园接待，</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">在竞赛与真实交流中持续打磨</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">结构化表达与跨文化沟通。</span></div>
               </div>
               <div class="div-hide">
                 <div class="h-arrow w-embed">
@@ -1330,17 +1451,19 @@
               </div>
             </div>
             <div class="bot col clipping-text gap">
-              <div class="nav-tag clipping-text split-horizontal">Soft Skills & Leadership</div>
-              <h2 class="clipping-text split-horizontal split-reveal home-h2">Global<br/>Vision</h2>
+              <div class="nav-tag clipping-text split-horizontal">English &amp; Communication</div>
+              <h2 class="clipping-text split-horizontal split-reveal home-h2">Speak<br/>Connect</h2>
             </div>
           </div>
-          <div class="h-slide side">
+          <div class="h-slide side" data-experience-divider="speak">
             <div class="slide-side__content">
               <div class="nav-tag color-white split-horizontal">Timeline</div>
               <div class="w-embed">
-                <svg xmlns="http://www.w3.org/2000/svg" class="svg-draw" viewBox="0 0 59 59" fill="none">
-                  <path d="M28.92 28.92L28.65 56.83H1V1H56.84L57.06 28.9L28.92 28.92Z" stroke="white" stroke-width="1.5" stroke-miterlimit="10"/>
-                  <path d="M56.5042 29.7143L28.9945 2.20459L1.48476 29.7143L28.9945 57.2241L56.5042 29.7143Z" stroke="white" stroke-width="1.5" stroke-miterlimit="10"/>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 58" fill="none" class="svg-draw" aria-hidden="true" focusable="false">
+                  <path d="M1 1H57V57H1V1Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path d="M7 18C14 8 22 8 29 18C36 28 44 28 51 18" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path d="M7 40C14 50 22 50 29 40C36 30 44 30 51 40" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path d="M29 23C32.3137 23 35 25.6863 35 29C35 32.3137 32.3137 35 29 35C25.6863 35 23 32.3137 23 29C23 25.6863 25.6863 23 29 23Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
                 </svg>
               </div>
               <div class="nav-tag color-white split-horizontal">Timeline</div>
@@ -1578,96 +1701,81 @@
     <div id="tech" class="last-section bg-white">
       <div class="w-layout-grid grid-container">
         <div id="w-node-f795206b-cfea-47c2-42e7-3d1c4abaf7b3-8b326cb4" class="section__intro-text">
-          <div class="nav-tag color-black split-tag">Tech & Skills</div>
-          <p class="manifesto clipping-text">Bridging the gap between<br/>theory and execution.</p>
+          <div class="nav-tag color-black split-tag">Methods &amp; Skills</div>
+          <p class="manifesto clipping-text">Turning ideas into<br/>evidence and execution.</p>
         </div>
       </div>
       <div class="section-values">
         <div class="container color-black">
           <div class="value-list">
            
-            <div class="value-item top-align">
+            <div class="value-item top-align" style="--reveal-order: 0">
               <div class="value-icon color-orange w-embed">
                 <svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 58 58" fill="currentColor"><path d="M28.7197 0C44.5813 0 57.4403 12.8582 57.4404 28.7197C57.4404 44.5813 44.5813 57.4404 28.7197 57.4404C12.8584 57.4402 6.5975e-05 44.5811 0 28.7197C0.000147413 12.8584 12.8584 0.000263891 28.7197 0ZM2.02051 29.7207C2.53478 43.6819 13.7585 54.9049 27.7197 55.4189V29.7207H2.02051ZM29.7197 55.4189C44.0135 54.8931 55.4404 43.1419 55.4404 28.7197C55.4403 14.2976 44.0134 2.54536 29.7197 2.01953V55.4189ZM27.7197 2.01953C13.7578 2.5335 2.53382 13.7586 2.02051 27.7207H27.7197V2.01953Z" fill="#FA4838"/></svg>
               </div>
               <div class="value-text">
-                <h4>Python</h4>
+                <h4>Python &amp; Data</h4>
                 <div class="scroll-mask-block">
-                  <div class="mask-line-container"><span class="reveal-text-line">专注于金融数据处理、</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">量化策略回测与自动</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">化脚本构建。能够独</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">立运用 yfinance</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">与 pandas 等核</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">心库实现历史市场数</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">据的批量抓取、深度</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">清洗与本地化存储。</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">使用 pandas 与 yfinance</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">完成金融数据获取、清洗</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">与基础策略验证，</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">并以 Python 编写自动化脚本。</span></div>
                 </div>
               </div>
               <div class="value-item__line top"></div>
               <div class="value-item__line bot"></div>
             </div>
-            <div class="value-divider"></div>
+            <div class="value-divider" style="--reveal-order: 0"></div>
             
-            <div class="value-item top-align">
+            <div class="value-item top-align" style="--reveal-order: 1">
               <div class="value-icon color-orange w-embed">
                 <svg xmlns="http://www.w3.org/2000/svg" width="58" height="57" viewBox="0 0 58 57" fill="none"><path d="M57.4502 56.8203H0V0H57.4502V56.8203ZM55.4502 28.7324C41.3566 29.2843 30.0444 40.689 29.6416 54.8203H55.4502V28.7324ZM27.8945 11.7305C23.74 22.0935 13.7552 29.4912 2 29.8633V54.8203H27.6348L27.8945 11.7305ZM29.6943 44.8613C33.8319 34.5384 43.7549 27.1556 55.4502 26.7295V2H29.9541L29.6943 44.8613ZM2 27.8613C16.0818 27.3823 27.4195 16.0714 27.9395 2H2V27.8613Z" fill="#FA4838"/></svg>
               </div>
               <div class="value-text">
-                <h4>C++</h4>
+                <h4>C++ &amp; Algorithms</h4>
                 <div class="scroll-mask-block">
-                  <div class="mask-line-container"><span class="reveal-text-line">聚焦于金融核心算法</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">的实践开发与底层计</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">算性能的深度优化探索。</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">持续训练算法、数据结构</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">与计算思维，</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">为量化开发和金融科技</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">后端实践夯实基础。</span></div>
                 </div>
               </div>
               <div class="value-item__line top"></div>
               <div class="value-item__line bot"></div>
             </div>
-            <div class="value-divider"></div>
+            <div class="value-divider" style="--reveal-order: 1"></div>
            
-            <div class="value-item top-align">
+            <div class="value-item top-align" style="--reveal-order: 2">
               <div class="value-icon color-orange w-embed">
                 <svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 58 58" fill="none"><path d="M28.6201 0C36.6084 0.000185128 43.1235 6.30373 43.4648 14.208C51.321 14.601 57.5702 21.0961 57.5703 29.0498C57.5701 37.0143 51.3038 43.5138 43.4326 43.8906C42.8308 51.5453 36.4294 57.5692 28.6201 57.5693C20.8042 57.5691 14.3972 51.5351 13.8047 43.8711C6.09058 43.3296 0.00018935 36.9016 0 29.0498C0.00012607 21.2086 6.07408 14.7862 13.7734 14.2295C14.1039 6.31514 20.6246 0.000192842 28.6201 0ZM28.7852 34.2461C26.7838 39.607 21.7762 43.5007 15.8125 43.8779C16.4028 50.4327 21.9117 55.5691 28.6201 55.5693C35.3368 55.5692 40.8489 50.4199 41.4277 43.8535C35.6099 43.3561 30.7496 39.5077 28.7852 34.2461ZM43.418 16.209C42.897 21.9976 39.0574 26.8276 33.8154 28.7842C39.2156 30.7998 43.1282 35.8659 43.457 41.8867C50.2116 41.4999 55.5701 35.9013 55.5703 29.0498C55.5702 22.1851 50.191 16.5764 43.418 16.209ZM27.6914 29.8828C21.2982 30.3393 16.1987 35.4693 15.7881 41.875C22.1823 41.419 27.2817 36.2897 27.6914 29.8828ZM13.8232 16.2314C7.20596 16.7596 2.00013 22.2967 2 29.0498C2.00019 35.7895 7.18554 41.3175 13.7842 41.8643C14.1215 35.8537 18.0308 30.7976 23.4238 28.7842C18.189 26.8298 14.3521 22.0097 13.8232 16.2314ZM29.8789 29.9111C30.2945 36.1936 35.2216 41.2418 41.4502 41.8477C41.0342 35.5652 36.1078 30.5163 29.8789 29.9111ZM15.832 16.2256C16.4804 22.367 21.4518 27.2187 27.6465 27.6826C26.9973 21.5412 22.0271 16.6885 15.832 16.2256ZM41.4033 16.2549C35.3745 16.8635 30.5746 21.6368 29.9248 27.6533C35.9551 27.0457 40.754 22.2728 41.4033 16.2549ZM28.6201 2C21.7333 2.00019 16.1111 7.41392 15.7764 14.2178C21.7556 14.5815 26.7796 18.4811 28.7852 23.8525C30.7539 18.5803 35.6304 14.7267 41.4639 14.2422C41.1414 7.42689 35.5152 2.00018 28.6201 2Z" fill="#FA4838"/></svg>
               </div>
               <div class="value-text">
-                <h4>Network & Deploy</h4>
+                <h4>Web &amp; Deploy</h4>
                 <div class="scroll-mask-block">
-                  <div class="mask-line-container"><span class="reveal-text-line">熟悉基于 Cloudflare</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">的全球边缘节点部署</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">机制与 Geo-DNS</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">路由优化策略。理解</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">DNS核心底层协议与</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">永久重定向安全法则，</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">拥有处理 A/CNAME</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">记录冲突的经验，可确</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">保在复杂网络环境下数</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">据传输的极致安全与</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">毫秒级稳定解析。</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">独立处理网页结构、</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">交互动效与响应式适配，</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">完成 Cloudflare 部署</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">与域名解析配置。</span></div>
                 </div>
               </div>
               <div class="value-item__line top"></div>
               <div class="value-item__line bot"></div>
             </div>
-            <div class="value-divider"></div>
+            <div class="value-divider" style="--reveal-order: 2"></div>
          
-            <div class="value-item top-align">
+            <div class="value-item top-align" style="--reveal-order: 3">
               <div class="value-icon color-orange w-embed">
                 <svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 58 58" fill="none"><path d="M28.8008 0C44.713 0.000263844 57.6005 12.899 57.6006 28.8008V29.8008H29.8008V57.6006H28.8008C12.8885 57.6005 0.00026382 44.7025 0 28.8008V27.8008H27.8008V0H28.8008ZM2.02148 29.8008C2.5353 43.8038 13.7894 55.0662 27.8008 55.5801V29.8008H2.02148ZM29.8008 27.8008H55.5801C55.0663 13.7978 43.8122 2.53536 29.8008 2.02148V27.8008Z" fill="#FA4838"/></svg>
               </div>
               <div class="value-text">
-                <h4>Git & LaTeX</h4>
+                <h4>Research &amp; Writing</h4>
                 <div class="scroll-mask-block">
-                  <div class="mask-line-container"><span class="reveal-text-line">熟练掌握 GitHub</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">版本控制体系与现代</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">代码托管流程，有效</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">保障复杂项目的敏捷</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">迭代与团队高效协同。</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">同时擅长运用 LaTeX</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">进行结构化的学术论</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">文与专业技术文档排</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">版，具备严谨的代码</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">规范与强烈的系统化</span></div>
-                  <div class="mask-line-container"><span class="reveal-text-line">知识库沉淀意识。</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">具备访谈记录、</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">调研日志与 PPT 文书</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">协作经验，</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">参与新闻稿初稿撰写。</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">使用 Git 与 LaTeX</span></div>
+                  <div class="mask-line-container"><span class="reveal-text-line">管理代码与结构化文档。</span></div>
                 </div>
               </div>
               <div class="value-item__line top"></div>
@@ -1733,7 +1841,7 @@
               </div>
               <p class="use-case-text">Academic Foundation</p>
             </div>
-            <p class="use-case-text">坐落于中国硅谷的创新型大学。在这里，我主攻金融科技专业，构建了扎实的金融与计算机交叉理论基础。</p>
+            <p class="use-case-text">2025 级金融科技学生。大一通过独立开发、数学建模、县域调研与英语演讲，建立跨学科实践基础。</p>
           </a>
         </div>
         
@@ -1755,7 +1863,7 @@
               </div>
               <p class="use-case-text">Personal Identity</p>
             </div>
-            <p class="use-case-text">我是唐嘉辰，英文名是William，当然，你完全可以称呼我Will。</p>
+            <p class="use-case-text">我是唐嘉辰，英文名 William，也可以叫我 Will。</p>
           </a>
         </div>
         
@@ -1775,7 +1883,7 @@
               </div>
               <p class="use-case-text">Fintech Institute</p>
             </div>
-            <p class="use-case-text">全球领先的数字银行。其与深大共建的金融科技学院，让我得以在真实的业务与科研场景中探索前沿架构。</p>
+            <p class="use-case-text">在金融与技术交叉的培养环境中，把课程问题带入竞赛、项目与真实场景。</p>
           </a>
         </div>
       </div>
@@ -1850,121 +1958,24 @@
 
         const doersItems = document.querySelectorAll(".value-item, .value-divider");
         if (doersItems.length > 0) {
-            /* 全局 h4 样式守护快照表 */
-            const h4Snapshots = new Map();
+          const revealItem = (item) => item.classList.add("scroll-reveal-inview");
 
+          if (typeof IntersectionObserver === "undefined") {
+            doersItems.forEach(revealItem);
+          } else {
             const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    const el = entry.target;
-                    if (entry.isIntersecting && entry.intersectionRatio >= 0.1) {
-                        el.classList.add('scroll-reveal-inview');
-                        observer.unobserve(el);
-
-                        /* 延迟 3 秒：等 Webflow IX2 进场动画完成后再启动防御 */
-                        setTimeout(() => {
-                            /* 收集所有需要保护的目标（含 .value-item 本体和所有深层子元素） */
-                            const allTargets = el.classList.contains('value-item')
-                                ? [el, ...el.querySelectorAll('.value-item__line, .value-icon, .value-icon svg, .value-text, .value-text h4, .value-text .div-hide, .value-text div')]
-                                : [el];
-                            
-                            /* 拍摄每个元素的完整 style 快照 */
-                            const snapshots = new Map();
-                            allTargets.forEach(child => {
-                                snapshots.set(child, child.getAttribute('style') || '');
-                            });
-
-                            /* 对 h4 单独存一份全局快照（供 setInterval 使用） */
-                            if (el.classList.contains('value-item')) {
-                                const h4 = el.querySelector('h4');
-                                if (h4) h4Snapshots.set(h4, h4.getAttribute('style') || '');
-                                const vt = el.querySelector('.value-text');
-                                if (vt) h4Snapshots.set(vt, vt.getAttribute('style') || '');
-                                /* 也收集 h4 内可能被 Webflow 动态创建的所有子 div */
-                                if (h4) {
-                                    h4.querySelectorAll('div, span').forEach(inner => {
-                                        h4Snapshots.set(inner, inner.getAttribute('style') || '');
-                                    });
-                                }
-                            }
-
-                            /* MutationObserver：监控 style 属性变化，subtree:true 捕获所有深度 */
-                            const styleGuard = new MutationObserver((mutations) => {
-                                mutations.forEach(m => {
-                                    const t = m.target;
-                                    const s = t.style;
-                                    if (!s) return;
-                                    const tag = t.tagName ? t.tagName.toLowerCase() : '';
-                                    const isH4 = tag === 'h4';
-                                    const isValueText = t.classList && t.classList.contains('value-text');
-                                    const isInsideH4 = !isH4 && t.closest && t.closest('h4');
-
-                                    /* h4 / .value-text / h4内部元素：完整快照还原 */
-                                    if (isH4 || isValueText || isInsideH4) {
-                                        const snap = snapshots.get(t) || h4Snapshots.get(t);
-                                        if (snap !== undefined) {
-                                            const curr = t.getAttribute('style') || '';
-                                            if (curr !== snap) {
-                                                t.setAttribute('style', snap);
-                                            }
-                                        }
-                                        return;
-                                    }
-
-                                    /* 其他元素：逐属性守护 */
-                                    if (s.width && s.width !== '100%' && s.width !== 'auto') {
-                                        if (t.classList && t.classList.contains('value-item__line')) {
-                                            s.setProperty('width', '100%', 'important');
-                                        }
-                                    }
-                                    if (s.opacity !== '' && s.opacity !== '1') {
-                                        s.setProperty('opacity', '1', 'important');
-                                    }
-                                    if (s.visibility === 'hidden') {
-                                        s.setProperty('visibility', 'visible', 'important');
-                                    }
-                                    if (s.transform && s.transform !== 'none' && s.transform !== '') {
-                                        s.setProperty('transform', 'none', 'important');
-                                    }
-                                    if (s.clipPath && s.clipPath !== 'none' && s.clipPath !== '') {
-                                        s.setProperty('clip-path', 'none', 'important');
-                                    }
-                                    if (s.height === '0' || s.height === '0px' || s.height === '0%') {
-                                        s.setProperty('height', 'auto', 'important');
-                                    }
-                                    if (s.maxHeight === '0' || s.maxHeight === '0px' || s.maxHeight === '0%') {
-                                        s.setProperty('max-height', 'none', 'important');
-                                    }
-                                    if (s.overflow === 'hidden') {
-                                        s.setProperty('overflow', 'visible', 'important');
-                                    }
-                                });
-                            });
-
-                            /* 在 .value-item 级别启用 subtree 监控，捕获所有深层子元素变化 */
-                            styleGuard.observe(el, { attributes: true, attributeFilter: ['style'], subtree: true });
-
-                        }, 3000);
-                    }
-                });
-            }, { 
-                threshold: 0.4,
-                rootMargin: "0px 0px -15% 0px"
+              entries.forEach((entry) => {
+                if (!entry.isIntersecting || entry.intersectionRatio < 0.1) return;
+                revealItem(entry.target);
+                observer.unobserve(entry.target);
+              });
+            }, {
+              threshold: 0.1,
+              rootMargin: "0px 0px -10% 0px"
             });
 
-            doersItems.forEach(item => observer.observe(item));
-
-            /* 终极保险：每 500ms 巡检所有 h4 和 .value-text 的样式，
-               如果发现与快照不同则强制还原。
-               这是 MutationObserver 之外的最后一道防线。 */
-            setInterval(() => {
-                h4Snapshots.forEach((snap, el) => {
-                    if (!el.isConnected) return;
-                    const curr = el.getAttribute('style') || '';
-                    if (curr !== snap) {
-                        el.setAttribute('style', snap);
-                    }
-                });
-            }, 500);
+            doersItems.forEach((item) => observer.observe(item));
+          }
         }
 
         if (typeof ScrollTrigger !== "undefined") {
