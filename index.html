@@ -308,6 +308,37 @@
       white-space: normal !important;
   }
 
+  .horizontal-text-pin .subtitle-in-text {
+      margin-bottom: clamp(0.5rem, 0.8vw, 1rem) !important;
+  }
+
+  .w-mod-js .svg-draw path {
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      transition: stroke-dashoffset 2.4s cubic-bezier(0.65, 0, 0.35, 1);
+      will-change: stroke-dashoffset;
+  }
+
+  .svg-draw path:nth-child(2) { transition-delay: 0.14s; }
+  .svg-draw path:nth-child(3) { transition-delay: 0.28s; }
+  .svg-draw path:nth-child(4) { transition-delay: 0.42s; }
+
+  .h-slide.side.scroll-reveal-inview .svg-draw path,
+  .horizontal-reveal-immediate .svg-draw path {
+      stroke-dashoffset: 0;
+  }
+
+  .horizontal-reveal-immediate .svg-draw path {
+      transition: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .w-mod-js .svg-draw path {
+      stroke-dashoffset: 0;
+      transition: none;
+    }
+  }
+
   .last-section.bg-white .nav-tag { color: #000000 !important; }
   .last-section.bg-white .value-text h4 { color: #000000 !important; }
   .last-section.bg-white .value-text p,
@@ -1303,7 +1334,11 @@
         <div class="w-layout-grid grid-container no-padd">
           <div><div class="div-hide"><div class="nav-tag split-tag">Academic Background</div></div></div>
           <div id="w-node-f795206b-cfea-47c2-42e7-3d1c4abaf737-8b326cb4">
-            <p class="manifesto">深圳大学微众银行金融科技学院 · 2025级<br/>完成大学第一年，持续探索金融、计算与现实问题的交叉地带。</p>
+            <p class="manifesto">
+              <span class="reveal-text-line">深圳大学微众银行金融科技学院 · 2025级</span><br/>
+              <span class="reveal-text-line">完成大学第一年，持续探索金融、计算与现实问题</span><br/>
+              <span class="reveal-text-line">的交叉地带。</span>
+            </p>
           </div>
         </div>
         <div class="spacer"></div>
@@ -1340,10 +1375,10 @@
               <div class="nav-tag color-white split-horizontal">Timeline</div>
               <div class="w-embed">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 58" fill="none" class="svg-draw" aria-hidden="true" focusable="false">
-                  <path d="M1 1H57V57H1V1Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
-                  <path d="M21 21H37V37H21V21Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
-                  <path d="M1 1L21 21M57 1L37 21M57 57L37 37M1 57L21 37" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
-                  <path d="M29 1V21M57 29H37M29 57V37M1 29H21" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path pathLength="1" d="M1 1H57V57H1V1Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path pathLength="1" d="M21 21H37V37H21V21Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path pathLength="1" d="M1 1L21 21M57 1L37 21M57 57L37 37M1 57L21 37" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path pathLength="1" d="M29 1V21M57 29H37M29 57V37M1 29H21" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
                 </svg>
                 <style>
                 .svg-draw { width: 5.556vw !important; height: 5.556vw !important; }
@@ -1358,14 +1393,16 @@
           <div class="h-slide" data-experience="model">
             <div class="top">
               <div class="scroll-mask-block claim-s">
-                <div class="mask-line-container"><span class="reveal-text-line">大一担任队长参加</span></div>
-                <div class="mask-line-container"><span class="reveal-text-line">电工杯数学建模大赛，</span></div>
-                <div class="mask-line-container"><span class="reveal-text-line">组织问题拆解、模型构建、</span></div>
-                <div class="mask-line-container"><span class="reveal-text-line">结果检验与论文表达，</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">大一作为队长参加</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">第十八届“中国电机工程学会杯”</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">全国大学生电工数学建模竞赛，</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">负责问题拆解、模型构建、</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">结果检验、论文表达与团队协作，</span></div>
                 <div class="mask-line-container"><span class="reveal-text-line">获全国三等奖。</span></div>
                 <div class="mask-line-container"><span class="reveal-text-line">同时担任课题组导师小组组长，</span></div>
                 <div class="mask-line-container"><span class="reveal-text-line">统筹 5 人协作与沟通。</span></div>
               </div>
+              <a class="evidence-link" href="evidence/modeling-csee-cup-2026-third-prize-redacted.png" target="_blank" rel="noopener noreferrer" aria-label="查看第十八届“中国电机工程学会杯”全国大学生电工数学建模竞赛全国三等奖脱敏凭证（在新窗口打开）">查看获奖凭证 ↗</a>
               <div class="div-hide">
                 <div class="h-arrow w-embed">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"><path d="M16.0003 14.1421H11.9895V6.59024L3.14789 15.4319L0.568359 12.8524L9.41002 4.01071H1.85812V0H16.0003L16.0003 14.1421Z" fill="#FA4838"/></svg>
@@ -1382,10 +1419,10 @@
               <div class="nav-tag color-white split-horizontal">Timeline</div>
               <div class="w-embed">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 58" fill="none" class="svg-draw" aria-hidden="true" focusable="false">
-                  <path d="M1 1H57V57H1V1Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
-                  <path d="M7 29H51M29 7V51" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
-                  <path d="M7 43C15 16 43 16 51 43" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
-                  <path d="M7 15C15 42 43 42 51 15" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path pathLength="1" d="M1 1H57V57H1V1Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path pathLength="1" d="M7 29H51M29 7V51" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path pathLength="1" d="M7 43C15 16 43 16 51 43" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path pathLength="1" d="M7 15C15 42 43 42 51 15" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
                 </svg>
               </div>
               <div class="nav-tag color-white split-horizontal">Timeline</div>
@@ -1423,10 +1460,10 @@
               <div class="nav-tag color-white split-horizontal">Timeline</div>
               <div class="w-embed">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 58" fill="none" class="svg-draw" aria-hidden="true" focusable="false">
-                  <path d="M1 1H57V57H1V1Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
-                  <path d="M19.67 1V57M38.33 1V57" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
-                  <path d="M1 19.67H57M1 38.33H57" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
-                  <path d="M29 35C32.3137 35 35 32.3137 35 29C35 25.6863 32.3137 23 29 23C25.6863 23 23 25.6863 23 29C23 32.3137 25.6863 35 29 35Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path pathLength="1" d="M1 1H57V57H1V1Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path pathLength="1" d="M19.67 1V57M38.33 1V57" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path pathLength="1" d="M1 19.67H57M1 38.33H57" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path pathLength="1" d="M29 35C32.3137 35 35 32.3137 35 29C35 25.6863 32.3137 23 29 23C25.6863 23 23 25.6863 23 29C23 32.3137 25.6863 35 29 35Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
                 </svg>
               </div>
               <div class="nav-tag color-white split-horizontal">Timeline</div>
@@ -1437,13 +1474,16 @@
           <div class="h-slide" data-experience="speak">
             <div class="top">
               <div class="scroll-mask-block claim-s">
-                <div class="mask-line-container"><span class="reveal-text-line">英语口语表达偏向英式英语，</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">英语口语表达以英式发音为主，</span></div>
                 <div class="mask-line-container"><span class="reveal-text-line">获青衿文化桥英语演讲比赛一等奖，</span></div>
-                <div class="mask-line-container"><span class="reveal-text-line">及 CN Story 广东省二等奖。</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">并在 CN Stories 英语演讲大赛——</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">第六届“用英语讲中国故事大会”中，</span></div>
+                <div class="mask-line-container"><span class="reveal-text-line">获广东省级二等奖。</span></div>
                 <div class="mask-line-container"><span class="reveal-text-line">曾参与法国留学生校园接待，</span></div>
                 <div class="mask-line-container"><span class="reveal-text-line">在竞赛与真实交流中持续打磨</span></div>
                 <div class="mask-line-container"><span class="reveal-text-line">结构化表达与跨文化沟通。</span></div>
               </div>
+              <a class="evidence-link" href="evidence/cn-story-2026-guangdong-second-prize-redacted.jpg" target="_blank" rel="noopener noreferrer" aria-label="查看 CN Stories 英语演讲大赛广东省级二等奖脱敏凭证（在新窗口打开）">查看获奖凭证 ↗</a>
               <div class="div-hide">
                 <div class="h-arrow w-embed">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"><path d="M16.0003 14.1421H11.9895V6.59024L3.14789 15.4319L0.568359 12.8524L9.41002 4.01071H1.85812V0H16.0003L16.0003 14.1421Z" fill="#FA4838"/></svg>
@@ -1460,10 +1500,10 @@
               <div class="nav-tag color-white split-horizontal">Timeline</div>
               <div class="w-embed">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 58" fill="none" class="svg-draw" aria-hidden="true" focusable="false">
-                  <path d="M1 1H57V57H1V1Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
-                  <path d="M7 18C14 8 22 8 29 18C36 28 44 28 51 18" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
-                  <path d="M7 40C14 50 22 50 29 40C36 30 44 30 51 40" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
-                  <path d="M29 23C32.3137 23 35 25.6863 35 29C35 32.3137 32.3137 35 29 35C25.6863 35 23 32.3137 23 29C23 25.6863 25.6863 23 29 23Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path pathLength="1" d="M1 1H57V57H1V1Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path pathLength="1" d="M7 18C14 8 22 8 29 18C36 28 44 28 51 18" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path pathLength="1" d="M7 40C14 50 22 50 29 40C36 30 44 30 51 40" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
+                  <path pathLength="1" d="M29 23C32.3137 23 35 25.6863 35 29C35 32.3137 32.3137 35 29 35C25.6863 35 23 32.3137 23 29C23 25.6863 25.6863 23 29 23Z" stroke="white" stroke-width="1" stroke-miterlimit="10"/>
                 </svg>
               </div>
               <div class="nav-tag color-white split-horizontal">Timeline</div>
@@ -1532,7 +1572,9 @@
             });
             return;
           }
-          const getTotalDistance = () => track.scrollWidth - window.innerWidth;
+          const getViewportWidth = () => section.clientWidth;
+          const getTotalDistance = () =>
+            Math.max(0, Math.ceil(track.scrollWidth - getViewportWidth()) + 2);
           gsap.set(wrapper, { scale: 0, x: 0, y: 0 }); gsap.set(track, { x: 0 });
           
           const tl = gsap.timeline({
@@ -1565,12 +1607,11 @@
           const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
           function revealSlidesImmediately() {
+            document.body.classList.add("horizontal-reveal-immediate");
             slides.forEach(slide => slide.classList.add("scroll-reveal-inview"));
             const splitLines = document.querySelectorAll(".horizontal-section .split-text-line");
-            const svgPaths = document.querySelectorAll(".horizontal-section .svg-draw path");
             const arrows = document.querySelectorAll(".horizontal-section .h-arrow");
             if (splitLines.length) gsap.set(splitLines, { y: "0%", opacity: 1 });
-            if (svgPaths.length) gsap.set(svgPaths, { strokeDashoffset: 0 });
             if (arrows.length) gsap.set(arrows, { yPercent: 0 });
           }
 
@@ -1588,6 +1629,7 @@
               const svgPaths = slide.querySelectorAll(".svg-draw path");
               const arrows   = slide.querySelectorAll(".h-arrow");
               const isFirst  = index === 0;
+              const isDivider = slide.classList.contains("side");
               if (!targets.length && !svgPaths.length && !arrows.length) return;
               let lines = [];
               if (targets.length) {
@@ -1606,22 +1648,17 @@
                   gsap.set(lines, { y: "140%", opacity: 0 });
                 }
               }
-              if (svgPaths.length && !prefersReducedMotion) {
-                svgPaths.forEach(path => {
-                  const length = path.getTotalLength();
-                  gsap.set(path, {
-                    stroke: "#ffffff",
-                    strokeWidth: 1,
-                    fill: "none",
-                    strokeDasharray: length,
-                    strokeDashoffset: length
-                  });
-                });
-              }
               if (arrows.length && !prefersReducedMotion) {
                 gsap.set(arrows, { yPercent: 150 });
               }
-              slideDataMap.set(slide, { lines, svgPaths, arrows, isFirst, played: false });
+              slideDataMap.set(slide, {
+                lines,
+                svgPaths,
+                arrows,
+                isFirst,
+                isDivider,
+                played: false
+              });
             });
 
             if (!slideDataMap.size) {
@@ -1643,7 +1680,6 @@
               data.played = true;
               slide.classList.add("scroll-reveal-inview");
               if (data.lines.length) gsap.set(data.lines, { y: "0%", opacity: 1 });
-              if (data.svgPaths.length) gsap.set(data.svgPaths, { strokeDashoffset: 0 });
               if (data.arrows.length) gsap.set(data.arrows, { yPercent: 0 });
             });
             return;
@@ -1654,7 +1690,7 @@
               const slide = entry.target;
               const data = slideDataMap.get(slide);
               if (!data) return;
-              const minRatio = 0.12;
+              const minRatio = data.isDivider ? 0.35 : 0.12;
 
               if (!entry.isIntersecting || entry.intersectionRatio < minRatio) {
                 return;
@@ -1675,13 +1711,6 @@
                   stagger: 0.1
                 });
               }
-              if (data.svgPaths.length) {
-                gsap.to(data.svgPaths, {
-                  strokeDashoffset: 0,
-                  duration: 1.5,
-                  ease: "power3.inOut"
-                });
-              }
               if (data.arrows.length) {
                 gsap.to(data.arrows, {
                   yPercent: 0,
@@ -1690,7 +1719,7 @@
                 });
               }
             });
-          }, { threshold: [0, 0.05, 0.1, 0.15, 0.25, 0.5, 0.75] });
+          }, { threshold: [0, 0.05, 0.1, 0.12, 0.25, 0.35, 0.5, 0.75] });
           slideDataMap.forEach((_, slide) => observer.observe(slide));
         });
         </script>
@@ -1876,14 +1905,14 @@
             </div>
             <div class="use-case__block-top">
               <div class="top use-case__top-margin">
-                <h4 class="use-case-h4">WeBank (微众银行)</h4>
+                <h4 class="use-case-h4">微众银行金融科技学院</h4>
                 <div class="w-embed">
                   <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M8 7.33138H5.92082V3.41642L1.33724 8L0 6.66276L4.58358 2.07918H0.668622V0H8L8 7.33138Z" fill="#FA4838"/></svg>
                 </div>
               </div>
-              <p class="use-case-text">Fintech Institute</p>
+              <p class="use-case-text">FinTech Learning Environment</p>
             </div>
-            <p class="use-case-text">在金融与技术交叉的培养环境中，把课程问题带入竞赛、项目与真实场景。</p>
+            <p class="use-case-text">学院提供金融科技专业的学习环境；我把课程问题带入竞赛、项目与真实场景。</p>
           </a>
         </div>
       </div>

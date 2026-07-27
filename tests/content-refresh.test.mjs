@@ -82,6 +82,7 @@ test("horizontal experiences present four evidence-driven groups", async () => {
   assert.match(html, /PPT 文书制作/);
   assert.match(html, /英语口语表达以英式发音为主/);
   assert.match(html, /青衿文化桥英语演讲比赛一等奖/);
+  assert.match(html, /CN Stories 英语演讲大赛/);
   assert.match(html, /第六届“用英语讲中国故事大会”/);
   assert.match(html, /广东省级二等奖/);
 
@@ -186,7 +187,12 @@ test("skills and About cards use restrained first-year evidence", async () => {
 test("skill icons and rules reveal locally without a global style patrol", async () => {
   const html = await loadHtml();
 
-  assert.equal((html.match(/style="--reveal-order:\s*[0-3]"/g) ?? []).length, 4);
+  const revealOrder = [
+    ...html.matchAll(
+      /<div class="value-item top-align" style="--reveal-order:\s*([0-3])">/g,
+    ),
+  ].map((match) => Number(match[1]));
+  assert.deepEqual(revealOrder, [0, 1, 2, 3]);
   assert.match(
     html,
     /\.w-mod-js\s+\.value-icon\s*\{[\s\S]*?opacity:\s*0[\s\S]*?transform:/,
@@ -197,9 +203,10 @@ test("skill icons and rules reveal locally without a global style patrol", async
   );
   assert.match(
     html,
-    /\.w-mod-js\s+\.value-item__divider\s*\{[\s\S]*?transform:\s*scaleY\(0\)/,
+    /\.w-mod-js\s+\.value-divider\s*\{[\s\S]*?transform:\s*scaleY\(0\)/,
   );
   assert.match(html, /\.value-item\.scroll-reveal-inview\s+\.value-icon/);
+  assert.match(html, /\.value-divider\.scroll-reveal-inview/);
   assert.match(
     html,
     /transition-delay:\s*calc\(var\(--reveal-order,\s*0\)\s*\*\s*80ms\)/,
