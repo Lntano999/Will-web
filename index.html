@@ -354,11 +354,28 @@
   /* Skills 以本地状态类完成一次性进场，不再依赖全局样式巡检。 */
   .w-mod-js .value-icon {
     opacity: 0 !important;
-    transform: translateY(1.25rem) scale(0.9) !important;
+    transform: translateY(115%) scale(0.96) !important;
+    clip-path: inset(100% 0 0) !important;
     transition:
       opacity 0.7s ease,
-      transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+      transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+      clip-path 0.85s cubic-bezier(0.22, 1, 0.36, 1);
     transition-delay: calc(var(--reveal-order, 0) * 80ms);
+    will-change: transform, opacity;
+  }
+
+  .skill-title-mask {
+    overflow: hidden;
+    margin-bottom: 0;
+  }
+
+  .w-mod-js .skill-title-line {
+    opacity: 0 !important;
+    transform: translateY(115%) !important;
+    transition:
+      opacity 0.8s ease,
+      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: calc(var(--reveal-order, 0) * 80ms + 100ms);
     will-change: transform, opacity;
   }
 
@@ -366,7 +383,7 @@
     transform: scaleX(0) !important;
     transform-origin: left center;
     transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
-    transition-delay: calc(var(--reveal-order, 0) * 80ms);
+    transition-delay: calc(var(--reveal-order, 0) * 80ms + 60ms);
     will-change: transform;
   }
 
@@ -381,6 +398,12 @@
   .value-item.scroll-reveal-inview .value-icon {
     opacity: 1 !important;
     transform: translateY(0) scale(1) !important;
+    clip-path: inset(0) !important;
+  }
+
+  .value-item.scroll-reveal-inview .skill-title-line {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
   }
 
   .value-item.scroll-reveal-inview .value-item__line {
@@ -393,10 +416,12 @@
 
   @media (prefers-reduced-motion: reduce) {
     .w-mod-js .value-icon,
+    .w-mod-js .skill-title-line,
     .w-mod-js .value-item__line,
     .w-mod-js .value-divider {
       opacity: 1 !important;
       transform: none !important;
+      clip-path: inset(0) !important;
       transition: none;
     }
   }
@@ -441,7 +466,19 @@
   .scroll-mask-block .mask-line-container:nth-child(20) .reveal-text-line { transition-delay: 1.9s; }
   .scroll-mask-block .mask-line-container:nth-child(n+21) .reveal-text-line { transition-delay: 2.0s; }
 
+  .value-item .scroll-mask-block .mask-line-container:nth-child(1) { --skill-line-delay: 220ms; }
+  .value-item .scroll-mask-block .mask-line-container:nth-child(2) { --skill-line-delay: 320ms; }
+  .value-item .scroll-mask-block .mask-line-container:nth-child(3) { --skill-line-delay: 420ms; }
+  .value-item .scroll-mask-block .mask-line-container:nth-child(4) { --skill-line-delay: 520ms; }
+  .value-item .scroll-mask-block .mask-line-container:nth-child(5) { --skill-line-delay: 620ms; }
+  .value-item .scroll-mask-block .mask-line-container:nth-child(6) { --skill-line-delay: 720ms; }
+  .value-item .scroll-mask-block .reveal-text-line {
+    transition-delay:
+      calc(var(--reveal-order, 0) * 80ms + var(--skill-line-delay, 220ms));
+  }
+
   @media (prefers-reduced-motion: reduce) {
+    .value-item .scroll-mask-block .reveal-text-line,
     .horizontal-section .scroll-mask-block .reveal-text-line {
       transform: translateY(0) !important;
       opacity: 1 !important;
@@ -1743,7 +1780,9 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 58 58" fill="currentColor"><path d="M28.7197 0C44.5813 0 57.4403 12.8582 57.4404 28.7197C57.4404 44.5813 44.5813 57.4404 28.7197 57.4404C12.8584 57.4402 6.5975e-05 44.5811 0 28.7197C0.000147413 12.8584 12.8584 0.000263891 28.7197 0ZM2.02051 29.7207C2.53478 43.6819 13.7585 54.9049 27.7197 55.4189V29.7207H2.02051ZM29.7197 55.4189C44.0135 54.8931 55.4404 43.1419 55.4404 28.7197C55.4403 14.2976 44.0134 2.54536 29.7197 2.01953V55.4189ZM27.7197 2.01953C13.7578 2.5335 2.53382 13.7586 2.02051 27.7207H27.7197V2.01953Z" fill="#FA4838"/></svg>
               </div>
               <div class="value-text">
-                <h4>Python &amp; Data</h4>
+                <div class="mask-line-container skill-title-mask">
+                  <h4 class="skill-title-line">Python &amp; Data</h4>
+                </div>
                 <div class="scroll-mask-block">
                   <div class="mask-line-container"><span class="reveal-text-line">使用 pandas 与 yfinance</span></div>
                   <div class="mask-line-container"><span class="reveal-text-line">完成金融数据获取、清洗</span></div>
@@ -1761,7 +1800,9 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="58" height="57" viewBox="0 0 58 57" fill="none"><path d="M57.4502 56.8203H0V0H57.4502V56.8203ZM55.4502 28.7324C41.3566 29.2843 30.0444 40.689 29.6416 54.8203H55.4502V28.7324ZM27.8945 11.7305C23.74 22.0935 13.7552 29.4912 2 29.8633V54.8203H27.6348L27.8945 11.7305ZM29.6943 44.8613C33.8319 34.5384 43.7549 27.1556 55.4502 26.7295V2H29.9541L29.6943 44.8613ZM2 27.8613C16.0818 27.3823 27.4195 16.0714 27.9395 2H2V27.8613Z" fill="#FA4838"/></svg>
               </div>
               <div class="value-text">
-                <h4>C++ &amp; Algorithms</h4>
+                <div class="mask-line-container skill-title-mask">
+                  <h4 class="skill-title-line">C++ &amp; Algorithms</h4>
+                </div>
                 <div class="scroll-mask-block">
                   <div class="mask-line-container"><span class="reveal-text-line">持续训练算法、数据结构</span></div>
                   <div class="mask-line-container"><span class="reveal-text-line">与计算思维，</span></div>
@@ -1779,7 +1820,9 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 58 58" fill="none"><path d="M28.6201 0C36.6084 0.000185128 43.1235 6.30373 43.4648 14.208C51.321 14.601 57.5702 21.0961 57.5703 29.0498C57.5701 37.0143 51.3038 43.5138 43.4326 43.8906C42.8308 51.5453 36.4294 57.5692 28.6201 57.5693C20.8042 57.5691 14.3972 51.5351 13.8047 43.8711C6.09058 43.3296 0.00018935 36.9016 0 29.0498C0.00012607 21.2086 6.07408 14.7862 13.7734 14.2295C14.1039 6.31514 20.6246 0.000192842 28.6201 0ZM28.7852 34.2461C26.7838 39.607 21.7762 43.5007 15.8125 43.8779C16.4028 50.4327 21.9117 55.5691 28.6201 55.5693C35.3368 55.5692 40.8489 50.4199 41.4277 43.8535C35.6099 43.3561 30.7496 39.5077 28.7852 34.2461ZM43.418 16.209C42.897 21.9976 39.0574 26.8276 33.8154 28.7842C39.2156 30.7998 43.1282 35.8659 43.457 41.8867C50.2116 41.4999 55.5701 35.9013 55.5703 29.0498C55.5702 22.1851 50.191 16.5764 43.418 16.209ZM27.6914 29.8828C21.2982 30.3393 16.1987 35.4693 15.7881 41.875C22.1823 41.419 27.2817 36.2897 27.6914 29.8828ZM13.8232 16.2314C7.20596 16.7596 2.00013 22.2967 2 29.0498C2.00019 35.7895 7.18554 41.3175 13.7842 41.8643C14.1215 35.8537 18.0308 30.7976 23.4238 28.7842C18.189 26.8298 14.3521 22.0097 13.8232 16.2314ZM29.8789 29.9111C30.2945 36.1936 35.2216 41.2418 41.4502 41.8477C41.0342 35.5652 36.1078 30.5163 29.8789 29.9111ZM15.832 16.2256C16.4804 22.367 21.4518 27.2187 27.6465 27.6826C26.9973 21.5412 22.0271 16.6885 15.832 16.2256ZM41.4033 16.2549C35.3745 16.8635 30.5746 21.6368 29.9248 27.6533C35.9551 27.0457 40.754 22.2728 41.4033 16.2549ZM28.6201 2C21.7333 2.00019 16.1111 7.41392 15.7764 14.2178C21.7556 14.5815 26.7796 18.4811 28.7852 23.8525C30.7539 18.5803 35.6304 14.7267 41.4639 14.2422C41.1414 7.42689 35.5152 2.00018 28.6201 2Z" fill="#FA4838"/></svg>
               </div>
               <div class="value-text">
-                <h4>Web &amp; Deploy</h4>
+                <div class="mask-line-container skill-title-mask">
+                  <h4 class="skill-title-line">Web &amp; Deploy</h4>
+                </div>
                 <div class="scroll-mask-block">
                   <div class="mask-line-container"><span class="reveal-text-line">独立处理网页结构、</span></div>
                   <div class="mask-line-container"><span class="reveal-text-line">交互动效与响应式适配，</span></div>
@@ -1797,7 +1840,9 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="58" height="58" viewBox="0 0 58 58" fill="none"><path d="M28.8008 0C44.713 0.000263844 57.6005 12.899 57.6006 28.8008V29.8008H29.8008V57.6006H28.8008C12.8885 57.6005 0.00026382 44.7025 0 28.8008V27.8008H27.8008V0H28.8008ZM2.02148 29.8008C2.5353 43.8038 13.7894 55.0662 27.8008 55.5801V29.8008H2.02148ZM29.8008 27.8008H55.5801C55.0663 13.7978 43.8122 2.53536 29.8008 2.02148V27.8008Z" fill="#FA4838"/></svg>
               </div>
               <div class="value-text">
-                <h4>Research &amp; Writing</h4>
+                <div class="mask-line-container skill-title-mask">
+                  <h4 class="skill-title-line">Research &amp; Writing</h4>
+                </div>
                 <div class="scroll-mask-block">
                   <div class="mask-line-container"><span class="reveal-text-line">具备访谈记录、</span></div>
                   <div class="mask-line-container"><span class="reveal-text-line">调研日志与 PPT 文书</span></div>

@@ -167,6 +167,55 @@ try {
       `${viewport.width}px: third identity line is not isolated`,
     );
 
+    const initialSkillState = await page.evaluate(() =>
+      [...document.querySelectorAll(".value-item")].map((item) => {
+        const icon = getComputedStyle(item.querySelector(".value-icon"));
+        const title = getComputedStyle(item.querySelector(".skill-title-line"));
+        const textLines = [
+          ...item.querySelectorAll(".scroll-mask-block .reveal-text-line"),
+        ];
+        const ruleScaleX = [...item.querySelectorAll(".value-item__line")].map(
+          (line) => new DOMMatrix(getComputedStyle(line).transform).a,
+        );
+        return {
+          inView: item.classList.contains("scroll-reveal-inview"),
+          iconOpacity: Number(icon.opacity),
+          iconClipPath: icon.clipPath,
+          titleOpacity: Number(title.opacity),
+          ruleScaleX,
+          hiddenTextLines: textLines.filter(
+            (line) => Number(getComputedStyle(line).opacity) < 0.01,
+          ).length,
+          textLineCount: textLines.length,
+        };
+      }),
+    );
+    check(
+      initialSkillState.length === 4,
+      `${viewport.width}px: expected four initially masked skill cards`,
+    );
+    for (const [index, state] of initialSkillState.entries()) {
+      check(
+        !state.inView &&
+          state.iconOpacity < 0.01 &&
+          state.iconClipPath !== "none" &&
+          state.titleOpacity < 0.01 &&
+          state.ruleScaleX.every((scale) => Math.abs(scale) < 0.001) &&
+          state.hiddenTextLines === state.textLineCount,
+        `${viewport.width}px: skill ${index + 1} did not start fully masked`,
+      );
+    }
+    const initialDividerState = await page.evaluate(() =>
+      [...document.querySelectorAll(".value-divider")].map(
+        (divider) => new DOMMatrix(getComputedStyle(divider).transform).d,
+      ),
+    );
+    check(
+      initialDividerState.length === 3 &&
+        initialDividerState.every((scale) => Math.abs(scale) < 0.001),
+      `${viewport.width}px: skill dividers did not start collapsed`,
+    );
+
     await page.locator("#tech").scrollIntoViewIfNeeded();
     const skillCards = page.locator(".value-item");
     for (let index = 0; index < (await skillCards.count()); index += 1) {
@@ -178,10 +227,14 @@ try {
       await skillDividers.nth(index).scrollIntoViewIfNeeded();
       await page.waitForTimeout(250);
     }
-    await page.waitForTimeout(1_000);
+    await page.waitForTimeout(1_300);
     const skillState = await page.evaluate(() =>
       [...document.querySelectorAll(".value-item")].map((item) => {
         const icon = getComputedStyle(item.querySelector(".value-icon"));
+        const title = getComputedStyle(item.querySelector(".skill-title-line"));
+        const textLines = [
+          ...item.querySelectorAll(".scroll-mask-block .reveal-text-line"),
+        ];
         const lines = [...item.querySelectorAll(".value-item__line")].map((line) =>
           getComputedStyle(line).transform,
         );
@@ -189,6 +242,15 @@ try {
           inView: item.classList.contains("scroll-reveal-inview"),
           iconOpacity: Number(icon.opacity),
           iconTransform: icon.transform,
+          iconClipPath: icon.clipPath,
+          titleOpacity: Number(title.opacity),
+          titleTransform: title.transform,
+          hiddenTextLines: textLines.filter(
+            (line) => Number(getComputedStyle(line).opacity) < 0.99,
+          ).length,
+          textLineTransforms: textLines.map(
+            (line) => getComputedStyle(line).transform,
+          ),
           lines,
         };
       }),
@@ -199,6 +261,26 @@ try {
       check(
         state.iconOpacity > 0.99,
         `${viewport.width}px: skill ${index + 1} icon opacity is ${state.iconOpacity}`,
+      );
+      check(
+        state.iconClipPath === "none" ||
+          /^inset\(0(px)?(?:\s+0(px)?){0,3}\)$/.test(state.iconClipPath),
+        `${viewport.width}px: skill ${index + 1} icon mask is ${state.iconClipPath}`,
+      );
+      check(
+        state.titleOpacity > 0.99 &&
+          (state.titleTransform === "none" ||
+            state.titleTransform === "matrix(1, 0, 0, 1, 0, 0)"),
+        `${viewport.width}px: skill ${index + 1} title did not finish its mask reveal`,
+      );
+      check(
+        state.hiddenTextLines === 0 &&
+          state.textLineTransforms.every(
+            (transform) =>
+              transform === "none" ||
+              transform === "matrix(1, 0, 0, 1, 0, 0)",
+          ),
+        `${viewport.width}px: skill ${index + 1} body lines did not finish their waterfall`,
       );
       check(
         state.lines.every(
@@ -237,6 +319,11 @@ try {
       await page.screenshot({
         path: path.join(outputDir, `portfolio-${viewport.width}.png`),
         fullPage: true,
+      });
+    }
+    if (viewport.width === 1440) {
+      await page.locator("#tech .section-values").screenshot({
+        path: path.join(outputDir, "skills-1440.png"),
       });
     }
 
@@ -423,15 +510,59 @@ try {
   });
   await reducedPage.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: 30_000 });
   await reducedPage.evaluate(() => document.querySelector("#preloader")?.remove());
-  const reducedState = await reducedPage.evaluate(() => ({
-    hiddenIcons: [...document.querySelectorAll(".value-icon")].filter(
-      (icon) => Number(getComputedStyle(icon).opacity) < 1,
-    ).length,
-    unfinishedPaths: [...document.querySelectorAll(".svg-draw path")].filter(
-      (path) => Math.abs(Number.parseFloat(getComputedStyle(path).strokeDashoffset)) > 0.001,
-    ).length,
-  }));
+  const reducedState = await reducedPage.evaluate(() => {
+    const isIdentity = (transform) =>
+      transform === "none" || transform === "matrix(1, 0, 0, 1, 0, 0)";
+    return {
+      hiddenIcons: [...document.querySelectorAll(".value-icon")].filter(
+        (icon) => Number(getComputedStyle(icon).opacity) < 1,
+      ).length,
+      hiddenSkillTitles: [
+        ...document.querySelectorAll(".skill-title-line"),
+      ].filter((title) => {
+        const style = getComputedStyle(title);
+        return Number(style.opacity) < 1 || !isIdentity(style.transform);
+      }).length,
+      hiddenSkillTextLines: [
+        ...document.querySelectorAll(
+          "#tech .scroll-mask-block .reveal-text-line",
+        ),
+      ].filter((line) => {
+        const style = getComputedStyle(line);
+        return Number(style.opacity) < 1 || !isIdentity(style.transform);
+      }).length,
+      unfinishedSkillRules: [
+        ...document.querySelectorAll(".value-item__line"),
+      ].filter((line) => !isIdentity(getComputedStyle(line).transform)).length,
+      unfinishedSkillDividers: [
+        ...document.querySelectorAll(".value-divider"),
+      ].filter((divider) => !isIdentity(getComputedStyle(divider).transform))
+        .length,
+      unfinishedPaths: [...document.querySelectorAll(".svg-draw path")].filter(
+        (path) =>
+          Math.abs(
+            Number.parseFloat(getComputedStyle(path).strokeDashoffset),
+          ) > 0.001,
+      ).length,
+    };
+  });
   check(reducedState.hiddenIcons === 0, "reduced motion: skill icons remain hidden");
+  check(
+    reducedState.hiddenSkillTitles === 0,
+    "reduced motion: skill titles remain hidden",
+  );
+  check(
+    reducedState.hiddenSkillTextLines === 0,
+    "reduced motion: skill body lines remain hidden",
+  );
+  check(
+    reducedState.unfinishedSkillRules === 0,
+    "reduced motion: skill rules remain collapsed",
+  );
+  check(
+    reducedState.unfinishedSkillDividers === 0,
+    "reduced motion: skill dividers remain collapsed",
+  );
   check(reducedState.unfinishedPaths === 0, "reduced motion: SVG paths remain unfinished");
   await reducedPage.close();
 } finally {

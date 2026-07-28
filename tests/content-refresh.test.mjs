@@ -165,7 +165,10 @@ test("skills and About cards use restrained first-year evidence", async () => {
     "Web &amp; Deploy",
     "Research &amp; Writing",
   ]) {
-    assert.ok(html.includes(`<h4>${heading}</h4>`), `missing skill heading: ${heading}`);
+    assert.ok(
+      html.includes(`<h4 class="skill-title-line">${heading}</h4>`),
+      `missing skill heading: ${heading}`,
+    );
   }
 
   assert.match(html, /使用 pandas 与 yfinance/);
@@ -193,9 +196,22 @@ test("skill icons and rules reveal locally without a global style patrol", async
     ),
   ].map((match) => Number(match[1]));
   assert.deepEqual(revealOrder, [0, 1, 2, 3]);
+  assert.equal(
+    (
+      html.match(
+        /<div class="mask-line-container skill-title-mask">\s*<h4 class="skill-title-line">/g,
+      ) ?? []
+    ).length,
+    4,
+    "every skill title must have its own waterfall mask",
+  );
   assert.match(
     html,
-    /\.w-mod-js\s+\.value-icon\s*\{[\s\S]*?opacity:\s*0[\s\S]*?transform:/,
+    /\.w-mod-js\s+\.value-icon\s*\{[\s\S]*?opacity:\s*0[\s\S]*?transform:[\s\S]*?clip-path:\s*inset\(100%\s+0\s+0\)/,
+  );
+  assert.match(
+    html,
+    /\.w-mod-js\s+\.skill-title-line\s*\{[\s\S]*?opacity:\s*0\s*!important;[\s\S]*?transform:\s*translateY\(115%\)\s*!important;/,
   );
   assert.match(
     html,
@@ -206,10 +222,18 @@ test("skill icons and rules reveal locally without a global style patrol", async
     /\.w-mod-js\s+\.value-divider\s*\{[\s\S]*?transform:\s*scaleY\(0\)/,
   );
   assert.match(html, /\.value-item\.scroll-reveal-inview\s+\.value-icon/);
+  assert.match(
+    html,
+    /\.value-item\.scroll-reveal-inview\s+\.skill-title-line\s*\{[\s\S]*?opacity:\s*1\s*!important;[\s\S]*?transform:\s*translateY\(0\)\s*!important;/,
+  );
+  assert.match(
+    html,
+    /\.value-item\s+\.scroll-mask-block\s+\.reveal-text-line\s*\{[\s\S]*?transition-delay:\s*calc\(var\(--reveal-order,\s*0\)\s*\*\s*80ms\s*\+\s*var\(--skill-line-delay,\s*220ms\)\)/,
+  );
   assert.match(html, /\.value-divider\.scroll-reveal-inview/);
   assert.match(
     html,
-    /\.value-item\.scroll-reveal-inview\s+\.value-icon\s*\{[\s\S]*?opacity:\s*1\s*!important;[\s\S]*?transform:\s*translateY\(0\)\s*scale\(1\)\s*!important;/,
+    /\.value-item\.scroll-reveal-inview\s+\.value-icon\s*\{[\s\S]*?opacity:\s*1\s*!important;[\s\S]*?transform:\s*translateY\(0\)\s*scale\(1\)\s*!important;[\s\S]*?clip-path:\s*inset\(0\)\s*!important;/,
   );
   assert.match(
     html,
@@ -272,6 +296,13 @@ test("browser QA is reproducible and exercises every horizontal SVG group", asyn
   );
   assert.match(qa, /oneDevicePixel:\s*1\s*\/\s*window\.devicePixelRatio/);
   assert.match(qa, /rightUnderCoverage\s*>=\s*-3/);
+  assert.match(qa, /initialSkillState/);
+  assert.match(qa, /titleOpacity/);
+  assert.match(qa, /hiddenTextLines/);
+  assert.match(qa, /hiddenSkillTitles/);
+  assert.match(qa, /hiddenSkillTextLines/);
+  assert.match(qa, /unfinishedSkillRules/);
+  assert.match(qa, /unfinishedSkillDividers/);
 });
 
 test("horizontal expansion preserves animation timing and explicit line masks", async () => {
