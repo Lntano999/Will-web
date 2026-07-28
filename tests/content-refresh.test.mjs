@@ -209,12 +209,69 @@ test("skill icons and rules reveal locally without a global style patrol", async
   assert.match(html, /\.value-divider\.scroll-reveal-inview/);
   assert.match(
     html,
+    /\.value-item\.scroll-reveal-inview\s+\.value-icon\s*\{[\s\S]*?opacity:\s*1\s*!important;[\s\S]*?transform:\s*translateY\(0\)\s*scale\(1\)\s*!important;/,
+  );
+  assert.match(
+    html,
+    /\.value-item\.scroll-reveal-inview\s+\.value-item__line\s*\{[\s\S]*?transform:\s*scaleX\(1\)\s*!important;/,
+  );
+  assert.match(
+    html,
+    /\.value-divider\.scroll-reveal-inview\s*\{[\s\S]*?transform:\s*scaleY\(1\)\s*!important;/,
+  );
+  assert.match(
+    html,
     /transition-delay:\s*calc\(var\(--reveal-order,\s*0\)\s*\*\s*80ms\)/,
   );
   assert.match(html, /prefers-reduced-motion:\s*reduce/);
 
   assert.doesNotMatch(html, /new MutationObserver/);
   assert.doesNotMatch(html, /startStyleGuard/);
+});
+
+test("skill reveal initializes before parser-blocking external resources", async () => {
+  const html = await loadHtml();
+  const controllerStart = html.indexOf("(function initSkillReveals()");
+  const controllerEnd = html.indexOf("</script>", controllerStart);
+  const firstExternalScript = html.indexOf("<script src=");
+
+  assert.ok(controllerStart > -1, "missing standalone skill reveal controller");
+  assert.ok(
+    controllerEnd < firstExternalScript,
+    "skill controller must run before external scripts",
+  );
+  const controller = html.slice(controllerStart, controllerEnd);
+  assert.match(controller, /\n\s*init\(\);\s*\n\}\)\(\);/);
+  assert.match(controller, /typeof IntersectionObserver === "undefined"/);
+  assert.match(
+    controller,
+    /item\.classList\.contains\("value-item"\)[\s\S]*?item\.nextElementSibling[\s\S]*?classList\.contains\("value-divider"\)[\s\S]*?classList\.add\("scroll-reveal-inview"\)/,
+  );
+  assert.doesNotMatch(controller, /window\.addEventListener\("load"/);
+  assert.doesNotMatch(controller, /DOMContentLoaded/);
+});
+
+test("browser QA is reproducible and exercises every horizontal SVG group", async () => {
+  const qa = await readFile(
+    new URL("../scripts/qa-portfolio.mjs", import.meta.url),
+    "utf8",
+  );
+  const packageJson = JSON.parse(
+    await readFile(new URL("../package.json", import.meta.url), "utf8"),
+  );
+
+  assert.match(packageJson.devDependencies?.playwright ?? "", /^\^?1\./);
+  assert.match(qa, /await import\("playwright"\)/);
+  assert.match(
+    qa,
+    /const dividerNames = \["build", "model", "field", "speak"\]/,
+  );
+  assert.match(
+    qa,
+    /initialOffsets\.every\([\s\S]*?Math\.abs\([\s\S]*?-\s*1\)\s*<\s*0\.001/,
+  );
+  assert.match(qa, /oneDevicePixel:\s*1\s*\/\s*window\.devicePixelRatio/);
+  assert.match(qa, /rightUnderCoverage\s*>=\s*-3/);
 });
 
 test("horizontal expansion preserves animation timing and explicit line masks", async () => {
@@ -227,7 +284,7 @@ test("horizontal expansion preserves animation timing and explicit line masks", 
   assert.match(html, /const getViewportWidth = \(\) => section\.clientWidth/);
   assert.match(
     html,
-    /Math\.max\(0,\s*Math\.ceil\(track\.scrollWidth\s*-\s*getViewportWidth\(\)\)\s*\+\s*2\)/,
+    /Math\.max\(0,\s*Math\.ceil\(track\.scrollWidth\s*-\s*getViewportWidth\(\)\)\s*\+\s*1\)/,
   );
   assert.match(html, /const minRatio = data\.isDivider \? 0\.35 : 0\.12/);
   assert.match(html, /duration:\s*0\.7,[\s\S]*?ease:\s*"power3\.out",[\s\S]*?stagger:\s*0\.1/);
