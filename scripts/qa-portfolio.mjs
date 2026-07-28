@@ -187,6 +187,12 @@ try {
             (line) => Number(getComputedStyle(line).opacity) < 0.01,
           ).length,
           textLineCount: textLines.length,
+          textLineDelays: textLines.map((line) =>
+            Number.parseFloat(getComputedStyle(line).transitionDelay),
+          ),
+          textLineDurations: textLines.map((line) =>
+            Number.parseFloat(getComputedStyle(line).transitionDuration),
+          ),
         };
       }),
     );
@@ -195,6 +201,12 @@ try {
       `${viewport.width}px: expected four initially masked skill cards`,
     );
     for (const [index, state] of initialSkillState.entries()) {
+      const hasApprovedTiming = state.textLineDelays.every(
+        (delay, lineIndex) => {
+          const expectedDelay = (260 + lineIndex * 150 + index * 110) / 1_000;
+          return Math.abs(delay - expectedDelay) < 0.002;
+        },
+      );
       check(
         !state.inView &&
           state.iconOpacity < 0.01 &&
@@ -203,6 +215,16 @@ try {
           state.ruleScaleX.every((scale) => Math.abs(scale) < 0.001) &&
           state.hiddenTextLines === state.textLineCount,
         `${viewport.width}px: skill ${index + 1} did not start fully masked`,
+      );
+      check(
+        hasApprovedTiming &&
+          state.textLineDurations.every(
+            (duration) => Math.abs(duration - 1.1) < 0.002,
+          ),
+        `${viewport.width}px: skill ${index + 1} computed waterfall timing is ${JSON.stringify({
+          delays: state.textLineDelays,
+          durations: state.textLineDurations,
+        })}`,
       );
     }
     const initialDividerState = await page.evaluate(() =>

@@ -228,7 +228,7 @@ test("skill icons and rules reveal locally without a global style patrol", async
   );
   assert.match(
     html,
-    /\.value-item\s+\.scroll-mask-block\s+\.reveal-text-line\s*\{[\s\S]*?transition-delay:\s*calc\(var\(--reveal-order,\s*0\)\s*\*\s*110ms\s*\+\s*var\(--skill-line-delay,\s*260ms\)\)/,
+    /#tech\s+\.value-item\s+\.scroll-mask-block\s+\.reveal-text-line\s*\{[\s\S]*?transition-delay:\s*calc\(var\(--reveal-order,\s*0\)\s*\*\s*110ms\s*\+\s*var\(--skill-line-delay,\s*260ms\)\)/,
   );
   assert.match(html, /\.value-divider\.scroll-reveal-inview/);
   assert.match(
@@ -270,7 +270,11 @@ test("footer and skill copy use scoped, moderately slower reveal timing", async 
   );
   assert.match(
     html,
-    /\.value-item\s+\.scroll-mask-block\s+\.reveal-text-line\s*\{[\s\S]*?transform:\s*translateY\(125%\)[\s\S]*?transition-duration:\s*1\.1s,\s*1\.1s[\s\S]*?var\(--reveal-order,\s*0\)\s*\*\s*110ms/,
+    /\.value-item\s+\.scroll-mask-block\s+\.reveal-text-line\s*\{[\s\S]*?transform:\s*translateY\(125%\)[\s\S]*?transition-duration:\s*1\.1s,\s*1\.1s/,
+  );
+  assert.match(
+    html,
+    /#tech\s+\.value-item\s+\.scroll-mask-block\s+\.reveal-text-line\s*\{[\s\S]*?var\(--reveal-order,\s*0\)\s*\*\s*110ms/,
   );
 
   for (const [line, delay] of [
@@ -336,6 +340,8 @@ test("browser QA is reproducible and exercises every horizontal SVG group", asyn
   assert.match(qa, /initialSkillState/);
   assert.match(qa, /titleOpacity/);
   assert.match(qa, /hiddenTextLines/);
+  assert.match(qa, /textLineDelays/);
+  assert.match(qa, /expectedDelay/);
   assert.match(qa, /hiddenSkillTitles/);
   assert.match(qa, /hiddenSkillTextLines/);
   assert.match(qa, /unfinishedSkillRules/);
