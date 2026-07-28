@@ -227,7 +227,7 @@ try {
       await skillDividers.nth(index).scrollIntoViewIfNeeded();
       await page.waitForTimeout(250);
     }
-    await page.waitForTimeout(1_300);
+    await page.waitForTimeout(2_700);
     const skillState = await page.evaluate(() =>
       [...document.querySelectorAll(".value-item")].map((item) => {
         const icon = getComputedStyle(item.querySelector(".value-icon"));

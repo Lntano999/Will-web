@@ -340,6 +340,7 @@ test("browser QA is reproducible and exercises every horizontal SVG group", asyn
   assert.match(qa, /hiddenSkillTextLines/);
   assert.match(qa, /unfinishedSkillRules/);
   assert.match(qa, /unfinishedSkillDividers/);
+  assert.match(qa, /await page\.waitForTimeout\(2_700\)/);
 });
 
 test("horizontal expansion preserves animation timing and explicit line masks", async () => {
