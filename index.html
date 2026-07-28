@@ -466,15 +466,17 @@
   .scroll-mask-block .mask-line-container:nth-child(20) .reveal-text-line { transition-delay: 1.9s; }
   .scroll-mask-block .mask-line-container:nth-child(n+21) .reveal-text-line { transition-delay: 2.0s; }
 
-  .value-item .scroll-mask-block .mask-line-container:nth-child(1) { --skill-line-delay: 220ms; }
-  .value-item .scroll-mask-block .mask-line-container:nth-child(2) { --skill-line-delay: 320ms; }
-  .value-item .scroll-mask-block .mask-line-container:nth-child(3) { --skill-line-delay: 420ms; }
-  .value-item .scroll-mask-block .mask-line-container:nth-child(4) { --skill-line-delay: 520ms; }
-  .value-item .scroll-mask-block .mask-line-container:nth-child(5) { --skill-line-delay: 620ms; }
-  .value-item .scroll-mask-block .mask-line-container:nth-child(6) { --skill-line-delay: 720ms; }
+  .value-item .scroll-mask-block .mask-line-container:nth-child(1) { --skill-line-delay: 260ms; }
+  .value-item .scroll-mask-block .mask-line-container:nth-child(2) { --skill-line-delay: 410ms; }
+  .value-item .scroll-mask-block .mask-line-container:nth-child(3) { --skill-line-delay: 560ms; }
+  .value-item .scroll-mask-block .mask-line-container:nth-child(4) { --skill-line-delay: 710ms; }
+  .value-item .scroll-mask-block .mask-line-container:nth-child(5) { --skill-line-delay: 860ms; }
+  .value-item .scroll-mask-block .mask-line-container:nth-child(6) { --skill-line-delay: 1010ms; }
   .value-item .scroll-mask-block .reveal-text-line {
+    transform: translateY(125%);
+    transition-duration: 1.1s, 1.1s;
     transition-delay:
-      calc(var(--reveal-order, 0) * 80ms + var(--skill-line-delay, 220ms));
+      calc(var(--reveal-order, 0) * 110ms + var(--skill-line-delay, 260ms));
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -2515,11 +2517,15 @@
       footer: document.querySelector("#contact .one-shot-white-reveal")
     };
 
-    function createReveal(element) {
+    function createReveal(element, options = {}) {
       if (!element || typeof gsap === "undefined") {
         return null;
       }
 
+      const {
+        duration = 0.8,
+        stagger = 0.08
+      } = options;
       const lines = Array.from(element.querySelectorAll(".one-shot-white-line"));
       if (!lines.length) return null;
       let played = false;
@@ -2538,9 +2544,9 @@
         const vars = {
           y: "0%",
           opacity: 1,
-          duration: 0.8,
+          duration,
           ease: "power3.out",
-          stagger: 0.08
+          stagger
         };
         if (timeline) timeline.to(lines, vars, position);
         else gsap.to(lines, vars);
@@ -2550,7 +2556,10 @@
     }
 
     const hero = createReveal(targets.hero);
-    const footer = createReveal(targets.footer);
+    const footer = createReveal(targets.footer, {
+      duration: 1.05,
+      stagger: 0.14
+    });
     window.oneShotWhiteReveals = { hero, footer };
 
     if (footer && !footer.played) {

@@ -228,7 +228,7 @@ test("skill icons and rules reveal locally without a global style patrol", async
   );
   assert.match(
     html,
-    /\.value-item\s+\.scroll-mask-block\s+\.reveal-text-line\s*\{[\s\S]*?transition-delay:\s*calc\(var\(--reveal-order,\s*0\)\s*\*\s*80ms\s*\+\s*var\(--skill-line-delay,\s*220ms\)\)/,
+    /\.value-item\s+\.scroll-mask-block\s+\.reveal-text-line\s*\{[\s\S]*?transition-delay:\s*calc\(var\(--reveal-order,\s*0\)\s*\*\s*110ms\s*\+\s*var\(--skill-line-delay,\s*260ms\)\)/,
   );
   assert.match(html, /\.value-divider\.scroll-reveal-inview/);
   assert.match(
@@ -251,6 +251,43 @@ test("skill icons and rules reveal locally without a global style patrol", async
 
   assert.doesNotMatch(html, /new MutationObserver/);
   assert.doesNotMatch(html, /startStyleGuard/);
+});
+
+test("footer and skill copy use scoped, moderately slower reveal timing", async () => {
+  const html = await loadHtml();
+
+  assert.match(
+    html,
+    /function createReveal\(element,\s*options\s*=\s*\{\}\)/,
+  );
+  assert.match(
+    html,
+    /duration\s*=\s*0\.8[\s\S]*?stagger\s*=\s*0\.08/,
+  );
+  assert.match(
+    html,
+    /createReveal\(targets\.footer,\s*\{\s*duration:\s*1\.05,\s*stagger:\s*0\.14\s*\}\)/,
+  );
+  assert.match(
+    html,
+    /\.value-item\s+\.scroll-mask-block\s+\.reveal-text-line\s*\{[\s\S]*?transform:\s*translateY\(125%\)[\s\S]*?transition-duration:\s*1\.1s,\s*1\.1s[\s\S]*?var\(--reveal-order,\s*0\)\s*\*\s*110ms/,
+  );
+
+  for (const [line, delay] of [
+    [1, 260],
+    [2, 410],
+    [3, 560],
+    [4, 710],
+    [5, 860],
+    [6, 1010],
+  ]) {
+    assert.match(
+      html,
+      new RegExp(
+        `mask-line-container:nth-child\\(${line}\\) \\{ --skill-line-delay: ${delay}ms; \\}`,
+      ),
+    );
+  }
 });
 
 test("skill reveal initializes before parser-blocking external resources", async () => {
