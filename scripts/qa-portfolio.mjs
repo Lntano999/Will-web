@@ -11,6 +11,8 @@ if (!baseUrl) {
 
 const moduleTarget = process.env.PLAYWRIGHT_MODULE_URL;
 const allowOffline = process.env.QA_ALLOW_OFFLINE === "1";
+const blockExternal = process.env.QA_BLOCK_EXTERNAL === "1";
+const baseOrigin = new URL(baseUrl).origin;
 const playwrightModule = moduleTarget
   ? await import(
       moduleTarget.startsWith("file:")
@@ -67,8 +69,26 @@ try {
   for (const viewport of viewports) {
     const page = await browser.newPage({ viewport });
     const requestFailures = [];
+    const pageErrors = [];
+    if (blockExternal) {
+      await page.route("**/*", async (route) => {
+        const requestUrl = new URL(route.request().url());
+        if (
+          requestUrl.origin === baseOrigin ||
+          requestUrl.protocol === "data:" ||
+          requestUrl.protocol === "blob:"
+        ) {
+          await route.continue();
+        } else {
+          await route.abort("blockedbyclient");
+        }
+      });
+    }
     page.on("requestfailed", (request) => {
       requestFailures.push(`${request.url()} — ${request.failure()?.errorText ?? "failed"}`);
+    });
+    page.on("pageerror", (error) => {
+      pageErrors.push(error.message);
     });
 
     await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: 30_000 });
@@ -88,6 +108,8 @@ try {
       );
     }
 
+    let preloaderFailOpen = null;
+    let preloaderFallbackState = null;
     if (Object.values(runtime).every(Boolean)) {
       await page
         .waitForFunction(() => !document.querySelector("#preloader"), null, {
@@ -103,12 +125,44 @@ try {
           });
         });
     } else {
-      await page.evaluate(() => {
-        document.querySelector("#preloader")?.remove();
-        window.lenis?.start?.();
-      });
+      preloaderFailOpen = await page
+        .waitForFunction(() => !document.querySelector("#preloader"), null, {
+          timeout: 2_500,
+        })
+        .then(() => true)
+        .catch(() => false);
+      preloaderFallbackState = await page.evaluate(() => ({
+        released:
+          document.documentElement.classList.contains("preloader-released"),
+        releaseReason:
+          document.documentElement.dataset.preloaderReleaseReason ?? "",
+        navHidden:
+          document
+            .querySelector(".navigation")
+            ?.classList.contains("pre-hidden") ?? false,
+      }));
+      check(
+        preloaderFailOpen,
+        `${viewport.width}px: preloader did not fail open without external runtimes`,
+      );
+      check(
+        preloaderFallbackState.released &&
+          preloaderFallbackState.releaseReason ===
+            "animation-runtime-unavailable" &&
+          !preloaderFallbackState.navHidden,
+        `${viewport.width}px: fallback state is ${JSON.stringify(preloaderFallbackState)}`,
+      );
+      if (!preloaderFailOpen) {
+        await page.evaluate(() => {
+          document.querySelector("#preloader")?.remove();
+          document
+            .querySelector(".navigation")
+            ?.classList.remove("pre-hidden");
+          window.lenis?.start?.();
+        });
+      }
       notes.push(
-        `${viewport.width}px: external runtime unavailable; preloader removed for scoped layout QA`,
+        `${viewport.width}px: external runtime unavailable; native preloader fail-open verified`,
       );
     }
 
@@ -363,6 +417,12 @@ try {
       });
     }
 
+    if (blockExternal) {
+      check(
+        pageErrors.length === 0,
+        `${viewport.width}px: offline fallback raised ${JSON.stringify(pageErrors)}`,
+      );
+    }
     if (requestFailures.length) {
       notes.push(
         `${viewport.width}px request failures:\n${requestFailures
@@ -417,21 +477,31 @@ try {
     };
   });
   check(motionBaseline.pathCount === 16, "desktop motion: expected 16 SVG paths");
-  check(
-    motionBaseline.initialOffsets.every(
-      (offset) => Math.abs(Number.parseFloat(offset) - 1) < 0.001,
-    ),
-    `desktop motion: SVG paths did not start unbuilt ${motionBaseline.initialOffsets.join(", ")}`,
-  );
-  check(
-    motionBaseline.durations.every((duration) => duration === "2.4s"),
-    `desktop motion: unexpected durations ${motionBaseline.durations.join(", ")}`,
-  );
-  check(
-    JSON.stringify(motionBaseline.delays) ===
-      JSON.stringify(["0s", "0.14s", "0.28s", "0.42s"]),
-    `desktop motion: unexpected stagger ${motionBaseline.delays.join(", ")}`,
-  );
+  if (motionRuntimeReady) {
+    check(
+      motionBaseline.initialOffsets.every(
+        (offset) => Math.abs(Number.parseFloat(offset) - 1) < 0.001,
+      ),
+      `desktop motion: SVG paths did not start unbuilt ${motionBaseline.initialOffsets.join(", ")}`,
+    );
+    check(
+      motionBaseline.durations.every((duration) => duration === "2.4s"),
+      `desktop motion: unexpected durations ${motionBaseline.durations.join(", ")}`,
+    );
+    check(
+      JSON.stringify(motionBaseline.delays) ===
+        JSON.stringify(["0s", "0.14s", "0.28s", "0.42s"]),
+      `desktop motion: unexpected stagger ${motionBaseline.delays.join(", ")}`,
+    );
+  } else {
+    check(
+      motionBaseline.initialOffsets.every(
+        (offset) => Math.abs(Number.parseFloat(offset)) < 0.001,
+      ),
+      `desktop fallback: SVG paths were not made visible ${motionBaseline.initialOffsets.join(", ")}`,
+    );
+    notes.push("desktop motion: verified immediate SVG fallback without GSAP");
+  }
 
   const horizontalRange = await page.evaluate(() => {
     const section = document.querySelector(".horizontal-section");

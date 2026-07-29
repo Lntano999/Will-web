@@ -324,6 +324,52 @@ test("skill reveal initializes before parser-blocking external resources", async
   assert.doesNotMatch(controller, /DOMContentLoaded/);
 });
 
+test("preloader fails open before external animation resources can block the page", async () => {
+  const html = await loadHtml();
+  const failOpenStart = html.indexOf("(function installPreloaderFailOpen()");
+  const failOpenEnd = html.indexOf("</script>", failOpenStart);
+  const firstExternalScript = html.indexOf("<script src=");
+  const preloaderControllerStart = html.indexOf("(function initPreloader()");
+  const preloaderControllerEnd = html.indexOf(
+    "</script>",
+    preloaderControllerStart,
+  );
+
+  assert.ok(failOpenStart > -1, "missing dependency-free preloader fail-open");
+  assert.ok(
+    failOpenEnd < firstExternalScript,
+    "preloader fail-open must run before every external script",
+  );
+
+  const failOpen = html.slice(failOpenStart, failOpenEnd);
+  assert.match(failOpen, /const FAIL_OPEN_TIMEOUT_MS = 8_000/);
+  assert.match(failOpen, /window\.releasePreloader = releasePreloader/);
+  assert.match(failOpen, /classList\.add\("preloader-released"\)/);
+  assert.match(failOpen, /classList\.remove\("pre-hidden"\)/);
+  assert.match(failOpen, /window\.lenis\?\.start\?\.\(\)/);
+  assert.match(
+    failOpen,
+    /setTimeout\(\s*\(\) => releasePreloader\("watchdog-timeout"\),\s*FAIL_OPEN_TIMEOUT_MS/,
+  );
+
+  const preloaderController = html.slice(
+    preloaderControllerStart,
+    preloaderControllerEnd,
+  );
+  assert.match(
+    preloaderController,
+    /typeof anime === "undefined"[\s\S]*?typeof gsap === "undefined"[\s\S]*?releasePreloader\("animation-runtime-unavailable"\)[\s\S]*?return;/,
+  );
+  assert.match(
+    preloaderController,
+    /releasePreloader\("animation-complete"\)/,
+  );
+  assert.match(
+    html,
+    /var lenis;[\s\S]*?typeof Lenis !== "undefined"[\s\S]*?typeof ScrollTrigger !== "undefined"[\s\S]*?typeof gsap !== "undefined"/,
+  );
+});
+
 test("browser QA is reproducible and exercises every horizontal SVG group", async () => {
   const qa = await readFile(
     new URL("../scripts/qa-portfolio.mjs", import.meta.url),
@@ -356,6 +402,14 @@ test("browser QA is reproducible and exercises every horizontal SVG group", asyn
   assert.match(qa, /hiddenSkillTextLines/);
   assert.match(qa, /unfinishedSkillRules/);
   assert.match(qa, /unfinishedSkillDividers/);
+  assert.match(qa, /const blockExternal = process\.env\.QA_BLOCK_EXTERNAL === "1"/);
+  assert.match(qa, /preloaderFailOpen/);
+  assert.match(qa, /preloaderFallbackState/);
+  assert.match(qa, /const pageErrors = \[\]/);
+  assert.match(
+    qa,
+    /blockExternal[\s\S]*?pageErrors\.length === 0/,
+  );
   assert.match(qa, /await page\.waitForTimeout\(2_700\)/);
 });
 
