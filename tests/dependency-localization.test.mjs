@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import path from "node:path";
 import test from "node:test";
+import { pathToFileURL } from "node:url";
 
 const indexHtml = await readFile("index.html", "utf8");
 const packageJson = JSON.parse(await readFile("package.json", "utf8"));
@@ -25,15 +27,18 @@ test("runtime dependencies use exact reproducible versions", () => {
   assert.equal(packageJson.scripts.prebuild, "npm run sync:vendor");
 });
 
-test("homepage loads approved animation runtimes from the same origin", () => {
-  const approvedPaths = [
-    "/vendor/gsap/gsap.min.js",
-    "/vendor/gsap/SplitText.min.js",
-    "/vendor/gsap/ScrollTrigger.min.js",
-    "/vendor/lenis/lenis.min.js",
-    "/vendor/lenis/lenis.css",
-    "/vendor/anime/anime.umd.min.js",
+test("source vendor URLs work from disk and Vite rewrites them for HTTP", async () => {
+  const sourcePaths = [
+    "./public/vendor/gsap/gsap.min.js",
+    "./public/vendor/gsap/SplitText.min.js",
+    "./public/vendor/gsap/ScrollTrigger.min.js",
+    "./public/vendor/lenis/lenis.min.js",
+    "./public/vendor/lenis/lenis.css",
+    "./public/vendor/anime/anime.umd.min.js",
   ];
+  const servedPaths = sourcePaths.map((sourcePath) =>
+    sourcePath.replace("./public/vendor/", "/vendor/"),
+  );
   const forbiddenReferences = [
     "unpkg.com/lenis",
     "cdn.jsdelivr.net/npm/animejs",
@@ -42,19 +47,37 @@ test("homepage loads approved animation runtimes from the same origin", () => {
     "Draggable",
   ];
 
-  for (const approvedPath of approvedPaths) {
-    assert.match(
-      indexHtml,
-      new RegExp(`["']${escapeRegExp(approvedPath)}["']`),
-    );
+  for (const sourcePath of sourcePaths) {
+    assertVendorPathAttribute(indexHtml, sourcePath, "source HTML");
   }
-  assert.doesNotMatch(indexHtml, /["']\.\/vendor\//);
+  assert.doesNotMatch(indexHtml, /["']\/vendor\//);
   for (const forbiddenReference of forbiddenReferences) {
     assert.doesNotMatch(
       indexHtml,
       new RegExp(escapeRegExp(forbiddenReference)),
     );
   }
+
+  const configModuleUrl = pathToFileURL(path.resolve("vite.config.mjs"));
+  configModuleUrl.searchParams.set("test", Date.now().toString());
+  const viteConfigModule = await import(configModuleUrl.href);
+
+  assert.equal(typeof viteConfigModule.rewriteVendorPathsForVite, "function");
+  const transformedHtml = viteConfigModule.rewriteVendorPathsForVite(indexHtml);
+  for (const servedPath of servedPaths) {
+    assertVendorPathAttribute(transformedHtml, servedPath, "transformed HTML");
+  }
+  assert.doesNotMatch(transformedHtml, /\.\/public\/vendor\//);
+
+  const directFilePlugin = viteConfigModule.default.plugins.find(
+    (plugin) => plugin.name === "will-web-direct-file-vendor-paths",
+  );
+  assert.ok(directFilePlugin);
+  assert.equal(directFilePlugin.transformIndexHtml.order, "pre");
+  assert.equal(
+    directFilePlugin.transformIndexHtml.handler(indexHtml),
+    transformedHtml,
+  );
 });
 
 test("vendor synchronization uses a fixed allowlist and generated output stays ignored", () => {
@@ -92,4 +115,19 @@ test("offline QA verifies both self-hosted runtimes and dependency fail-open", (
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function assertVendorPathAttribute(html, expectedPath, htmlLabel) {
+  const { attribute, tag } = expectedPath.endsWith(".css")
+    ? { attribute: "href", tag: "link" }
+    : { attribute: "src", tag: "script" };
+  const pattern = new RegExp(
+    `<${tag}\\b[^>]*\\s${attribute}\\s*=\\s*(["'])${escapeRegExp(expectedPath)}\\1`,
+  );
+  const uncommentedHtml = html.replace(/<!--[\s\S]*?-->/g, "");
+
+  assert.ok(
+    pattern.test(uncommentedHtml),
+    `${htmlLabel} is missing <${tag} ${attribute}="${expectedPath}">`,
+  );
 }
