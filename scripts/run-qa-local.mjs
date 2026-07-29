@@ -1,14 +1,17 @@
 import { spawn } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  createPreviewLifecycle,
+  runWithPreviewLifecycle,
+} from "./preview-lifecycle.mjs";
 
 const repoDir = path.resolve(fileURLToPath(new URL("../", import.meta.url)));
 const viteBin = fileURLToPath(
   new URL("../node_modules/vite/bin/vite.js", import.meta.url),
 );
-const qaScript = fileURLToPath(
-  new URL("./qa-portfolio.mjs", import.meta.url),
-);
+const qaScript = path.join(repoDir, "scripts", "qa-portfolio.mjs");
+const directFileQaScript = path.join(repoDir, "scripts", "qa-direct-file.mjs");
 const baseUrl = "http://127.0.0.1:4173/";
 const outputDir = path.join(repoDir, ".artifacts", "qa");
 
@@ -22,26 +25,9 @@ function waitForExit(child) {
   });
 }
 
-async function waitForPreview() {
-  const deadline = Date.now() + 15_000;
-  let lastError;
-
-  while (Date.now() < deadline) {
-    try {
-      const response = await fetch(baseUrl);
-      if (response.ok) return;
-      lastError = new Error(`preview returned ${response.status}`);
-    } catch (error) {
-      lastError = error;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 200));
-  }
-
-  throw new Error(`Vite preview did not become ready: ${lastError?.message}`);
-}
-
-async function runQa(environment) {
-  const qa = spawn(process.execPath, [qaScript, baseUrl], {
+async function runQa(script, environment) {
+  const args = script === qaScript ? [script, baseUrl] : [script];
+  const qa = spawn(process.execPath, args, {
     cwd: repoDir,
     stdio: "inherit",
     env: {
@@ -60,25 +46,25 @@ const server = spawn(
     stdio: ["ignore", "pipe", "pipe"],
   },
 );
-
-server.stdout.on("data", (chunk) => process.stdout.write(chunk));
 server.stderr.on("data", (chunk) => process.stderr.write(chunk));
+const previewLifecycle = createPreviewLifecycle(server, { baseUrl });
 
-try {
-  await waitForPreview();
-  await runQa({
+await runWithPreviewLifecycle(previewLifecycle, async () => {
+  await runQa(qaScript, {
     QA_ALLOW_OFFLINE: "0",
     QA_BLOCK_EXTERNAL: "1",
     QA_BLOCK_VENDOR: "0",
     QA_OUTPUT_DIR: outputDir,
   });
-  await runQa({
+  await runQa(qaScript, {
     QA_ALLOW_OFFLINE: "1",
     QA_BLOCK_EXTERNAL: "1",
     QA_BLOCK_VENDOR: "1",
     QA_VIEWPORTS: "1440,390",
     QA_OUTPUT_DIR: path.join(outputDir, "fallback"),
   });
-} finally {
-  server.kill();
-}
+});
+
+await runQa(directFileQaScript, {
+  QA_OUTPUT_DIR: path.join(outputDir, "direct-file"),
+});

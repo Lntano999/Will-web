@@ -54,14 +54,37 @@ test("evidence remains available at stable public paths", async () => {
   );
 });
 
-test("offline QA wrapper owns preview readiness and cleanup", async () => {
-  const runner = await readText("scripts/run-qa-local.mjs");
+test("offline QA wrapper delegates preview lifecycle cleanup to its helper", async () => {
+  const [runner, lifecycle] = await Promise.all([
+    readText("scripts/run-qa-local.mjs"),
+    readText("scripts/preview-lifecycle.mjs"),
+  ]);
 
   assert.match(runner, /node_modules\/vite\/bin\/vite\.js/);
   assert.match(runner, /"preview"/);
+  assert.match(runner, /const server = spawn\(/);
+  assert.match(runner, /from "\.\/preview-lifecycle\.mjs"/);
+  assert.match(runner, /createPreviewLifecycle\(server, \{ baseUrl \}\)/);
   assert.match(runner, /QA_ALLOW_OFFLINE:\s*"1"/);
+  assert.match(runner, /QA_ALLOW_OFFLINE:\s*"0"/);
   assert.match(runner, /QA_BLOCK_EXTERNAL:\s*"1"/);
-  assert.match(runner, /finally\s*\{[\s\S]*server\.kill\(\)/);
+
+  const lifecycleRoundIndex = runner.indexOf(
+    "await runWithPreviewLifecycle(previewLifecycle, async () => {",
+  );
+  const directFileRoundIndex = runner.indexOf("await runQa(directFileQaScript,");
+  assert.ok(lifecycleRoundIndex >= 0, "preview lifecycle round is not awaited");
+  assert.ok(
+    lifecycleRoundIndex < directFileRoundIndex,
+    "direct-file QA must start only after preview lifecycle cleanup",
+  );
+
+  assert.match(lifecycle, /export function createPreviewLifecycle\(/);
+  assert.match(lifecycle, /async function stop\(\)/);
+  assert.match(lifecycle, /await waitForClose\(\)/);
+  assert.match(lifecycle, /cleanupTimeoutMs = 5_000/);
+  assert.match(lifecycle, /ERR_PREVIEW_CLEANUP_TIMEOUT/);
+  assert.match(lifecycle, /export async function runWithPreviewLifecycle\(/);
 });
 
 test("CI verifies build and offline browser behavior", async () => {

@@ -12,6 +12,9 @@ const syncScript = await readFile("scripts/sync-vendor-assets.mjs", "utf8").catc
 );
 const qaScript = await readFile("scripts/qa-portfolio.mjs", "utf8");
 const qaRunner = await readFile("scripts/run-qa-local.mjs", "utf8");
+const directFileQa = await readFile("scripts/qa-direct-file.mjs", "utf8").catch(
+  () => "",
+);
 
 test("runtime dependencies use exact reproducible versions", () => {
   assert.deepEqual(packageJson.dependencies, {
@@ -111,6 +114,49 @@ test("offline QA verifies both self-hosted runtimes and dependency fail-open", (
   assert.match(qaRunner, /QA_BLOCK_VENDOR: "1"/);
   assert.match(qaRunner, /QA_ALLOW_OFFLINE: "1"/);
   assert.match(qaRunner, /QA_VIEWPORTS: "1440,390"/);
+
+  const previewLifecycleIndex = qaRunner.indexOf(
+    "await runWithPreviewLifecycle(previewLifecycle,",
+  );
+  const directFileRoundIndex = qaRunner.indexOf(
+    "await runQa(directFileQaScript,",
+  );
+  assert.ok(previewLifecycleIndex >= 0, "preview lifecycle must be awaited");
+  assert.match(qaRunner, /createPreviewLifecycle/);
+  assert.match(qaRunner, /runWithPreviewLifecycle/);
+  assert.ok(
+    previewLifecycleIndex < directFileRoundIndex,
+    "preview cleanup must complete before direct-file QA starts",
+  );
+});
+
+test("offline QA includes a real direct-file runtime round", () => {
+  assert.equal(packageJson.scripts["qa:file"], "node scripts/qa-direct-file.mjs");
+  assert.match(qaRunner, /["']scripts["']/);
+  assert.match(qaRunner, /["']qa-direct-file\.mjs["']/);
+  assert.match(qaRunner, /direct-file/);
+
+  assert.match(directFileQa, /pathToFileURL/);
+  assert.match(directFileQa, /animation-complete/);
+  assert.match(directFileQa, /window\s*\.\s*ScrollTrigger/);
+  assert.match(directFileQa, /page\s*\.\s*mouse\s*\.\s*wheel/);
+  assert.match(directFileQa, /page\.on\("request"/);
+  assert.match(directFileQa, /path\.resolve\(fileURLToPath\(requestUrl\)\)/);
+  assert.match(directFileQa, /const expectedVendorFiles = \[/);
+  assert.match(directFileQa, /path\.relative\(vendorDir, filePath\)/);
+  assert.match(directFileQa, /path\.isAbsolute\(relativePath\)/);
+  assert.match(directFileQa, /assert\.equal\(vendorRequests\.length, expectedVendorFiles\.length\)/);
+  assert.match(directFileQa, /getComputedStyle\(navigation\)/);
+  assert.match(directFileQa, /navigation\.display/);
+  assert.match(directFileQa, /navigation\.visibility/);
+  assert.match(directFileQa, /navigation\.opacity/);
+  assert.match(directFileQa, /navigation\.width/);
+  assert.match(directFileQa, /navigation\.height/);
+  assert.match(directFileQa, /page\.waitForFunction\(/);
+  assert.match(directFileQa, /const cleanupErrors = \[\]/);
+  assert.match(directFileQa, /await page\?\.close\(\)/);
+  assert.match(directFileQa, /await browser\?\.close\(\)/);
+  assert.match(directFileQa, /new AggregateError\(errors,/);
 });
 
 function escapeRegExp(value) {
