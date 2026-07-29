@@ -26,6 +26,15 @@ test("package scripts expose a reproducible Vite lifecycle", async () => {
   assert.match(viteConfig, /strictPort:\s*true/);
 });
 
+test("page does not ship the unused Webflow icon font", async () => {
+  const html = await readText("index.html");
+  const css = await readText("will-tech.core.v1.css");
+
+  assert.doesNotMatch(html, /font-family:\s*webflow-icons/);
+  assert.doesNotMatch(css, /font-family:\s*webflow-icons/);
+  assert.doesNotMatch(css, /\.w-icon-slider-left:before/);
+});
+
 test("evidence remains available at stable public paths", async () => {
   for (const relativePath of [
     "public/evidence/modeling-csee-cup-2026-third-prize-redacted.png",
