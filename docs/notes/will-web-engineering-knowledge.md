@@ -153,3 +153,21 @@
 **在 Will-web 中：** 当前大量内联代码和第三方脚本使严格 CSP 难以直接启用；应先收敛依赖，再用 Report-Only 观察，最后才强制执行。
 
 **为什么重要：** 一次性开启过严策略可能再次造成脚本被浏览器阻断，因此安全策略本身也需要渐进迁移和回滚。
+
+## 版本与环境
+
+### Version Pinning（版本锁定）
+
+**是什么：** 在项目清单中声明可接受版本范围，并在 lockfile 中记录实际安装的精确版本及依赖树。
+
+**在 Will-web 中：** `package.json` 声明 Vite 8.1 系列，`package-lock.json` 当前固定到 Vite 8.1.5 及其完整依赖树。
+
+**为什么重要：** 公共 CDN 或不受控的 `latest` 可能在没有修改网站代码时改变行为；版本锁定让同一提交能够重复构建和回滚。
+
+### Development Server 与 Preview
+
+**是什么：** Development server 面向编码调试，提供快速更新；Preview 用本地服务器检查已经生成的生产构建产物。
+
+**在 Will-web 中：** `npm run dev` 用于开发，`npm run build` 生成 `dist/`，`npm run preview` 和 `qa:offline` 验证 `dist/`。
+
+**为什么重要：** 只验证开发服务器不能证明真正准备部署的文件能够正常运行。
