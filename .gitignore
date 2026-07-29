@@ -11,3 +11,4 @@ node_modules/
 # Generated build and browser QA artifacts
 dist/
 .artifacts/
+public/vendor/
