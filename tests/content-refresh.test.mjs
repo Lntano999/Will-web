@@ -116,7 +116,10 @@ test("award claims link directly to privacy-safe public evidence", async () => {
   );
 
   const modelingEvidence = await readFile(
-    new URL("../evidence/modeling-csee-cup-2026-third-prize-redacted.png", import.meta.url),
+    new URL(
+      "../public/evidence/modeling-csee-cup-2026-third-prize-redacted.png",
+      import.meta.url,
+    ),
   );
   assert.deepEqual(
     [...modelingEvidence.subarray(0, 8)],
@@ -124,7 +127,10 @@ test("award claims link directly to privacy-safe public evidence", async () => {
   );
 
   const englishEvidence = await readFile(
-    new URL("../evidence/cn-story-2026-guangdong-second-prize-redacted.jpg", import.meta.url),
+    new URL(
+      "../public/evidence/cn-story-2026-guangdong-second-prize-redacted.jpg",
+      import.meta.url,
+    ),
   );
   assert.deepEqual([...englishEvidence.subarray(0, 3)], [255, 216, 255]);
 });
