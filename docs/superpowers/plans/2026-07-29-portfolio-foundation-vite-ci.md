@@ -32,7 +32,7 @@ This plan intentionally does not localize GSAP/Webflow/Lenis/anime.js, change se
 
 - Create: `tests/build-foundation.test.mjs`
 
-- [ ] **Step 1: Create the contract test**
+- [x] **Step 1: Create the contract test**
 
 ```js
 import assert from "node:assert/strict";
@@ -105,7 +105,7 @@ test("CI verifies build and offline browser behavior", async () => {
 });
 ```
 
-- [ ] **Step 2: Run the new test and verify it fails**
+- [x] **Step 2: Run the new test and verify it fails**
 
 Run:
 
@@ -115,7 +115,7 @@ node --test tests/build-foundation.test.mjs
 
 Expected: FAIL because `package.json` has no `engines` field and the Vite config, public evidence directory, QA wrapper, and CI workflow do not exist.
 
-- [ ] **Step 3: Commit the red test**
+- [x] **Step 3: Commit the red test**
 
 ```powershell
 git add tests/build-foundation.test.mjs
@@ -132,7 +132,7 @@ git commit -m "test: define portfolio build foundation contract"
 - Modify: `.gitignore`
 - Test: `tests/build-foundation.test.mjs`
 
-- [ ] **Step 1: Replace `package.json` with the build lifecycle**
+- [x] **Step 1: Replace `package.json` with the build lifecycle**
 
 ```json
 {
@@ -159,7 +159,7 @@ git commit -m "test: define portfolio build foundation contract"
 }
 ```
 
-- [ ] **Step 2: Create `vite.config.mjs`**
+- [x] **Step 2: Create `vite.config.mjs`**
 
 ```js
 import { defineConfig } from "vite";
@@ -181,7 +181,7 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 3: Add generated directories to `.gitignore`**
+- [x] **Step 3: Add generated directories to `.gitignore`**
 
 Append exactly:
 
@@ -192,7 +192,7 @@ dist/
 .artifacts/
 ```
 
-- [ ] **Step 4: Install the locked Vite dependency**
+- [x] **Step 4: Install the locked Vite dependency**
 
 Run:
 
@@ -202,7 +202,7 @@ npm install
 
 Expected: exit 0; `package-lock.json` contains a `node_modules/vite` entry in the supported `8.1.x` line.
 
-- [ ] **Step 5: Run the focused package/config contract**
+- [x] **Step 5: Run the focused package/config contract**
 
 Run:
 
@@ -212,7 +212,7 @@ node --test --test-name-pattern="package scripts" tests/build-foundation.test.mj
 
 Expected: PASS for the package/config subtest; the other subtests are skipped by the name filter.
 
-- [ ] **Step 6: Run the initial Vite build**
+- [x] **Step 6: Run the initial Vite build**
 
 Run:
 
@@ -222,7 +222,7 @@ npm run build
 
 Expected: exit 0; `dist/index.html` and a generated CSS asset exist. Evidence URLs may still be absent until Task 3.
 
-- [ ] **Step 7: Commit the Vite lifecycle**
+- [x] **Step 7: Commit the Vite lifecycle**
 
 ```powershell
 git add package.json package-lock.json vite.config.mjs .gitignore
@@ -239,7 +239,7 @@ git commit -m "build: add reproducible Vite lifecycle"
 - Test: `tests/build-foundation.test.mjs`
 - Test: `tests/content-refresh.test.mjs`
 
-- [ ] **Step 1: Move evidence with Git history preserved**
+- [x] **Step 1: Move evidence with Git history preserved**
 
 ```powershell
 New-Item -ItemType Directory -Force public/evidence
@@ -247,7 +247,7 @@ git mv evidence/modeling-csee-cup-2026-third-prize-redacted.png public/evidence/
 git mv evidence/cn-story-2026-guangdong-second-prize-redacted.jpg public/evidence/cn-story-2026-guangdong-second-prize-redacted.jpg
 ```
 
-- [ ] **Step 2: Update source-file reads without changing public HTML links**
+- [x] **Step 2: Update source-file reads without changing public HTML links**
 
 In `tests/content-refresh.test.mjs`, replace:
 
@@ -281,7 +281,7 @@ new URL(
 
 Do not change either `href="evidence/..."` in `index.html`; Vite copies `public/evidence` to `dist/evidence`, preserving the production URLs.
 
-- [ ] **Step 3: Run evidence and content tests**
+- [x] **Step 3: Run evidence and content tests**
 
 Run:
 
@@ -291,7 +291,7 @@ node --test tests/build-foundation.test.mjs tests/content-refresh.test.mjs
 
 Expected: the public-evidence and all existing content tests pass; QA-wrapper and CI subtests still fail because their files do not exist.
 
-- [ ] **Step 4: Build and verify public evidence output**
+- [x] **Step 4: Build and verify public evidence output**
 
 Run:
 
@@ -303,7 +303,7 @@ Test-Path dist/evidence/cn-story-2026-guangdong-second-prize-redacted.jpg
 
 Expected: build exits 0 and both `Test-Path` calls return `True`.
 
-- [ ] **Step 5: Commit the public evidence move**
+- [x] **Step 5: Commit the public evidence move**
 
 ```powershell
 git add public/evidence tests/content-refresh.test.mjs
@@ -317,7 +317,7 @@ git commit -m "build: preserve evidence in Vite output"
 - Create: `scripts/run-qa-local.mjs`
 - Test: `tests/build-foundation.test.mjs`
 
-- [ ] **Step 1: Create `scripts/run-qa-local.mjs`**
+- [x] **Step 1: Create `scripts/run-qa-local.mjs`**
 
 ```js
 import { spawn } from "node:child_process";
@@ -392,7 +392,7 @@ try {
 }
 ```
 
-- [ ] **Step 2: Run the focused wrapper contract**
+- [x] **Step 2: Run the focused wrapper contract**
 
 Run:
 
@@ -402,7 +402,7 @@ node --test --test-name-pattern="offline QA wrapper" tests/build-foundation.test
 
 Expected: PASS.
 
-- [ ] **Step 3: Run a built offline QA**
+- [x] **Step 3: Run a built offline QA**
 
 Run:
 
@@ -413,7 +413,7 @@ npm run qa:offline
 
 Expected: `Portfolio QA passed for 6 responsive viewports.` Screenshots exist under `.artifacts/qa`; all external runtime failures are expected notes, not test failures.
 
-- [ ] **Step 4: Confirm the preview process was cleaned up**
+- [x] **Step 4: Confirm the preview process was cleaned up**
 
 Run:
 
@@ -423,7 +423,7 @@ Get-NetTCPConnection -LocalPort 4173 -State Listen -ErrorAction SilentlyContinue
 
 Expected: no output.
 
-- [ ] **Step 5: Commit the offline QA runner**
+- [x] **Step 5: Commit the offline QA runner**
 
 ```powershell
 git add scripts/run-qa-local.mjs tests/build-foundation.test.mjs package.json
@@ -437,7 +437,7 @@ git commit -m "test: run offline portfolio QA against Vite preview"
 - Create: `.github/workflows/ci.yml`
 - Test: `tests/build-foundation.test.mjs`
 
-- [ ] **Step 1: Create `.github/workflows/ci.yml`**
+- [x] **Step 1: Create `.github/workflows/ci.yml`**
 
 ```yaml
 name: CI
@@ -491,7 +491,7 @@ jobs:
           if-no-files-found: error
 ```
 
-- [ ] **Step 2: Run the CI contract test**
+- [x] **Step 2: Run the CI contract test**
 
 Run:
 
@@ -501,7 +501,7 @@ node --test --test-name-pattern="CI verifies" tests/build-foundation.test.mjs
 
 Expected: PASS.
 
-- [ ] **Step 3: Run the full static suite**
+- [x] **Step 3: Run the full static suite**
 
 Run:
 
@@ -509,9 +509,9 @@ Run:
 npm test
 ```
 
-Expected: all previous 18 tests plus the four foundation tests pass.
+Expected: all previous 18 tests plus the five foundation tests pass.
 
-- [ ] **Step 4: Commit the CI workflow**
+- [x] **Step 4: Commit the CI workflow**
 
 ```powershell
 git add .github/workflows/ci.yml tests/build-foundation.test.mjs
@@ -526,7 +526,7 @@ git commit -m "ci: verify build and offline browser behavior"
 - Modify: `docs/audits/2026-07-27-portfolio-architecture-professionalism-review.md`
 - Modify: `docs/notes/will-web-engineering-knowledge.md`
 
-- [ ] **Step 1: Create the build baseline record**
+- [x] **Step 1: Create the build baseline record**
 
 ```markdown
 # Will-web Vite 迁移基线
@@ -563,7 +563,7 @@ npm run qa:offline
 QA 截图生成在 `.artifacts/qa`，CI 会把该目录保存为 `portfolio-qa` 构建产物。
 ```
 
-- [ ] **Step 2: Correct the old audit deployment and P0 statements**
+- [x] **Step 2: Correct the old audit deployment and P0 statements**
 
 In `docs/audits/2026-07-27-portfolio-architecture-professionalism-review.md`:
 
@@ -574,7 +574,7 @@ In `docs/audits/2026-07-27-portfolio-architecture-professionalism-review.md`:
 
 Do not rewrite unrelated professional-content conclusions.
 
-- [ ] **Step 3: Add version-locking knowledge**
+- [x] **Step 3: Add version-locking knowledge**
 
 Append to `docs/notes/will-web-engineering-knowledge.md`:
 
@@ -596,7 +596,7 @@ Append to `docs/notes/will-web-engineering-knowledge.md`:
 **为什么重要：** 只验证开发服务器不能证明真正准备部署的文件能够正常运行。
 ```
 
-- [ ] **Step 4: Run document and static verification**
+- [x] **Step 4: Run document and static verification**
 
 Run:
 
@@ -607,7 +607,7 @@ node --test tests/*.test.mjs
 
 Expected: exit 0; no whitespace errors; all static tests pass.
 
-- [ ] **Step 5: Commit the baseline documentation**
+- [x] **Step 5: Commit the baseline documentation**
 
 ```powershell
 git add docs/audits/2026-07-29-portfolio-build-baseline.md docs/audits/2026-07-27-portfolio-architecture-professionalism-review.md docs/notes/will-web-engineering-knowledge.md
@@ -620,7 +620,7 @@ git commit -m "docs: record Vite migration baseline"
 
 - Verify only; do not modify source unless a verification failure identifies a scoped defect.
 
-- [ ] **Step 1: Start from a clean dependency install**
+- [x] **Step 1: Start from a clean dependency install**
 
 Run:
 
@@ -630,7 +630,7 @@ npm ci
 
 Expected: exit 0 and package-lock remains unchanged.
 
-- [ ] **Step 2: Run every static regression**
+- [x] **Step 2: Run every static regression**
 
 Run:
 
@@ -638,9 +638,9 @@ Run:
 npm test
 ```
 
-Expected: 22 tests pass, 0 fail.
+Expected: 23 tests pass, 0 fail.
 
-- [ ] **Step 3: Build the deployable artifact**
+- [x] **Step 3: Build the deployable artifact**
 
 Run:
 
@@ -650,7 +650,7 @@ npm run build
 
 Expected: exit 0; `dist/index.html`, generated CSS/assets, and both `dist/evidence` files exist.
 
-- [ ] **Step 4: Run six-viewport offline browser QA**
+- [x] **Step 4: Run six-viewport offline browser QA**
 
 Run:
 
@@ -660,7 +660,7 @@ npm run qa:offline
 
 Expected: `Portfolio QA passed for 6 responsive viewports.`
 
-- [ ] **Step 5: Verify the source and build contracts**
+- [x] **Step 5: Verify the source and build contracts**
 
 Run:
 
@@ -678,7 +678,7 @@ Expected:
 - source hash is reported for audit traceability;
 - all three content patterns are present in the built HTML.
 
-- [ ] **Step 6: Record the phase result without publishing**
+- [x] **Step 6: Record the phase result without publishing**
 
 Update the implementation plan checkboxes to reflect the commands actually run and commit only that progress update:
 
