@@ -7,3 +7,7 @@ node_modules/
 
 # Codex isolated implementation worktrees
 .worktrees/
+
+# Generated build and browser QA artifacts
+dist/
+.artifacts/
