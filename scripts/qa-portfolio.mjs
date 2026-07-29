@@ -12,6 +12,7 @@ if (!baseUrl) {
 const moduleTarget = process.env.PLAYWRIGHT_MODULE_URL;
 const allowOffline = process.env.QA_ALLOW_OFFLINE === "1";
 const blockExternal = process.env.QA_BLOCK_EXTERNAL === "1";
+const blockVendor = process.env.QA_BLOCK_VENDOR === "1";
 const baseOrigin = new URL(baseUrl).origin;
 const playwrightModule = moduleTarget
   ? await import(
@@ -70,17 +71,25 @@ try {
     const page = await browser.newPage({ viewport });
     const requestFailures = [];
     const pageErrors = [];
-    if (blockExternal) {
+    if (blockExternal || blockVendor) {
       await page.route("**/*", async (route) => {
         const requestUrl = new URL(route.request().url());
-        if (
-          requestUrl.origin === baseOrigin ||
-          requestUrl.protocol === "data:" ||
-          requestUrl.protocol === "blob:"
-        ) {
-          await route.continue();
-        } else {
+        const isVendorRequest =
+          requestUrl.origin === baseOrigin &&
+          (requestUrl.pathname === "/vendor" ||
+            requestUrl.pathname.startsWith("/vendor/"));
+
+        if (blockVendor && isVendorRequest) {
           await route.abort("blockedbyclient");
+        } else if (
+          blockExternal &&
+          requestUrl.origin !== baseOrigin &&
+          requestUrl.protocol !== "data:" &&
+          requestUrl.protocol !== "blob:"
+        ) {
+          await route.abort("blockedbyclient");
+        } else {
+          await route.continue();
         }
       });
     }
@@ -162,7 +171,7 @@ try {
         });
       }
       notes.push(
-        `${viewport.width}px: external runtime unavailable; native preloader fail-open verified`,
+        `${viewport.width}px: animation runtime unavailable; native preloader fail-open verified`,
       );
     }
 

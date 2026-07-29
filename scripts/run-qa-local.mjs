@@ -40,6 +40,18 @@ async function waitForPreview() {
   throw new Error(`Vite preview did not become ready: ${lastError?.message}`);
 }
 
+async function runQa(environment) {
+  const qa = spawn(process.execPath, [qaScript, baseUrl], {
+    cwd: repoDir,
+    stdio: "inherit",
+    env: {
+      ...process.env,
+      ...environment,
+    },
+  });
+  await waitForExit(qa);
+}
+
 const server = spawn(
   process.execPath,
   [viteBin, "preview", "--host", "127.0.0.1", "--port", "4173", "--strictPort"],
@@ -54,17 +66,19 @@ server.stderr.on("data", (chunk) => process.stderr.write(chunk));
 
 try {
   await waitForPreview();
-  const qa = spawn(process.execPath, [qaScript, baseUrl], {
-    cwd: repoDir,
-    stdio: "inherit",
-    env: {
-      ...process.env,
-      QA_ALLOW_OFFLINE: "1",
-      QA_BLOCK_EXTERNAL: "1",
-      QA_OUTPUT_DIR: outputDir,
-    },
+  await runQa({
+    QA_ALLOW_OFFLINE: "0",
+    QA_BLOCK_EXTERNAL: "1",
+    QA_BLOCK_VENDOR: "0",
+    QA_OUTPUT_DIR: outputDir,
   });
-  await waitForExit(qa);
+  await runQa({
+    QA_ALLOW_OFFLINE: "1",
+    QA_BLOCK_EXTERNAL: "1",
+    QA_BLOCK_VENDOR: "1",
+    QA_VIEWPORTS: "1440,390",
+    QA_OUTPUT_DIR: path.join(outputDir, "fallback"),
+  });
 } finally {
   server.kill();
 }
