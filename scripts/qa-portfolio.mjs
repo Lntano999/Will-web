@@ -170,7 +170,11 @@ try {
     const initialSkillState = await page.evaluate(() =>
       [...document.querySelectorAll(".value-item")].map((item) => {
         const icon = getComputedStyle(item.querySelector(".value-icon"));
-        const title = getComputedStyle(item.querySelector(".skill-title-line"));
+        const titleElement = item.querySelector(".skill-title-line");
+        const titleMask = titleElement.closest(".skill-title-mask");
+        const title = getComputedStyle(titleElement);
+        const titleRect = titleElement.getBoundingClientRect();
+        const titleMaskRect = titleMask.getBoundingClientRect();
         const textLines = [
           ...item.querySelectorAll(".scroll-mask-block .reveal-text-line"),
         ];
@@ -182,6 +186,8 @@ try {
           iconOpacity: Number(icon.opacity),
           iconClipPath: icon.clipPath,
           titleOpacity: Number(title.opacity),
+          titleMaskHeadroom: titleMask.clientHeight - titleElement.scrollHeight,
+          titleMaskClearance: titleRect.top - titleMaskRect.bottom,
           ruleScaleX,
           hiddenTextLines: textLines.filter(
             (line) => Number(getComputedStyle(line).opacity) < 0.01,
@@ -225,6 +231,14 @@ try {
           delays: state.textLineDelays,
           durations: state.textLineDurations,
         })}`,
+      );
+      check(
+        state.titleMaskHeadroom >= 2,
+        `${viewport.width}px: skill ${index + 1} title mask headroom is ${state.titleMaskHeadroom}px`,
+      );
+      check(
+        state.titleMaskClearance >= 0.5,
+        `${viewport.width}px: skill ${index + 1} title is not fully below its mask`,
       );
     }
     const initialDividerState = await page.evaluate(() =>

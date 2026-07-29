@@ -294,6 +294,14 @@ test("footer and skill copy use scoped, moderately slower reveal timing", async 
   }
 });
 
+test("skill title masks reserve glyph headroom without moving the layout", async () => {
+  const html = await loadHtml();
+  assert.match(
+    html,
+    /\.mask-line-container\.skill-title-mask\s*\{[\s\S]*?padding-top:\s*0?\.12em;[\s\S]*?margin-top:\s*-0?\.12em;[\s\S]*?padding-bottom:\s*0?\.12em;[\s\S]*?margin-bottom:\s*calc\(0?\.25rem\s*-\s*0?\.12em\);/,
+  );
+});
+
 test("skill reveal initializes before parser-blocking external resources", async () => {
   const html = await loadHtml();
   const controllerStart = html.indexOf("(function initSkillReveals()");
@@ -340,6 +348,8 @@ test("browser QA is reproducible and exercises every horizontal SVG group", asyn
   assert.match(qa, /initialSkillState/);
   assert.match(qa, /titleOpacity/);
   assert.match(qa, /hiddenTextLines/);
+  assert.match(qa, /titleMaskHeadroom/);
+  assert.match(qa, /titleMaskClearance/);
   assert.match(qa, /textLineDelays/);
   assert.match(qa, /expectedDelay/);
   assert.match(qa, /hiddenSkillTitles/);
