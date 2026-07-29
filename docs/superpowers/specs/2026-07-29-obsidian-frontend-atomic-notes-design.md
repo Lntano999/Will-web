@@ -2,7 +2,7 @@
 
 **日期：** 2026-07-29
 
-**状态：** 用户已确认，等待实施
+**状态：** 已实施（Obsidian Vault 提交 `da5b6f3`）
 
 ## 1. 目标
 
@@ -43,12 +43,17 @@ D:\Obsidian--notes\notion\
    ├─ 构建产物.md
    ├─ Development Server.md
    ├─ Preview.md
+   ├─ Spec.md
+   ├─ Implementation Plan.md
+   ├─ Acceptance Criteria.md
    ├─ CI.md
    ├─ E2E 测试.md
+   ├─ Playwright.md
    ├─ 视觉回归.md
    ├─ Fail-open.md
    ├─ Watchdog.md
    ├─ Reduced Motion.md
+   ├─ Preview Deployment.md
    ├─ CSP.md
    └─ 回滚.md
 ```
@@ -144,7 +149,7 @@ Obsidian 成为后续项目驱动知识的主要记录位置。仓库内原知�
 - DNS、带宽、Cloudflare 和 Vercel 的旧内容已拆分并纠正过期事实。
 - `依赖.md` 和 `依赖本地化.md` 能准确解释 C++ 库类比、npm、CDN、`node_modules`、`package-lock.json` 和 Vite 构建产物之间的关系。
 - 系统课程学习笔记未被移动或混入本目录。
-- Vault Git 状态只包含本次明确迁移的 Markdown 文件。
+- Vault 可能保留迁移前已有的其他未提交改动，但本次 Git 暂存区只包含 `前端知识.md` 的迁移和 `前端知识/` 下的新 Markdown 文件。
 - 迁移提交完成后可以通过 Git 恢复原文件。
 
 ## 9. 回滚
