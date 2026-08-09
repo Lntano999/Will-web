@@ -90,6 +90,9 @@ test("offline QA verifies both self-hosted runtimes and dependency fail-open", (
   assert.match(qaScript, /watchdog-timeout/);
   assert.match(qaScript, /data-mobile-nav-trigger/);
   assert.match(qaScript, /aria-expanded/);
+  assert.match(qaScript, /#mobile-navigation a\[href=['"]#tech['"]\]/);
+  assert.match(qaScript, /premium-toast/);
+  assert.match(qaScript, /已复制/);
 
   const previewLifecycleIndex = qaRunner.indexOf(
     "await runWithPreviewLifecycle(previewLifecycle,",

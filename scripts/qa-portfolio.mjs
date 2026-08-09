@@ -66,33 +66,36 @@ function check(condition, message) {
   }
 }
 
+async function installRequestBlocking(target) {
+  if (!blockExternal && !blockVendor) return;
+  await target.route("**/*", async (route) => {
+    const requestUrl = new URL(route.request().url());
+    const isVendorRequest =
+      requestUrl.origin === baseOrigin &&
+      (requestUrl.pathname === "/vendor" ||
+        requestUrl.pathname.startsWith("/vendor/"));
+
+    if (blockVendor && isVendorRequest) {
+      await route.abort("blockedbyclient");
+    } else if (
+      blockExternal &&
+      requestUrl.origin !== baseOrigin &&
+      requestUrl.protocol !== "data:" &&
+      requestUrl.protocol !== "blob:"
+    ) {
+      await route.abort("blockedbyclient");
+    } else {
+      await route.continue();
+    }
+  });
+}
+
 try {
   for (const viewport of viewports) {
     const page = await browser.newPage({ viewport });
     const requestFailures = [];
     const pageErrors = [];
-    if (blockExternal || blockVendor) {
-      await page.route("**/*", async (route) => {
-        const requestUrl = new URL(route.request().url());
-        const isVendorRequest =
-          requestUrl.origin === baseOrigin &&
-          (requestUrl.pathname === "/vendor" ||
-            requestUrl.pathname.startsWith("/vendor/"));
-
-        if (blockVendor && isVendorRequest) {
-          await route.abort("blockedbyclient");
-        } else if (
-          blockExternal &&
-          requestUrl.origin !== baseOrigin &&
-          requestUrl.protocol !== "data:" &&
-          requestUrl.protocol !== "blob:"
-        ) {
-          await route.abort("blockedbyclient");
-        } else {
-          await route.continue();
-        }
-      });
-    }
+    await installRequestBlocking(page);
     page.on("requestfailed", (request) => {
       requestFailures.push(`${request.url()} — ${request.failure()?.errorText ?? "failed"}`);
     });
@@ -374,7 +377,48 @@ try {
       `${viewport.width}px: skill dividers did not start collapsed`,
     );
 
-    await page.locator("#tech").scrollIntoViewIfNeeded();
+    if (viewport.width <= 390) {
+      const trigger = page.locator("[data-mobile-nav-trigger]");
+      await trigger.focus();
+      await page.keyboard.press("Space");
+      check(
+        (await trigger.getAttribute("aria-expanded")) === "true",
+        `${viewport.width}px: mobile menu did not reopen before selecting Skills`,
+      );
+      const skillsLink = page.locator(
+        '#mobile-navigation a[href="#tech"]',
+      );
+      await skillsLink.focus();
+      await page.keyboard.press("Enter");
+      const menuClosedAfterSelection = await page
+        .waitForFunction(
+          () =>
+            document
+              .querySelector("[data-mobile-nav-trigger]")
+              ?.getAttribute("aria-expanded") === "false",
+          null,
+          { timeout: 1_000 },
+        )
+        .then(() => true)
+        .catch(() => false);
+      check(
+        menuClosedAfterSelection,
+        `${viewport.width}px: mobile menu did not close after selecting Skills`,
+      );
+      const reachedSkills = await page
+        .waitForFunction(() => {
+          const rect = document.getElementById("tech")?.getBoundingClientRect();
+          return rect && Math.abs(rect.top) <= 120;
+        }, null, { timeout: 4_000 })
+        .then(() => true)
+        .catch(() => false);
+      check(
+        reachedSkills,
+        `${viewport.width}px: Skills navigation did not reach #tech`,
+      );
+    } else {
+      await page.locator("#tech").scrollIntoViewIfNeeded();
+    }
     const skillCards = page.locator(".value-item");
     for (let index = 0; index < (await skillCards.count()); index += 1) {
       await skillCards.nth(index).scrollIntoViewIfNeeded();
@@ -465,6 +509,53 @@ try {
       );
     }
 
+    const passiveContentState = await page.evaluate(() => ({
+      aboutCards: [...document.querySelectorAll("#projects article")].map(
+        (node) => node.tagName,
+      ),
+      passiveFooterItems: [
+        ...document.querySelectorAll("#contact span.link-block"),
+      ].map((node) => node.tagName),
+    }));
+    check(
+      passiveContentState.aboutCards.length >= 3 &&
+        passiveContentState.aboutCards.every((tagName) => tagName === "ARTICLE"),
+      `${viewport.width}px: About cards are ${JSON.stringify(passiveContentState.aboutCards)}`,
+    );
+    check(
+      passiveContentState.passiveFooterItems.length >= 3 &&
+        passiveContentState.passiveFooterItems.every(
+          (tagName) => tagName === "SPAN",
+        ),
+      `${viewport.width}px: passive footer items are ${JSON.stringify(passiveContentState.passiveFooterItems)}`,
+    );
+
+    const copyButtons = page.locator("button[data-copy-wechat]");
+    for (let index = 0; index < (await copyButtons.count()); index += 1) {
+      const button = copyButtons.nth(index);
+      await button.scrollIntoViewIfNeeded();
+      const previousToastCount = await page.locator(".premium-toast").count();
+      await button.click();
+      const copiedToast = await page
+        .waitForFunction(
+          (previousCount) => {
+            const toasts = [...document.querySelectorAll(".premium-toast")];
+            return (
+              toasts.length > previousCount &&
+              toasts.at(-1)?.textContent.includes("jc3400098970 已复制")
+            );
+          },
+          previousToastCount,
+          { timeout: 2_000 },
+        )
+        .then(() => true)
+        .catch(() => false);
+      check(
+        copiedToast,
+        `${viewport.width}px: WeChat button ${index + 1} did not show an 已复制 toast`,
+      );
+    }
+
     for (const relativePath of evidencePaths) {
       const response = await page.request.get(new URL(relativePath, baseUrl).href);
       check(
@@ -474,10 +565,34 @@ try {
     }
 
     if (screenshotWidths.has(viewport.width)) {
-      await page.screenshot({
-        path: path.join(outputDir, `portfolio-${viewport.width}.png`),
-        fullPage: true,
+      const visualContext = await browser.newContext({
+        viewport,
+        reducedMotion: "reduce",
       });
+      try {
+        await installRequestBlocking(visualContext);
+        const visualPage = await visualContext.newPage();
+        await visualPage.goto(baseUrl, {
+          waitUntil: "domcontentloaded",
+          timeout: 30_000,
+        });
+        await visualPage.waitForFunction(
+          () =>
+            document.documentElement.classList.contains("preloader-released") &&
+            !document.getElementById("preloader"),
+          null,
+          { timeout: 12_000 },
+        );
+        await visualPage.evaluate(() => window.scrollTo(0, 0));
+        await visualPage.waitForTimeout(300);
+        await visualPage.screenshot();
+        await visualPage.screenshot({
+          path: path.join(outputDir, `portfolio-${viewport.width}.png`),
+          fullPage: true,
+        });
+      } finally {
+        await visualContext.close();
+      }
     }
     if (viewport.width === 1440) {
       await page.locator("#tech .section-values").screenshot({

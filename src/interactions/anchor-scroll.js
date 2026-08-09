@@ -14,7 +14,7 @@ export function registerAnchorScroll({
 
       link.addEventListener("click", function (event) {
         event.preventDefault();
-        event.stopImmediatePropagation();
+        event.stopPropagation();
 
         const actualTargetId = this.getAttribute("data-target");
         if (!actualTargetId) return;

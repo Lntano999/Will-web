@@ -96,6 +96,23 @@ test("QA distinguishes supported HTTP from the explicit file guard", async () =>
   assert.match(entryQa, /failedRequests\.length, 0/);
 });
 
+test("full-page visual QA uses an isolated reduced-motion capture context", async () => {
+  const qa = await readText("scripts/qa-portfolio.mjs");
+  const contextIndex = qa.indexOf("const visualContext = await browser.newContext({");
+  const reducedMotionIndex = qa.indexOf('reducedMotion: "reduce"', contextIndex);
+  const paintIndex = qa.indexOf("await visualPage.screenshot();", contextIndex);
+  const captureIndex = qa.indexOf("await visualPage.screenshot", contextIndex);
+  const fullCaptureIndex = qa.indexOf("fullPage: true", captureIndex);
+  const closeIndex = qa.indexOf("await visualContext.close()", contextIndex);
+
+  assert.ok(contextIndex >= 0);
+  assert.ok(contextIndex < reducedMotionIndex);
+  assert.ok(reducedMotionIndex < paintIndex);
+  assert.ok(paintIndex < captureIndex || paintIndex === captureIndex);
+  assert.ok(captureIndex < fullCaptureIndex);
+  assert.ok(fullCaptureIndex < closeIndex);
+});
+
 test("CI verifies build and offline browser behavior", async () => {
   const workflow = await readText(".github/workflows/ci.yml");
 

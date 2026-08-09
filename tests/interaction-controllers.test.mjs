@@ -7,6 +7,7 @@ function createHarness(isSmooth) {
   const documentListeners = new Map();
   const clickListeners = [];
   const attributes = new Map([["href", "#tech"]]);
+  const scrollCalls = [];
   const link = {
     getAttribute: (name) => attributes.get(name) ?? null,
     setAttribute: (name, value) => attributes.set(name, value),
@@ -19,17 +20,28 @@ function createHarness(isSmooth) {
       documentListeners.set(type, listener);
     },
     querySelectorAll: () => [link],
+    querySelector: () => ({ getBoundingClientRect: () => ({ top: 100 }) }),
   };
   const scrollController = {
     isSmooth,
-    scrollTo() {},
+    scrollTo(...args) {
+      scrollCalls.push(args);
+    },
+  };
+  const window = {
+    history: { replaceState() {} },
+    innerHeight: 800,
+    scrollY: 0,
   };
 
   return {
     attributes,
     clickListeners,
     document,
+    link,
+    scrollCalls,
     scrollController,
+    window,
     start() {
       documentListeners.get("DOMContentLoaded")?.();
     },
@@ -41,7 +53,7 @@ test("native anchors remain untouched when smooth scrolling is unavailable", () 
   registerAnchorScroll({
     scrollController: harness.scrollController,
     document: harness.document,
-    window: {},
+    window: harness.window,
   });
   harness.start();
 
@@ -55,11 +67,28 @@ test("smooth anchors retain their native href while opting into controlled scrol
   registerAnchorScroll({
     scrollController: harness.scrollController,
     document: harness.document,
-    window: {},
+    window: harness.window,
   });
   harness.start();
 
   assert.equal(harness.attributes.get("href"), "#tech");
   assert.equal(harness.attributes.get("data-target"), "#tech");
   assert.equal(harness.clickListeners.length, 1);
+
+  let defaultPrevented = false;
+  let propagationStopped = false;
+  harness.clickListeners[0].call(harness.link, {
+    preventDefault() {
+      defaultPrevented = true;
+    },
+    stopPropagation() {
+      propagationStopped = true;
+    },
+    stopImmediatePropagation() {
+      throw new Error("same-element listeners must remain available");
+    },
+  });
+  assert.equal(defaultPrevented, true);
+  assert.equal(propagationStopped, true);
+  assert.equal(harness.scrollCalls.length, 1);
 });
