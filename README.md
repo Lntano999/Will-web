@@ -11,6 +11,7 @@ Run `node scripts/manual-preview.mjs` or double-click `Start-Website.bat`, then 
 - Tests: `node --test tests/*.test.mjs`
 - Build: `node node_modules/vite/bin/vite.js build`
 - Full local QA: `node scripts/run-qa-local.mjs`
+- Read-only production smoke: `node scripts/qa-production.mjs`
 
 ## Delivery model
 
@@ -19,3 +20,5 @@ Run `node scripts/manual-preview.mjs` or double-click `Start-Website.bat`, then 
 ## Safe release order
 
 Local tests/build/QA → push isolated branch → inspect Vercel Preview → human approval → merge/deploy decision. See `docs/runbooks/preview-and-rollback.md` before release.
+
+The scheduled production smoke checks the public site's redirect, animation release, core contact controls, and scrolling every six hours. It observes production only; it does not deploy or roll back anything.
