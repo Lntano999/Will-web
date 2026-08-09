@@ -457,19 +457,31 @@ test("browser QA is reproducible and exercises every horizontal SVG group", asyn
 test("horizontal expansion preserves animation timing and explicit line masks", async () => {
   const html = await loadHtml();
   const customCss = await loadCustomCss();
+  const horizontalSource = (
+    await Promise.all([
+      readFile(
+        new URL("../src/motion/horizontal-layout.js", import.meta.url),
+        "utf8",
+      ),
+      readFile(
+        new URL("../src/motion/horizontal-reveals.js", import.meta.url),
+        "utf8",
+      ),
+    ])
+  ).join("\n");
 
   assert.match(
-    html,
+    horizontalSource,
     /end:\s*\(\)\s*=>\s*"\+="\s*\+\s*\(getTotalDistance\(\)\s*\+\s*window\.innerHeight\s*\*\s*0\.5\)/,
   );
-  assert.match(html, /const getViewportWidth = \(\) => section\.clientWidth/);
+  assert.match(horizontalSource, /const getViewportWidth = \(\) => section\.clientWidth/);
   assert.match(
-    html,
+    horizontalSource,
     /Math\.max\(0,\s*Math\.ceil\(track\.scrollWidth\s*-\s*getViewportWidth\(\)\)\s*\+\s*1\)/,
   );
-  assert.match(html, /const minRatio = data\.isDivider \? 0\.35 : 0\.12/);
-  assert.match(html, /duration:\s*0\.7,[\s\S]*?ease:\s*"power3\.out",[\s\S]*?stagger:\s*0\.1/);
-  assert.match(html, /duration:\s*0\.5,[\s\S]*?ease:\s*"power3\.out"/);
+  assert.match(horizontalSource, /const minRatio = data\.isDivider \? 0\.35 : 0\.12/);
+  assert.match(horizontalSource, /duration:\s*0\.7,[\s\S]*?ease:\s*"power3\.out",[\s\S]*?stagger:\s*0\.1/);
+  assert.match(horizontalSource, /duration:\s*0\.5,[\s\S]*?ease:\s*"power3\.out"/);
   assert.match(
     customCss,
     /\.svg-draw path\s*\{[\s\S]*?stroke-dasharray:\s*1[\s\S]*?stroke-dashoffset:\s*1/,
@@ -487,7 +499,7 @@ test("horizontal expansion preserves animation timing and explicit line masks", 
     customCss,
     /\.svg-draw path:nth-child\(4\)[\s\S]*?transition-delay:\s*0\.42s/,
   );
-  assert.doesNotMatch(html, /getTotalLength\(/);
+  assert.doesNotMatch(horizontalSource, /getTotalLength\(/);
 
   const fixedExperienceLines = [
     ...html.matchAll(/data-experience="(?:model|field|speak)"[\s\S]*?<div class="scroll-mask-block claim-s">([\s\S]*?)<\/div>\s*(?:<a|<div class="div-hide">)/g),

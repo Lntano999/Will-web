@@ -89,3 +89,21 @@ test("site interactions are assembled from focused owners", async () => {
   assert.doesNotMatch(main, /window\.lenis/);
   assert.doesNotMatch(html, /window\.lenis\?\.start/);
 });
+
+test("horizontal animation owners are assembled outside HTML", async () => {
+  const html = await read("index.html");
+  const main = await read("src/main.js");
+
+  assert.match(
+    main,
+    /import \{ registerHorizontalLayout \} from "\.\/motion\/horizontal-layout\.js";/,
+  );
+  assert.match(
+    main,
+    /import \{ registerHorizontalReveals \} from "\.\/motion\/horizontal-reveals\.js";/,
+  );
+  assert.match(main, /registerHorizontalLayout\(appContext\);/);
+  assert.match(main, /registerHorizontalReveals\(appContext\);/);
+  assert.doesNotMatch(html, /querySelectorAll\("\.split-timeline"\)/);
+  assert.doesNotMatch(html, /slideDataMap/);
+});

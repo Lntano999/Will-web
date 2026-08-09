@@ -23,9 +23,24 @@ async function loadCustomCss() {
   ).join("\n");
 }
 
+async function loadHorizontalSource() {
+  const [layout, reveals] = await Promise.all([
+    readFile(
+      new URL("../src/motion/horizontal-layout.js", import.meta.url),
+      "utf8",
+    ),
+    readFile(
+      new URL("../src/motion/horizontal-reveals.js", import.meta.url),
+      "utf8",
+    ),
+  ]);
+  return `${layout}\n${reveals}`;
+}
+
 test("the blue texture is painted by moving lines, not their mask ancestors", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
   const customCss = await loadCustomCss();
+  const horizontalSource = await loadHorizontalSource();
 
   assert.doesNotMatch(
     customCss,
@@ -38,14 +53,14 @@ test("the blue texture is painted by moving lines, not their mask ancestors", as
     "moving SplitText lines should own the clipping texture",
   );
   assert.equal(
-    html.match(/linesClass:\s*"split-text-line"/g)?.length,
+    horizontalSource.match(/linesClass:\s*"split-text-line"/g)?.length,
     2,
     "the original first-slide and later-slide pipelines should each identify moving lines",
   );
 });
 
 test("horizontal slides keep the original layout pipelines but never reset after reveal", async () => {
-  const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+  const html = await loadHorizontalSource();
 
   assert.match(
     html,

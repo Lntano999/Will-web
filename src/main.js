@@ -5,12 +5,16 @@ import { registerCustomCursor } from "./interactions/custom-cursor.js";
 import { registerContactCopy } from "./interactions/contact-copy.js";
 import { registerAnchorScroll } from "./interactions/anchor-scroll.js";
 import { registerNavigationEffects } from "./interactions/navigation-effects.js";
+import { registerHorizontalLayout } from "./motion/horizontal-layout.js";
+import { registerHorizontalReveals } from "./motion/horizontal-reveals.js";
 
 const runtime = createAnimationRuntime(window);
 const scrollController = createScrollController({ runtime });
 
 export const appContext = { runtime, scrollController };
 
+registerHorizontalLayout(appContext);
+registerHorizontalReveals(appContext);
 registerProjectReveals(appContext);
 registerCustomCursor(appContext);
 registerContactCopy(appContext);

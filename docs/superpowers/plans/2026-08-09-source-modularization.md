@@ -533,7 +533,7 @@ git commit -m "refactor: extract site interaction controllers"
 - Modify: `tests/content-refresh.test.mjs`
 - Modify: `tests/source-modularization.test.mjs`
 
-- [ ] **Step 1: Make the existing horizontal contracts read the future owners**
+- [x] **Step 1: Make the existing horizontal contracts read the future owners**
 
 Load the sources separately:
 
@@ -549,17 +549,17 @@ const horizontalSource = `${horizontalLayout}\n${horizontalReveals}`;
 
 Retarget first-slide, later-slide, one-shot, threshold, SVG timing, tail-distance, and no-reset assertions to `horizontalSource`. Add an assertion that `index.html` contains neither `.split-timeline` controller code nor `slideDataMap`. Run the tests; expect module-not-found RED.
 
-- [ ] **Step 2: Extract layout ownership verbatim**
+- [x] **Step 2: Extract layout ownership verbatim**
 
 Export `registerHorizontalLayout({ runtime, document = globalThis.document, window = globalThis.window })`. Its complete implementation is the first horizontal JavaScript body in design-baseline commit `3232faf`, `index.html` lines 1605–1697. Wrap that body without rewriting its control flow, and bind `gsap`, `ScrollTrigger`, and `SplitText` from `runtime`.
 
 Keep `Math.ceil(track.scrollWidth - section.clientWidth) + 1`, timeline durations `0.3 / 0.2 / 0.5 / 0.15`, `window.innerHeight * 0.5`, and the existing `scaleStart`/`scaleEnd` calculation exactly.
 
-- [ ] **Step 3: Extract reveal ownership verbatim**
+- [x] **Step 3: Extract reveal ownership verbatim**
 
 Export `registerHorizontalReveals(context)`. Its complete implementation is the second horizontal JavaScript body in design-baseline commit `3232faf`, `index.html` lines 1703–1829. Bind runtime globals from `context.runtime`. Keep separate `.split-horizontal` processing, the first-slide `h-slide-1-ready` gate, `IntersectionObserver` thresholds, one-shot `played`, line duration/stagger, arrow duration, SVG initialization and draw timing. Preserve reduced-motion and runtime-unavailable immediate final states.
 
-- [ ] **Step 4: Register in original order and verify**
+- [x] **Step 4: Register in original order and verify**
 
 In `main.js`, place the horizontal calls before `registerProjectReveals(appContext)`, matching the original `load` listener registration order. Remove the two old embedded script blocks but retain their surrounding DOM containers only if they affect layout; otherwise remove the now-empty `w-script` wrappers after browser comparison.
 
@@ -580,7 +580,7 @@ node node_modules/vite/bin/vite.js build
 
 Expected: PASS with exactly two `linesClass: "split-text-line"` pipelines and no reset path.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git add index.html src/main.js src/motion/horizontal-layout.js src/motion/horizontal-reveals.js tests/horizontal-animation.test.mjs tests/content-refresh.test.mjs tests/source-modularization.test.mjs
