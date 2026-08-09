@@ -201,7 +201,9 @@ test("skills and About cards use restrained first-year evidence", async () => {
 
   assert.match(html, /使用 pandas 与 yfinance/);
   assert.match(html, /为量化开发和金融科技/);
-  assert.match(html, /完成 Cloudflare 部署/);
+  assert.match(html, /完成 Vercel 部署/);
+  assert.match(html, /到 Vercel 部署与域名解析/);
+  assert.doesNotMatch(html, /Cloudflare (?:边缘)?部署/);
   assert.match(html, /参与新闻稿初稿撰写。/);
   assert.match(html, /使用 Git 与 LaTeX/);
 

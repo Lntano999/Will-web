@@ -11,8 +11,9 @@ critical motion dependencies, semantic and keyboard-correct structure, complete
 sharing metadata, safe response-header configuration, stricter local browser QA,
 and a documented production smoke/rollback loop.
 
-No branch push, merge, Vercel deployment, production rollback, or other
-production mutation was performed.
+The isolated branch has been pushed and is under review in GitHub PR #2. It has
+not been merged into `main`, promoted to Vercel production, rolled back, or used
+for any other production mutation.
 
 ## Supported entry and delivery model
 
@@ -50,6 +51,9 @@ production mutation was performed.
 - `vercel.json` configures `nosniff`, Referrer-Policy, Permissions-Policy, and
   frame denial. These headers are configuration in this branch and are **not
   live** before an authorized Vercel deployment.
+- Current portfolio copy now names Vercel as the deployment platform. The two
+  corrections are text-only and preserve the existing explicit line breaks,
+  waterfall-mask elements, reveal classes, and animation ownership.
 - A strict CSP was deliberately not claimed while the page still retains inline
   code and approved remote/Webflow-era resources.
 - `.github/workflows/production-smoke.yml` provides manual and six-hour scheduled
@@ -59,7 +63,7 @@ production mutation was performed.
 
 | Gate | Command | Result |
 | --- | --- | --- |
-| Static regression | `node --test tests/*.test.mjs` | 71/71 pass |
+| Static regression | Node 22.12.0: `node --test tests/*.test.mjs` | 74/74 pass |
 | Source syntax | `node --check` for every `src/**/*.js` plus QA scripts | pass |
 | Vendor synchronization | `node scripts/sync-vendor-assets.mjs` | 9 approved files synchronized |
 | Production build | `node node_modules/vite/bin/vite.js build` | 18 modules transformed; exit 0 |
@@ -67,6 +71,7 @@ production mutation was performed.
 | Focused real interaction | 390 normal plus 1440/390 fallback | pass after fresh build |
 | Port cleanup | `Get-NetTCPConnection -LocalPort 4173 -State Listen` | no listener |
 | Production smoke contract | `node --test tests/production-smoke-contract.test.mjs` | 2/2 pass |
+| Dependency audit | npm 10.9.0: `npm ci --ignore-scripts` | 21 packages audited; 0 vulnerabilities |
 
 The browser runner deliberately blocks remote Webflow, Unicorn, and remote-image
 requests. Their `ERR_BLOCKED_BY_CLIENT` notes are expected evidence that local
@@ -117,6 +122,25 @@ at 390 px, with additional contact checks at all normal/fallback viewports:
 | normal evidence 2 | `D48682335E83776CE14754C311C780B1410B4D567CEF40DBF61DFF84664FEBDA` | yes |
 | fallback evidence 1 | `37F1CED0E7519961F38143A9FD7C68579C2401FAF295037ECBD62A03D18F03EE` | yes |
 | fallback evidence 2 | `D48682335E83776CE14754C311C780B1410B4D567CEF40DBF61DFF84664FEBDA` | yes |
+
+- The production JavaScript and CSS bundles are byte-identical before and after
+  the deployment-wording and lockfile corrections:
+
+| Asset | SHA-256 before and after | Match |
+| --- | --- | --- |
+| `index-CJjL5W7D.js` | `04C76D1A2E48D2BE39EB17BCC92AF859E792D1361DD2AA10238DEB64D9A8E352` | yes |
+| `index-y2gYOMbI.css` | `F21031E450A07C1344BE3B7989E84532900CEAF37DE4E13196DE90B167D5C8D4` | yes |
+
+## Dependency security and deployment-source truth
+
+- The transitive development dependency `nanoid` is locked at `3.3.18`, which
+  includes the fix for GHSA-2v37-7h3g-55p8. It is a build-tool dependency, not a
+  runtime package downloaded by site visitors.
+- The repository contains Vercel configuration and GitHub verification
+  workflows, but no tracked Cloudflare Workers/Wrangler deployment workflow.
+  A Cloudflare deployment result that still appears on GitHub is therefore an
+  external GitHub App/integration status; it cannot be disabled by editing this
+  repository and does not replace the Vercel deployment path.
 
 ## Production smoke status before deployment
 
@@ -169,9 +193,10 @@ Use the runbook to identify the last known-good point. A source rollback uses
 `git revert <bad-commit>`; an urgent production rollback uses Vercel's last
 known-good deployment only after explicit authorization.
 
-## Production status: not pushed/merged/deployed
+## Production status: PR only, not merged or deployed
 
-The verified work exists only on local branch `codex/portfolio-industrialization`.
-It has not been pushed, merged into `main`, attached to a Vercel Preview, or
-deployed to production. Production headers, scheduled smoke, semantic controls,
-and the final interaction fix are therefore not claimed as live.
+The verified work is on branch `codex/portfolio-industrialization` and GitHub PR
+#2. Vercel has produced a protected Preview candidate for the branch, but the PR
+has not been merged into `main` and no production deployment was authorized.
+Production headers, scheduled smoke, semantic controls, and the final fixes are
+therefore not claimed as live.

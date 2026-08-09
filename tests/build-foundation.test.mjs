@@ -41,6 +41,22 @@ test("cross-platform WASM peer dependencies are fully locked", async () => {
   }
 });
 
+test("locked nanoid includes the zero-size generator security fix", async () => {
+  const lockfile = JSON.parse(await readText("package-lock.json"));
+  const nanoid = lockfile.packages["node_modules/nanoid"];
+
+  assert.ok(nanoid, "the PostCSS nanoid dependency must be locked");
+
+  const [major, minor, patch] = nanoid.version.split(".").map(Number);
+  const includesFix =
+    major > 3 ||
+    (major === 3 && (minor > 3 || (minor === 3 && patch >= 17)));
+  assert.ok(
+    includesFix,
+    `nanoid ${nanoid.version} is affected by GHSA-2v37-7h3g-55p8`,
+  );
+});
+
 test("page does not ship the unused Webflow icon font", async () => {
   const html = await readText("index.html");
   const css = await readText("will-tech.core.v1.css");
