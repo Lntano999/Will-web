@@ -54,3 +54,18 @@ test("decorative and content images expose deliberate alt text", () => {
   assert.match(portfolioHtml, /alt="微众银行金融科技学院学习环境"/);
   assert.match(portfolioHtml, /alt="联系 Will 的微信二维码"/);
 });
+
+test("contact sources are truthful and keyboard operable", () => {
+  assert.doesNotMatch(portfolioHtml, /hi@will\.xyz/);
+  assert.ok(
+    (portfolioHtml.match(/mailto:hi@will-tech\.xyz/g) ?? []).length >= 2,
+  );
+  assert.equal(
+    (portfolioHtml.match(/<button[^>]+data-copy-wechat/g) ?? []).length,
+    2,
+  );
+  assert.match(
+    portfolioHtml,
+    /id="toast-container"[^>]+role="status"[^>]+aria-live="polite"/,
+  );
+});
