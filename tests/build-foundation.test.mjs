@@ -128,6 +128,21 @@ test("full-page visual QA uses an isolated reduced-motion capture context", asyn
   assert.ok(fullCaptureIndex < closeIndex);
 });
 
+test("browser QA grants clipboard access before exercising copy controls", async () => {
+  const qa = await readText("scripts/qa-portfolio.mjs");
+  const pageIndex = qa.indexOf("const page = await browser.newPage({ viewport });");
+  const permissionIndex = qa.indexOf(
+    'await page.context().grantPermissions(["clipboard-read", "clipboard-write"], {',
+    pageIndex,
+  );
+  const navigationIndex = qa.indexOf("await page.goto(baseUrl", pageIndex);
+
+  assert.ok(pageIndex >= 0, "the interactive QA page is missing");
+  assert.ok(permissionIndex > pageIndex, "clipboard permission is not explicit");
+  assert.ok(permissionIndex < navigationIndex, "clipboard permission is granted too late");
+  assert.match(qa.slice(permissionIndex, navigationIndex), /origin:\s*baseOrigin/);
+});
+
 test("CI verifies build and offline browser behavior", async () => {
   const workflow = await readText(".github/workflows/ci.yml");
 

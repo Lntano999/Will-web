@@ -93,6 +93,9 @@ async function installRequestBlocking(target) {
 try {
   for (const viewport of viewports) {
     const page = await browser.newPage({ viewport });
+    await page.context().grantPermissions(["clipboard-read", "clipboard-write"], {
+      origin: baseOrigin,
+    });
     const requestFailures = [];
     const pageErrors = [];
     await installRequestBlocking(page);
