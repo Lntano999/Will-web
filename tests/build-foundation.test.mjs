@@ -84,6 +84,18 @@ test("offline QA wrapper delegates preview lifecycle cleanup to its helper", asy
   assert.match(lifecycle, /export async function runWithPreviewLifecycle\(/);
 });
 
+test("QA distinguishes supported HTTP from the explicit file guard", async () => {
+  const packageJson = JSON.parse(await readText("package.json"));
+  const runner = await readText("scripts/run-qa-local.mjs");
+  const entryQa = await readText("scripts/qa-entry-guard.mjs").catch(() => "");
+
+  assert.equal(packageJson.scripts["qa:entry"], "node scripts/qa-entry-guard.mjs");
+  assert.match(runner, /qa-entry-guard\.mjs/);
+  assert.match(entryQa, /pathToFileURL/);
+  assert.match(entryQa, /Will-web requires an HTTP preview/);
+  assert.match(entryQa, /failedRequests\.length, 0/);
+});
+
 test("CI verifies build and offline browser behavior", async () => {
   const workflow = await readText(".github/workflows/ci.yml");
 

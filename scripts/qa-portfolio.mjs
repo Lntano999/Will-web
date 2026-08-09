@@ -120,19 +120,33 @@ try {
     let preloaderFailOpen = null;
     let preloaderFallbackState = null;
     if (Object.values(runtime).every(Boolean)) {
-      await page
+      const normalPreloaderRemoved = await page
         .waitForFunction(() => !document.querySelector("#preloader"), null, {
           timeout: 9_000,
         })
-        .catch(async () => {
-          notes.push(
-            `${viewport.width}px: preloader did not self-remove; overlay removed for scoped layout QA`,
-          );
-          await page.evaluate(() => {
-            document.querySelector("#preloader")?.remove();
-            window.lenis?.start?.();
-          });
-        });
+        .then(() => true)
+        .catch(() => false);
+      const normalReleaseState = await page.evaluate(() => ({
+        released:
+          document.documentElement.classList.contains("preloader-released"),
+        releaseReason:
+          document.documentElement.dataset.preloaderReleaseReason ?? "",
+        navHidden:
+          document
+            .querySelector(".navigation")
+            ?.classList.contains("pre-hidden") ?? false,
+      }));
+      check(
+        normalPreloaderRemoved &&
+          normalReleaseState.released &&
+          normalReleaseState.releaseReason === "animation-complete" &&
+          !normalReleaseState.navHidden,
+        `${viewport.width}px: normal preloader state is ${JSON.stringify(normalReleaseState)}`,
+      );
+      check(
+        normalReleaseState.releaseReason !== "watchdog-timeout",
+        `${viewport.width}px: watchdog must not satisfy normal runtime QA`,
+      );
     } else {
       preloaderFailOpen = await page
         .waitForFunction(() => !document.querySelector("#preloader"), null, {
@@ -174,6 +188,51 @@ try {
         `${viewport.width}px: animation runtime unavailable; native preloader fail-open verified`,
       );
     }
+
+    if (viewport.width <= 390) {
+      const trigger = page.locator("[data-mobile-nav-trigger]");
+      await trigger.focus();
+      await page.keyboard.press("Space");
+      check(
+        (await trigger.getAttribute("aria-expanded")) === "true",
+        `${viewport.width}px: mobile menu did not open`,
+      );
+      await page.keyboard.press("Escape");
+      check(
+        (await trigger.getAttribute("aria-expanded")) === "false",
+        `${viewport.width}px: mobile menu did not close`,
+      );
+      check(
+        await trigger.evaluate((node) => node === document.activeElement),
+        `${viewport.width}px: mobile menu focus did not return`,
+      );
+    }
+
+    const contactState = await page.evaluate(() => ({
+      wechatButtons: [...document.querySelectorAll("[data-copy-wechat]")].map(
+        (node) => node.tagName,
+      ),
+      emailTargets: [
+        ...document.querySelectorAll("a[href^='mailto:']"),
+      ].map((link) => link.getAttribute("href")),
+      fakeInteractiveLinks: document.querySelectorAll("a[href='#']").length,
+    }));
+    check(
+      contactState.wechatButtons.length === 2 &&
+        contactState.wechatButtons.every((tagName) => tagName === "BUTTON"),
+      `${viewport.width}px: WeChat controls are ${JSON.stringify(contactState.wechatButtons)}`,
+    );
+    check(
+      contactState.emailTargets.length >= 2 &&
+        contactState.emailTargets.every(
+          (target) => target === "mailto:hi@will-tech.xyz",
+        ),
+      `${viewport.width}px: email targets are ${JSON.stringify(contactState.emailTargets)}`,
+    );
+    check(
+      contactState.fakeInteractiveLinks === 0,
+      `${viewport.width}px: found ${contactState.fakeInteractiveLinks} fake interactive links`,
+    );
 
     const basicLayout = await page.evaluate(() => {
       const root = document.documentElement;

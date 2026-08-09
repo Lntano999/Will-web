@@ -86,6 +86,10 @@ test("offline QA verifies both self-hosted runtimes and dependency fail-open", (
   assert.match(qaRunner, /QA_ALLOW_OFFLINE: "1"/);
   assert.match(qaRunner, /QA_VIEWPORTS: "1440,390"/);
   assert.match(qaRunner, /process\.env\.QA_OUTPUT_DIR/);
+  assert.match(qaScript, /releaseReason\s*===\s*["']animation-complete["']/);
+  assert.match(qaScript, /watchdog-timeout/);
+  assert.match(qaScript, /data-mobile-nav-trigger/);
+  assert.match(qaScript, /aria-expanded/);
 
   const previewLifecycleIndex = qaRunner.indexOf(
     "await runWithPreviewLifecycle(previewLifecycle,",

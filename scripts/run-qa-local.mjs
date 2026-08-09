@@ -11,6 +11,11 @@ const viteBin = fileURLToPath(
   new URL("../node_modules/vite/bin/vite.js", import.meta.url),
 );
 const qaScript = path.join(repoDir, "scripts", "qa-portfolio.mjs");
+const entryGuardQaScript = path.join(
+  repoDir,
+  "scripts",
+  "qa-entry-guard.mjs",
+);
 const baseUrl = "http://127.0.0.1:4173/";
 const outputDir = path.resolve(
   process.env.QA_OUTPUT_DIR || path.join(repoDir, ".artifacts", "qa"),
@@ -63,4 +68,8 @@ await runWithPreviewLifecycle(previewLifecycle, async () => {
     QA_VIEWPORTS: "1440,390",
     QA_OUTPUT_DIR: path.join(outputDir, "fallback"),
   });
+});
+
+await runQa(entryGuardQaScript, {
+  BROWSER_EXECUTABLE: process.env.BROWSER_EXECUTABLE,
 });
