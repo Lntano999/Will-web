@@ -666,7 +666,7 @@ node node_modules/vite/bin/vite.js build
 
 Expected: all tests pass; build exits 0; the branded normal path and the fail-open path are both still asserted.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```powershell
 git add index.html src/main.js src/motion/one-shot-reveals.js src/motion/preloader.js tests/content-refresh.test.mjs tests/horizontal-animation.test.mjs tests/source-modularization.test.mjs
@@ -684,7 +684,7 @@ git commit -m "refactor: extract branded entry motion"
 - Create: `docs/audits/2026-08-09-source-modularization-verification.md`
 - Modify or create: `D:/Obsidian--notes/notion/前端知识/module.md` or `模块化.md`
 
-- [ ] **Step 1: Enforce the final source boundary**
+- [x] **Step 1: Enforce the final source boundary**
 
 The modularization test must prove:
 
@@ -726,7 +726,7 @@ assert.deepEqual(positions, [...positions].sort((a, b) => a - b));
 
 Run `node --test tests/*.test.mjs`; expect PASS before browser work.
 
-- [ ] **Step 2: Run syntax, vendor, build, and full HTTP QA**
+- [x] **Step 2: Run syntax, vendor, build, and full HTTP QA**
 
 Run:
 
@@ -751,7 +751,7 @@ vendor-blocked fallback passes at 1440/390
 port 4173 is clean after preview shutdown
 ```
 
-- [ ] **Step 3: Review the required visual states**
+- [x] **Step 3: Review the required visual states**
 
 Compare `.artifacts/qa-modularized/` with `.artifacts/qa-baseline/` for:
 
@@ -768,7 +768,7 @@ vendor-blocked fail-open final states
 
 Any difference in content position, mask clipping, transform ownership, reveal order, or final visibility is a regression. Fix only the owning module and rerun its focused tests plus the affected browser round.
 
-- [ ] **Step 4: Write the verification report and update the atomic note**
+- [x] **Step 4: Write the verification report and update the atomic note**
 
 The repo report must record exact commands, pass counts, browser viewports, screenshots, remaining Webflow/jQuery/Unicorn dependencies, and the fact that production was not deployed.
 
@@ -785,7 +785,7 @@ Will-web 实例：scroll-controller owns Lenis; horizontal-layout owns track x
 
 Commit only the target Obsidian note; preserve all unrelated vault changes.
 
-- [ ] **Step 5: Commit the verified result**
+- [x] **Step 5: Commit the verified result**
 
 ```powershell
 git add index.html src tests/source-modularization.test.mjs docs/audits/2026-08-09-source-modularization-verification.md

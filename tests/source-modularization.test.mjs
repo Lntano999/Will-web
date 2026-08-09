@@ -137,3 +137,39 @@ test("branded entry motion stays behind the independent fail-open boundary", asy
     /releasePreloader\("animation-complete"\)/,
   );
 });
+
+test("the final source boundary and assembly order stay explicit", async () => {
+  const html = await read("index.html");
+  const main = await read("src/main.js");
+
+  for (const marker of [
+    "var lenis",
+    "originalProjectList",
+    "slideDataMap",
+    "ACTIVATION_DELAY",
+    "initOneShotWhiteReveals",
+    "initPreloader",
+  ]) {
+    assert.doesNotMatch(html, new RegExp(marker));
+  }
+
+  assert.equal((html.match(/type="module"/g) ?? []).length, 1);
+  assert.doesNotMatch(html, /<style(?:\s[^>]*)?>/);
+  assert.match(html, /installPreloaderFailOpen/);
+  assert.match(html, /initSkillReveals/);
+
+  const orderedCalls = [
+    "registerHorizontalLayout(appContext)",
+    "registerHorizontalReveals(appContext)",
+    "registerProjectReveals(appContext)",
+    "registerCustomCursor(appContext)",
+    "registerContactCopy(appContext)",
+    "registerAnchorScroll(appContext)",
+    "registerNavigationEffects(appContext)",
+    "createOneShotReveals(appContext)",
+    "registerPreloader(appContext)",
+  ];
+  const positions = orderedCalls.map((call) => main.indexOf(call));
+  assert.ok(positions.every((position) => position >= 0));
+  assert.deepEqual(positions, [...positions].sort((a, b) => a - b));
+});
