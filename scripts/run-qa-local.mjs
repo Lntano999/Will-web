@@ -11,9 +11,10 @@ const viteBin = fileURLToPath(
   new URL("../node_modules/vite/bin/vite.js", import.meta.url),
 );
 const qaScript = path.join(repoDir, "scripts", "qa-portfolio.mjs");
-const directFileQaScript = path.join(repoDir, "scripts", "qa-direct-file.mjs");
 const baseUrl = "http://127.0.0.1:4173/";
-const outputDir = path.join(repoDir, ".artifacts", "qa");
+const outputDir = path.resolve(
+  process.env.QA_OUTPUT_DIR || path.join(repoDir, ".artifacts", "qa"),
+);
 
 function waitForExit(child) {
   return new Promise((resolve, reject) => {
@@ -26,8 +27,7 @@ function waitForExit(child) {
 }
 
 async function runQa(script, environment) {
-  const args = script === qaScript ? [script, baseUrl] : [script];
-  const qa = spawn(process.execPath, args, {
+  const qa = spawn(process.execPath, [script, baseUrl], {
     cwd: repoDir,
     stdio: "inherit",
     env: {
@@ -63,8 +63,4 @@ await runWithPreviewLifecycle(previewLifecycle, async () => {
     QA_VIEWPORTS: "1440,390",
     QA_OUTPUT_DIR: path.join(outputDir, "fallback"),
   });
-});
-
-await runQa(directFileQaScript, {
-  QA_OUTPUT_DIR: path.join(outputDir, "direct-file"),
 });

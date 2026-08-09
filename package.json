@@ -13,7 +13,6 @@
     "preview": "vite preview",
     "test": "node --test tests/*.test.mjs",
     "qa:portfolio": "node scripts/qa-portfolio.mjs",
-    "qa:file": "node scripts/qa-direct-file.mjs",
     "qa:offline": "node scripts/run-qa-local.mjs"
   },
   "dependencies": {

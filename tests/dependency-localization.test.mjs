@@ -1,8 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import path from "node:path";
 import test from "node:test";
-import { pathToFileURL } from "node:url";
 
 const indexHtml = await readFile("index.html", "utf8");
 const packageJson = JSON.parse(await readFile("package.json", "utf8"));
@@ -12,9 +10,6 @@ const syncScript = await readFile("scripts/sync-vendor-assets.mjs", "utf8").catc
 );
 const qaScript = await readFile("scripts/qa-portfolio.mjs", "utf8");
 const qaRunner = await readFile("scripts/run-qa-local.mjs", "utf8");
-const directFileQa = await readFile("scripts/qa-direct-file.mjs", "utf8").catch(
-  () => "",
-);
 
 test("runtime dependencies use exact reproducible versions", () => {
   assert.deepEqual(packageJson.dependencies, {
@@ -30,18 +25,15 @@ test("runtime dependencies use exact reproducible versions", () => {
   assert.equal(packageJson.scripts.prebuild, "npm run sync:vendor");
 });
 
-test("source vendor URLs work from disk and Vite rewrites them for HTTP", async () => {
-  const sourcePaths = [
-    "./public/vendor/gsap/gsap.min.js",
-    "./public/vendor/gsap/SplitText.min.js",
-    "./public/vendor/gsap/ScrollTrigger.min.js",
-    "./public/vendor/lenis/lenis.min.js",
-    "./public/vendor/lenis/lenis.css",
-    "./public/vendor/anime/anime.umd.min.js",
+test("source HTML uses Vite public-directory vendor URLs", () => {
+  const servedPaths = [
+    "/vendor/gsap/gsap.min.js",
+    "/vendor/gsap/SplitText.min.js",
+    "/vendor/gsap/ScrollTrigger.min.js",
+    "/vendor/lenis/lenis.min.js",
+    "/vendor/lenis/lenis.css",
+    "/vendor/anime/anime.umd.min.js",
   ];
-  const servedPaths = sourcePaths.map((sourcePath) =>
-    sourcePath.replace("./public/vendor/", "/vendor/"),
-  );
   const forbiddenReferences = [
     "unpkg.com/lenis",
     "cdn.jsdelivr.net/npm/animejs",
@@ -50,37 +42,16 @@ test("source vendor URLs work from disk and Vite rewrites them for HTTP", async 
     "Draggable",
   ];
 
-  for (const sourcePath of sourcePaths) {
-    assertVendorPathAttribute(indexHtml, sourcePath, "source HTML");
+  for (const servedPath of servedPaths) {
+    assertVendorPathAttribute(indexHtml, servedPath, "source HTML");
   }
-  assert.doesNotMatch(indexHtml, /["']\/vendor\//);
+  assert.doesNotMatch(indexHtml, /\.\/public\/vendor\//);
   for (const forbiddenReference of forbiddenReferences) {
     assert.doesNotMatch(
       indexHtml,
       new RegExp(escapeRegExp(forbiddenReference)),
     );
   }
-
-  const configModuleUrl = pathToFileURL(path.resolve("vite.config.mjs"));
-  configModuleUrl.searchParams.set("test", Date.now().toString());
-  const viteConfigModule = await import(configModuleUrl.href);
-
-  assert.equal(typeof viteConfigModule.rewriteVendorPathsForVite, "function");
-  const transformedHtml = viteConfigModule.rewriteVendorPathsForVite(indexHtml);
-  for (const servedPath of servedPaths) {
-    assertVendorPathAttribute(transformedHtml, servedPath, "transformed HTML");
-  }
-  assert.doesNotMatch(transformedHtml, /\.\/public\/vendor\//);
-
-  const directFilePlugin = viteConfigModule.default.plugins.find(
-    (plugin) => plugin.name === "will-web-direct-file-vendor-paths",
-  );
-  assert.ok(directFilePlugin);
-  assert.equal(directFilePlugin.transformIndexHtml.order, "pre");
-  assert.equal(
-    directFilePlugin.transformIndexHtml.handler(indexHtml),
-    transformedHtml,
-  );
 });
 
 test("vendor synchronization uses a fixed allowlist and generated output stays ignored", () => {
@@ -114,49 +85,16 @@ test("offline QA verifies both self-hosted runtimes and dependency fail-open", (
   assert.match(qaRunner, /QA_BLOCK_VENDOR: "1"/);
   assert.match(qaRunner, /QA_ALLOW_OFFLINE: "1"/);
   assert.match(qaRunner, /QA_VIEWPORTS: "1440,390"/);
+  assert.match(qaRunner, /process\.env\.QA_OUTPUT_DIR/);
 
   const previewLifecycleIndex = qaRunner.indexOf(
     "await runWithPreviewLifecycle(previewLifecycle,",
   );
-  const directFileRoundIndex = qaRunner.indexOf(
-    "await runQa(directFileQaScript,",
-  );
   assert.ok(previewLifecycleIndex >= 0, "preview lifecycle must be awaited");
   assert.match(qaRunner, /createPreviewLifecycle/);
   assert.match(qaRunner, /runWithPreviewLifecycle/);
-  assert.ok(
-    previewLifecycleIndex < directFileRoundIndex,
-    "preview cleanup must complete before direct-file QA starts",
-  );
-});
-
-test("offline QA includes a real direct-file runtime round", () => {
-  assert.equal(packageJson.scripts["qa:file"], "node scripts/qa-direct-file.mjs");
-  assert.match(qaRunner, /["']scripts["']/);
-  assert.match(qaRunner, /["']qa-direct-file\.mjs["']/);
-  assert.match(qaRunner, /direct-file/);
-
-  assert.match(directFileQa, /pathToFileURL/);
-  assert.match(directFileQa, /animation-complete/);
-  assert.match(directFileQa, /window\s*\.\s*ScrollTrigger/);
-  assert.match(directFileQa, /page\s*\.\s*mouse\s*\.\s*wheel/);
-  assert.match(directFileQa, /page\.on\("request"/);
-  assert.match(directFileQa, /path\.resolve\(fileURLToPath\(requestUrl\)\)/);
-  assert.match(directFileQa, /const expectedVendorFiles = \[/);
-  assert.match(directFileQa, /path\.relative\(vendorDir, filePath\)/);
-  assert.match(directFileQa, /path\.isAbsolute\(relativePath\)/);
-  assert.match(directFileQa, /assert\.equal\(vendorRequests\.length, expectedVendorFiles\.length\)/);
-  assert.match(directFileQa, /getComputedStyle\(navigation\)/);
-  assert.match(directFileQa, /navigation\.display/);
-  assert.match(directFileQa, /navigation\.visibility/);
-  assert.match(directFileQa, /navigation\.opacity/);
-  assert.match(directFileQa, /navigation\.width/);
-  assert.match(directFileQa, /navigation\.height/);
-  assert.match(directFileQa, /page\.waitForFunction\(/);
-  assert.match(directFileQa, /const cleanupErrors = \[\]/);
-  assert.match(directFileQa, /await page\?\.close\(\)/);
-  assert.match(directFileQa, /await browser\?\.close\(\)/);
-  assert.match(directFileQa, /new AggregateError\(errors,/);
+  assert.doesNotMatch(qaRunner, /direct-file|qa-direct-file/);
+  assert.equal(packageJson.scripts["qa:file"], undefined);
 });
 
 function escapeRegExp(value) {

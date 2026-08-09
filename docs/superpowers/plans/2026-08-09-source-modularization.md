@@ -65,7 +65,7 @@
 - Modify: `tests/dependency-localization.test.mjs`
 - Delete: `scripts/qa-direct-file.mjs`
 
-- [ ] **Step 1: Replace direct-file expectations with the supported HTTP contract**
+- [x] **Step 1: Replace direct-file expectations with the supported HTTP contract**
 
 Update `tests/dependency-localization.test.mjs` so the source contract is explicit:
 
@@ -89,7 +89,7 @@ test("source HTML uses Vite public-directory vendor URLs", () => {
 
 Remove assertions for `rewriteVendorPathsForVite`, the direct-file plugin, `qa:file`, and the direct-file runner round. In `tests/build-foundation.test.mjs`, retain the preview lifecycle assertions but make the final orchestration assertion end after the vendor-blocked HTTP round and preview cleanup.
 
-- [ ] **Step 2: Run the focused tests and observe RED**
+- [x] **Step 2: Run the focused tests and observe RED**
 
 Run:
 
@@ -99,7 +99,7 @@ node --test tests/dependency-localization.test.mjs tests/build-foundation.test.m
 
 Expected: FAIL because `index.html`, `package.json`, `vite.config.mjs`, and the QA runner still contain the direct-file contract.
 
-- [ ] **Step 3: Remove only the unsupported entry path**
+- [x] **Step 3: Remove only the unsupported entry path**
 
 Apply these concrete changes:
 
@@ -125,7 +125,7 @@ const outputDir = path.resolve(
 );
 ```
 
-- [ ] **Step 4: Verify the supported entry**
+- [x] **Step 4: Verify the supported entry**
 
 Run:
 
@@ -137,7 +137,7 @@ node node_modules/vite/bin/vite.js build
 
 Expected: focused tests pass; 9 approved vendor files are synchronized; Vite build exits 0 and `dist/vendor/` contains the allowlisted assets.
 
-- [ ] **Step 5: Capture the supported HTTP visual baseline**
+- [x] **Step 5: Capture the supported HTTP visual baseline**
 
 Run:
 
@@ -150,7 +150,7 @@ Remove-Item Env:QA_OUTPUT_DIR
 
 Expected: six normal viewports and two vendor-blocked fallback viewports pass; baseline screenshots are preserved under `.artifacts/qa-baseline/`; port 4173 is clean after shutdown.
 
-- [ ] **Step 6: Commit the support-boundary change**
+- [x] **Step 6: Commit the support-boundary change**
 
 ```powershell
 git add index.html package.json vite.config.mjs scripts/run-qa-local.mjs scripts/qa-direct-file.mjs tests/build-foundation.test.mjs tests/dependency-localization.test.mjs

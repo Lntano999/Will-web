@@ -68,16 +68,13 @@ test("offline QA wrapper delegates preview lifecycle cleanup to its helper", asy
   assert.match(runner, /QA_ALLOW_OFFLINE:\s*"1"/);
   assert.match(runner, /QA_ALLOW_OFFLINE:\s*"0"/);
   assert.match(runner, /QA_BLOCK_EXTERNAL:\s*"1"/);
+  assert.match(runner, /process\.env\.QA_OUTPUT_DIR/);
 
   const lifecycleRoundIndex = runner.indexOf(
     "await runWithPreviewLifecycle(previewLifecycle, async () => {",
   );
-  const directFileRoundIndex = runner.indexOf("await runQa(directFileQaScript,");
   assert.ok(lifecycleRoundIndex >= 0, "preview lifecycle round is not awaited");
-  assert.ok(
-    lifecycleRoundIndex < directFileRoundIndex,
-    "direct-file QA must start only after preview lifecycle cleanup",
-  );
+  assert.doesNotMatch(runner, /direct-file|qa-direct-file/);
 
   assert.match(lifecycle, /export function createPreviewLifecycle\(/);
   assert.match(lifecycle, /async function stop\(\)/);
