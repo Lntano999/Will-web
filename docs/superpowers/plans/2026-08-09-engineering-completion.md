@@ -85,7 +85,7 @@ Do not overwrite unrelated Obsidian changes. The vault currently has no Git repo
 - Modify: `Start-Website.bat`
 - Create: `README.md`
 
-- [ ] **Step 1: Write the failing local-entry contracts**
+- [x] **Step 1: Write the failing local-entry contracts**
 
 Create `tests/entry-operations.test.mjs` with these complete contracts:
 
@@ -134,7 +134,7 @@ test("manual acceptance uses the checked-in Vite preview", async () => {
 });
 ```
 
-- [ ] **Step 2: Run the entry contracts and observe RED**
+- [x] **Step 2: Run the entry contracts and observe RED**
 
 Run:
 
@@ -144,7 +144,7 @@ node --test tests/entry-operations.test.mjs
 
 Expected: both tests fail because the early guard, manual preview script, package command, and README do not exist and `Start-Website.bat` still uses `npx -y serve`.
 
-- [ ] **Step 3: Add the dependency-free file-protocol guard**
+- [x] **Step 3: Add the dependency-free file-protocol guard**
 
 Place this inline script immediately after charset/viewport metadata and before every stylesheet or external script in `index.html`:
 
@@ -185,7 +185,7 @@ Place this inline script immediately after charset/viewport metadata and before 
 
 Do not reuse application CSS or import another script in this guard.
 
-- [ ] **Step 4: Implement the manual preview script**
+- [x] **Step 4: Implement the manual preview script**
 
 Create `scripts/manual-preview.mjs` with exported argument helpers and one executable `main()`:
 
@@ -262,7 +262,7 @@ if (isEntry) {
 }
 ```
 
-- [ ] **Step 5: Replace the Windows launcher and document the runtime model**
+- [x] **Step 5: Replace the Windows launcher and document the runtime model**
 
 Replace `Start-Website.bat` with:
 
@@ -310,7 +310,7 @@ Run `node scripts/manual-preview.mjs` or double-click `Start-Website.bat`, then 
 Local tests/build/QA → push isolated branch → inspect Vercel Preview → human approval → merge/deploy decision. See `docs/runbooks/preview-and-rollback.md` before release.
 ```
 
-- [ ] **Step 6: Run GREEN checks and a bounded launcher smoke test**
+- [x] **Step 6: Run GREEN checks and a bounded launcher smoke test**
 
 Run:
 
@@ -322,7 +322,7 @@ node scripts/manual-preview.mjs
 
 Expected: Node tests pass; launcher builds, prints `Manual acceptance: http://127.0.0.1:4173/`, and remains active until Ctrl+C. After Ctrl+C, `netstat -ano | Select-String ':4173\s+.*LISTENING'` returns no listener.
 
-- [ ] **Step 7: Commit the entry and operations contract**
+- [x] **Step 7: Commit the entry and operations contract**
 
 ```powershell
 git add index.html package.json Start-Website.bat README.md scripts/manual-preview.mjs tests/entry-operations.test.mjs
@@ -342,7 +342,7 @@ git commit -m "build: standardize manual acceptance entry"
 - Modify: `tests/interaction-controllers.test.mjs`
 - Modify: `src/styles/foundations.css`
 
-- [ ] **Step 1: Write failing semantics and anchor contracts**
+- [x] **Step 1: Write failing semantics and anchor contracts**
 
 Create `tests/semantics-accessibility.test.mjs`:
 
@@ -404,7 +404,7 @@ test("smooth anchors retain their native href while opting into controlled scrol
 });
 ```
 
-- [ ] **Step 2: Run focused tests and observe RED**
+- [x] **Step 2: Run focused tests and observe RED**
 
 ```powershell
 node --test tests/semantics-accessibility.test.mjs tests/interaction-controllers.test.mjs
@@ -412,7 +412,7 @@ node --test tests/semantics-accessibility.test.mjs tests/interaction-controllers
 
 Expected: semantic tests fail on missing landmarks/real controls; the smooth-anchor test fails because `anchor-scroll.js` rewrites `href` to `javascript:void(0);`.
 
-- [ ] **Step 3: Retain real href values in the anchor controller**
+- [x] **Step 3: Retain real href values in the anchor controller**
 
 In `src/interactions/anchor-scroll.js`, keep the source `href`, set `data-target`, and intercept click only when smooth scrolling is active:
 
@@ -429,7 +429,7 @@ link.addEventListener("click", (event) => {
 
 Do not write a `javascript:` URL.
 
-- [ ] **Step 4: Convert structural elements without changing class hooks**
+- [x] **Step 4: Convert structural elements without changing class hooks**
 
 Apply these exact semantic mappings in `index.html`:
 
@@ -461,7 +461,7 @@ Convert each About card's `<a href="#" class="use-case__block w-inline-block">..
 
 Convert LinkedIn and copyright placeholder anchors to `<span class="link-block ...">...</span>`. Keep the visible text and inner wrappers unchanged.
 
-- [ ] **Step 5: Add accessible region labels and image semantics**
+- [x] **Step 5: Add accessible region labels and image semantics**
 
 Add screen-reader-only section headings:
 
@@ -499,7 +499,7 @@ Add to `src/styles/foundations.css`:
 }
 ```
 
-- [ ] **Step 6: Verify semantics and unchanged source boundaries**
+- [x] **Step 6: Verify semantics and unchanged source boundaries**
 
 ```powershell
 node --test tests/semantics-accessibility.test.mjs tests/interaction-controllers.test.mjs tests/source-modularization.test.mjs tests/content-refresh.test.mjs
@@ -508,7 +508,7 @@ node node_modules\vite\bin\vite.js build
 
 Expected: focused tests pass; Vite build exits 0. Do not accept new inline style or script blocks beyond the already documented early guard/reliability exceptions.
 
-- [ ] **Step 7: Commit semantic structure**
+- [x] **Step 7: Commit semantic structure**
 
 ```powershell
 git add index.html src/interactions/anchor-scroll.js src/styles/foundations.css tests/semantics-accessibility.test.mjs tests/interaction-controllers.test.mjs
@@ -529,7 +529,7 @@ git commit -m "refactor: establish semantic document structure"
 - Modify: `src/styles/navigation.css`
 - Modify: `tests/source-modularization.test.mjs`
 
-- [ ] **Step 1: Write the controller behavior test first**
+- [x] **Step 1: Write the controller behavior test first**
 
 Create `tests/mobile-navigation.test.mjs` with a fake-DOM harness that records listeners, classes, attributes, and focus:
 
@@ -603,7 +603,7 @@ test("mobile menu owns open, escape, link close, aria state, and focus return", 
 });
 ```
 
-- [ ] **Step 2: Observe RED**
+- [x] **Step 2: Observe RED**
 
 ```powershell
 node --test tests/mobile-navigation.test.mjs
@@ -611,7 +611,7 @@ node --test tests/mobile-navigation.test.mjs
 
 Expected: `ERR_MODULE_NOT_FOUND` for `src/interactions/mobile-navigation.js`.
 
-- [ ] **Step 3: Implement the focused controller**
+- [x] **Step 3: Implement the focused controller**
 
 Create `src/interactions/mobile-navigation.js`:
 
@@ -652,7 +652,7 @@ export function registerMobileNavigation({
 }
 ```
 
-- [ ] **Step 4: Make the trigger and panel semantic**
+- [x] **Step 4: Make the trigger and panel semantic**
 
 Replace the outer nested trigger in `index.html` with:
 
@@ -681,7 +681,7 @@ button.nav-burger {
 }
 ```
 
-- [ ] **Step 5: Register ownership in the tested assembly order**
+- [x] **Step 5: Register ownership in the tested assembly order**
 
 In `src/main.js` import and register immediately after `registerNavigationEffects(appContext)`:
 
@@ -696,7 +696,7 @@ registerMobileNavigation(appContext);
 
 Extend `tests/source-modularization.test.mjs` to assert the import/call and place `registerMobileNavigation(appContext)` between navigation effects and one-shot/preloader assembly.
 
-- [ ] **Step 6: Run GREEN and build**
+- [x] **Step 6: Run GREEN and build**
 
 ```powershell
 node --test tests/mobile-navigation.test.mjs tests/source-modularization.test.mjs
@@ -705,7 +705,7 @@ node node_modules\vite\bin\vite.js build
 
 Expected: tests pass and build exits 0.
 
-- [ ] **Step 7: Commit mobile navigation ownership**
+- [x] **Step 7: Commit mobile navigation ownership**
 
 ```powershell
 git add index.html src/main.js src/interactions/mobile-navigation.js src/styles/navigation.css tests/mobile-navigation.test.mjs tests/source-modularization.test.mjs
@@ -725,7 +725,7 @@ git commit -m "feat: make mobile navigation keyboard accessible"
 - Modify: `src/styles/foundations.css`
 - Modify: `tests/semantics-accessibility.test.mjs`
 
-- [ ] **Step 1: Write the copy behavior tests**
+- [x] **Step 1: Write the copy behavior tests**
 
 Create `tests/contact-copy.test.mjs` using injected clipboard and document harnesses:
 
@@ -769,7 +769,7 @@ test("contact controls always copy the documented WeChat id", async () => {
 });
 ```
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 node --test tests/contact-copy.test.mjs
@@ -777,7 +777,7 @@ node --test tests/contact-copy.test.mjs
 
 Expected: import fails for missing `copyText` export and current controller queries only one ID/copies `hi@will.xyz`.
 
-- [ ] **Step 3: Implement Clipboard API plus dependency-free fallback**
+- [x] **Step 3: Implement Clipboard API plus dependency-free fallback**
 
 Refactor `src/interactions/contact-copy.js` around these interfaces:
 
@@ -808,7 +808,7 @@ export async function copyText(value, {
 
 `registerContactCopy` must query `[data-copy-wechat]`, attach async click handlers, copy exactly `jc3400098970`, and announce `微信号 jc3400098970 已复制` or `复制失败，请手动添加 jc3400098970`. Use `textContent` for toast copy rather than injecting user-controlled HTML.
 
-- [ ] **Step 4: Make contact controls real buttons and the toast a live region**
+- [x] **Step 4: Make contact controls real buttons and the toast a live region**
 
 Convert the primary QR/contact control and footer `.ml-link` to:
 
@@ -852,7 +852,7 @@ a.button-big:focus-visible {
 }
 ```
 
-- [ ] **Step 5: Extend static contact contracts and run GREEN**
+- [x] **Step 5: Extend static contact contracts and run GREEN**
 
 Add to `tests/semantics-accessibility.test.mjs`:
 
@@ -874,7 +874,7 @@ node node_modules\vite\bin\vite.js build
 
 Expected: tests and build pass.
 
-- [ ] **Step 6: Commit contact correctness**
+- [x] **Step 6: Commit contact correctness**
 
 ```powershell
 git add index.html src/interactions/contact-copy.js src/styles/foundations.css tests/contact-copy.test.mjs tests/semantics-accessibility.test.mjs
@@ -896,7 +896,7 @@ git commit -m "fix: normalize accessible contact controls"
 - Modify: `index.html`
 - Modify: `package.json`
 
-- [ ] **Step 1: Write failing SEO/share contracts**
+- [x] **Step 1: Write failing SEO/share contracts**
 
 Create `tests/seo-deployment.test.mjs` initially with metadata/public-asset checks:
 
@@ -941,7 +941,7 @@ test("share image and crawler files are deployable", async () => {
 });
 ```
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 node --test tests/seo-deployment.test.mjs
@@ -949,7 +949,7 @@ node --test tests/seo-deployment.test.mjs
 
 Expected: all tests fail because required head tags/public assets do not exist.
 
-- [ ] **Step 3: Add canonical and truthful structured metadata**
+- [x] **Step 3: Add canonical and truthful structured metadata**
 
 Add to the document head:
 
@@ -982,7 +982,7 @@ Add to the document head:
 
 Do not add `sameAs`, employer, job, award, or project fields without a verified public target.
 
-- [ ] **Step 4: Add crawler assets and capture script**
+- [x] **Step 4: Add crawler assets and capture script**
 
 Create `public/robots.txt`:
 
@@ -1026,7 +1026,7 @@ Add to `package.json`:
 "capture:og": "node scripts/capture-og-image.mjs"
 ```
 
-- [ ] **Step 5: Generate and verify the committed share image**
+- [x] **Step 5: Generate and verify the committed share image**
 
 ```powershell
 node scripts/capture-og-image.mjs
@@ -1038,7 +1038,7 @@ Expected: PNG is 1200×630; tests pass; `dist/og-will-tech.png`, `dist/robots.tx
 
 Use `view_image` to inspect `public/og-will-tech.png`. Reject blank, preloader-covered, clipped, or non-brand output.
 
-- [ ] **Step 6: Commit search and share metadata**
+- [x] **Step 6: Commit search and share metadata**
 
 ```powershell
 git add index.html package.json scripts/capture-og-image.mjs public/og-will-tech.png public/robots.txt public/sitemap.xml tests/seo-deployment.test.mjs
@@ -1055,7 +1055,7 @@ git commit -m "feat: complete search and sharing metadata"
 - Create: `vercel.json`
 - Modify: `tests/seo-deployment.test.mjs`
 
-- [ ] **Step 1: Extend the test before configuration exists**
+- [x] **Step 1: Extend the test before configuration exists**
 
 Add:
 
@@ -1072,7 +1072,7 @@ test("Vercel enforces the approved non-visual security headers", async () => {
 });
 ```
 
-- [ ] **Step 2: Observe RED**
+- [x] **Step 2: Observe RED**
 
 ```powershell
 node --test tests/seo-deployment.test.mjs
@@ -1080,7 +1080,7 @@ node --test tests/seo-deployment.test.mjs
 
 Expected: fail with `ENOENT: vercel.json`.
 
-- [ ] **Step 3: Add the exact deploy configuration**
+- [x] **Step 3: Add the exact deploy configuration**
 
 Create `vercel.json`:
 
@@ -1101,7 +1101,7 @@ Create `vercel.json`:
 }
 ```
 
-- [ ] **Step 4: Run GREEN and validate JSON/build**
+- [x] **Step 4: Run GREEN and validate JSON/build**
 
 ```powershell
 node --test tests/seo-deployment.test.mjs
@@ -1111,7 +1111,7 @@ node node_modules\vite\bin\vite.js build
 
 Expected: all commands exit 0.
 
-- [ ] **Step 5: Commit deployment headers**
+- [x] **Step 5: Commit deployment headers**
 
 ```powershell
 git add vercel.json tests/seo-deployment.test.mjs
@@ -1132,7 +1132,7 @@ git commit -m "build: add safe Vercel response headers"
 - Modify: `tests/build-foundation.test.mjs`
 - Modify: `tests/dependency-localization.test.mjs`
 
-- [ ] **Step 1: Write failing QA orchestration contracts**
+- [x] **Step 1: Write failing QA orchestration contracts**
 
 Extend `tests/build-foundation.test.mjs`:
 
@@ -1159,7 +1159,7 @@ assert.match(qaScript, /data-mobile-nav-trigger/);
 assert.match(qaScript, /aria-expanded/);
 ```
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 node --test tests/build-foundation.test.mjs tests/dependency-localization.test.mjs
@@ -1167,7 +1167,7 @@ node --test tests/build-foundation.test.mjs tests/dependency-localization.test.m
 
 Expected: fail because `qa:entry`, guard QA, strict normal-release check, and semantic browser assertions do not exist.
 
-- [ ] **Step 3: Implement real browser QA for the unsupported entry**
+- [x] **Step 3: Implement real browser QA for the unsupported entry**
 
 Create `scripts/qa-entry-guard.mjs`:
 
@@ -1202,7 +1202,13 @@ try {
 
 Add `"qa:entry": "node scripts/qa-entry-guard.mjs"` to `package.json`.
 
-- [ ] **Step 4: Make normal preloader release strict**
+Implementation note: the guard deliberately calls `window.stop()`, so Edge does
+not emit a normal `load` event and may report speculative requests that the
+preload scanner found before the guard stopped the source document. The final QA
+waits for navigation commit, verifies the guard content/title/page-error state,
+and then proves that the settled guard initiates no further failed requests.
+
+- [x] **Step 4: Make normal preloader release strict**
 
 In the normal-runtime branch of `scripts/qa-portfolio.mjs`, after the preloader disappears, read:
 
@@ -1226,7 +1232,7 @@ check(
 
 Remove the current behavior that merely notes/removes a stuck normal overlay and continues layout QA. A stuck or watchdog normal path must fail the round.
 
-- [ ] **Step 5: Add mobile and contact browser assertions**
+- [x] **Step 5: Add mobile and contact browser assertions**
 
 For 390/360 viewports after release and before long-scroll capture:
 
@@ -1242,7 +1248,7 @@ await check(await trigger.evaluate((node) => node === document.activeElement), `
 
 At the footer, assert both `[data-copy-wechat]` controls are buttons, email targets equal `mailto:hi@will-tech.xyz`, and no interactive `href="#"` exists. Do not change scroll capture positions or horizontal animation assertions.
 
-- [ ] **Step 6: Run the guard after HTTP lifecycle cleanup**
+- [x] **Step 6: Run the guard after HTTP lifecycle cleanup**
 
 In `scripts/run-qa-local.mjs`, resolve `scripts/qa-entry-guard.mjs` and call it only after `runWithPreviewLifecycle(...)` has completed and port 4173 is released:
 
@@ -1254,7 +1260,7 @@ await runQa(entryGuardQaScript, {
 
 Keep the normal six-view and fallback two-view rounds unchanged.
 
-- [ ] **Step 7: Run focused and full QA GREEN**
+- [x] **Step 7: Run focused and full QA GREEN**
 
 ```powershell
 node --test tests/build-foundation.test.mjs tests/dependency-localization.test.mjs
@@ -1272,7 +1278,7 @@ Direct-file guard QA passed
 port 4173 has no LISTENING process
 ```
 
-- [ ] **Step 8: Commit strict QA boundaries**
+- [x] **Step 8: Commit strict QA boundaries**
 
 ```powershell
 git add package.json scripts/qa-entry-guard.mjs scripts/qa-portfolio.mjs scripts/run-qa-local.mjs tests/build-foundation.test.mjs tests/dependency-localization.test.mjs
@@ -1294,7 +1300,7 @@ git commit -m "test: enforce entry and semantic browser contracts"
 - Modify: `.github/workflows/ci.yml`
 - Modify: `README.md`
 
-- [ ] **Step 1: Write failing operations contracts**
+- [x] **Step 1: Write failing operations contracts**
 
 Create `tests/production-smoke-contract.test.mjs`:
 
@@ -1336,7 +1342,7 @@ test("scheduled smoke and rollback documentation are explicit", () => {
 });
 ```
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 ```powershell
 node --test tests/production-smoke-contract.test.mjs
@@ -1344,7 +1350,7 @@ node --test tests/production-smoke-contract.test.mjs
 
 Expected: both tests fail because the script, workflow, runbook, and package command are absent.
 
-- [ ] **Step 3: Implement bounded production smoke behavior**
+- [x] **Step 3: Implement bounded production smoke behavior**
 
 Create `scripts/qa-production.mjs` using Playwright Chromium. It must:
 
@@ -1373,7 +1379,7 @@ const state = await page.evaluate(() => ({
 
 Allow `PRODUCTION_ROOT_URL`, `PRODUCTION_CANONICAL_URL`, and `BROWSER_EXECUTABLE` environment overrides, while defaulting to the public domains.
 
-- [ ] **Step 4: Add the scheduled/manual workflow**
+- [x] **Step 4: Add the scheduled/manual workflow**
 
 Create `.github/workflows/production-smoke.yml`:
 
@@ -1405,7 +1411,7 @@ jobs:
 
 Add `"qa:production": "node scripts/qa-production.mjs"` to `package.json`.
 
-- [ ] **Step 5: Write the Preview and rollback runbook**
+- [x] **Step 5: Write the Preview and rollback runbook**
 
 Create `docs/runbooks/preview-and-rollback.md` with these executable gates:
 
@@ -1435,11 +1441,11 @@ No push, merge, deployment promotion, rollback, or production mutation occurs wi
 
 Link this runbook from `README.md`.
 
-- [ ] **Step 6: Keep ordinary CI complete**
+- [x] **Step 6: Keep ordinary CI complete**
 
 Do not replace `.github/workflows/ci.yml`. Ensure it still runs `npm ci`, static tests, Vite build, offline browser QA, and always uploads `.artifacts/qa` as `portfolio-qa`. Add a static contract step only if the existing `npm test` no longer covers the new test files automatically; normally no YAML change is required because `tests/*.test.mjs` already includes them.
 
-- [ ] **Step 7: Run GREEN and a live read-only smoke check**
+- [x] **Step 7: Run GREEN and a live read-only smoke check**
 
 ```powershell
 node --test tests/production-smoke-contract.test.mjs
@@ -1449,7 +1455,12 @@ node scripts/qa-production.mjs
 
 Expected: contract tests pass. The live smoke check is read-only; if production still runs the old commit and returns watchdog/old contact semantics, record the expected pre-deployment failure rather than weakening the new contract. Do not modify production to manufacture GREEN.
 
-- [ ] **Step 8: Commit operations closure**
+Observed before deployment: root redirect and `animation-complete` passed; the
+public site still has the old non-semantic logo/navigation and zero semantic
+WeChat buttons, so the smoke correctly failed. The unrelated `/favicon.ico` 404
+is retained as a warning.
+
+- [x] **Step 8: Commit operations closure**
 
 ```powershell
 git add package.json README.md scripts/qa-production.mjs .github/workflows/production-smoke.yml .github/workflows/ci.yml docs/runbooks/preview-and-rollback.md tests/production-smoke-contract.test.mjs
@@ -1470,7 +1481,7 @@ git commit -m "ops: add production smoke and rollback runbook"
 - Modify/create outside repo: `D:/Obsidian--notes/notion/前端知识/Smoke Test.md`
 - Modify outside repo: `D:/Obsidian--notes/notion/前端知识/前端知识.md`
 
-- [ ] **Step 1: Run all static, syntax, vendor, and build gates**
+- [x] **Step 1: Run all static, syntax, vendor, and build gates**
 
 ```powershell
 node --test tests\*.test.mjs
@@ -1481,7 +1492,7 @@ node node_modules\vite\bin\vite.js build
 
 Expected: all Node tests pass, every source module syntax check exits 0, 9 approved vendor files synchronize, and Vite build exits 0.
 
-- [ ] **Step 2: Run final Edge normal/fallback/entry QA**
+- [x] **Step 2: Run final Edge normal/fallback/entry QA**
 
 ```powershell
 $env:BROWSER_EXECUTABLE='C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'
@@ -1496,7 +1507,7 @@ Expected:
 - file entry: explanatory guard passes with zero failed resource requests;
 - port 4173 has no LISTENING process after cleanup.
 
-- [ ] **Step 3: Perform the required visual comparison**
+- [x] **Step 3: Perform the required visual comparison**
 
 Use `view_image` on baseline and final:
 
@@ -1513,7 +1524,7 @@ Use `view_image` on baseline and final:
 
 Also compare all four `evidence-*.png` horizontal checkpoints by SHA-256. Any change in content position, waterfall breaks, mask clipping, horizontal ownership, SVG order, skills timing, marquee, footer, or final visibility is a regression. Dynamic full-page capture position alone is not a failure when dedicated stable evidence frames match.
 
-- [ ] **Step 4: Run keyboard/contact acceptance in real Edge**
+- [x] **Step 4: Run keyboard/contact acceptance in real Edge**
 
 At 390 px:
 
@@ -1527,7 +1538,7 @@ At 390 px:
 
 Record results in the verification report.
 
-- [ ] **Step 5: Write the final verification report**
+- [x] **Step 5: Write the final verification report**
 
 Create `docs/audits/2026-08-09-engineering-completion-verification.md` with:
 
@@ -1550,7 +1561,7 @@ Create `docs/audits/2026-08-09-engineering-completion-verification.md` with:
 
 Do not claim the new headers or smoke behavior is live before an authorized deployment.
 
-- [ ] **Step 6: Update project-driven Obsidian atomic notes**
+- [x] **Step 6: Update project-driven Obsidian atomic notes**
 
 Before editing, read each target and `前端知识.md` with UTF-8 and inspect for user changes. Merge only these reusable concepts:
 
@@ -1580,7 +1591,7 @@ Will-web：根域重定向、www 200、预加载释放原因、滚动、导航�
 
 Add all three links to the appropriate index sections. Copy through a patched workspace staging file and verify SHA-256 after the approved external write. The vault has no Git repo; report hash verification, not a Git commit.
 
-- [ ] **Step 7: Mark plan checkboxes and commit the verified result**
+- [x] **Step 7: Mark plan checkboxes and commit the verified result**
 
 After every preceding step is actually complete, mark remaining checkboxes `[x]`, then:
 
@@ -1590,7 +1601,7 @@ git diff --cached --check
 git commit -m "docs: verify engineering completion"
 ```
 
-- [ ] **Step 8: Re-run completion gates on the final commit**
+- [x] **Step 8: Re-run completion gates on the final commit**
 
 ```powershell
 node --test tests\*.test.mjs
