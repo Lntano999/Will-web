@@ -26,6 +26,21 @@ test("package scripts expose a reproducible Vite lifecycle", async () => {
   assert.match(viteConfig, /strictPort:\s*true/);
 });
 
+test("cross-platform WASM peer dependencies are fully locked", async () => {
+  const lockfile = JSON.parse(await readText("package-lock.json"));
+  const wasmRuntime =
+    lockfile.packages["node_modules/@napi-rs/wasm-runtime"];
+
+  assert.ok(wasmRuntime, "the Vite WASM fallback runtime must be locked");
+
+  for (const packageName of Object.keys(wasmRuntime.peerDependencies ?? {})) {
+    assert.ok(
+      lockfile.packages[`node_modules/${packageName}`],
+      `${packageName} must be locked for npm ci on non-Windows runners`,
+    );
+  }
+});
+
 test("page does not ship the unused Webflow icon font", async () => {
   const html = await readText("index.html");
   const css = await readText("will-tech.core.v1.css");
