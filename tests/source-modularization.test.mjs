@@ -52,3 +52,15 @@ test("application JavaScript has one explicit Vite module entry", async () => {
   assert.doesNotMatch(html, /\bvar lenis\b/);
   assert.equal(packageJson.type, "module");
 });
+
+test("project reveals are owned by one application module", async () => {
+  const html = await read("index.html");
+  const main = await read("src/main.js");
+
+  assert.match(
+    main,
+    /import \{ registerProjectReveals \} from "\.\/motion\/project-reveals\.js";/,
+  );
+  assert.match(main, /registerProjectReveals\(appContext\);/);
+  assert.doesNotMatch(html, /originalProjectList/);
+});

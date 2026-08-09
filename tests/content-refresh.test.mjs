@@ -531,3 +531,18 @@ test("field research uses mobile-safe explicit waterfall segments", async () => 
     /<span class="reveal-text-line">开展为期 11 天的沉浸式蹲点调研。<\/span>/,
   );
 });
+
+test("project cards preserve their one-shot reveal timing in the module owner", async () => {
+  const source = await readFile(
+    new URL("../src/motion/project-reveals.js", import.meta.url),
+    "utf8",
+  ).catch(() => "");
+
+  assert.match(source, /start:\s*"top 75%"/);
+  assert.match(source, /once:\s*true/);
+  assert.equal(source.match(/duration:\s*2\.5/g)?.length, 2);
+  assert.match(source, /duration:\s*1\.5/);
+  assert.match(source, /stagger:\s*0\.2/);
+  assert.match(source, /clearProps:\s*"clipPath,transform,opacity"/);
+  assert.match(source, /\},\s*1\.0\s*\)/);
+});

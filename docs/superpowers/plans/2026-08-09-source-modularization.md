@@ -412,7 +412,7 @@ git commit -m "refactor: establish frontend runtime entry"
 - Modify: `tests/horizontal-animation.test.mjs`
 - Modify: `tests/source-modularization.test.mjs`
 
-- [ ] **Step 1: Add failing ownership tests**
+- [x] **Step 1: Add failing ownership tests**
 
 Assert that `src/main.js` imports and calls the registration and that `index.html` no longer contains `originalProjectList`:
 
@@ -423,13 +423,13 @@ assert.doesNotMatch(html, /originalProjectList/);
 
 Run `node --test tests/source-modularization.test.mjs`; expect RED.
 
-- [ ] **Step 2: Extract the project controller without changing its timeline**
+- [x] **Step 2: Extract the project controller without changing its timeline**
 
 Export `registerProjectReveals({ runtime, document = globalThis.document, window = globalThis.window })`. Its complete implementation is the JavaScript body in design-baseline commit `3232faf`, `index.html` lines 2035–2111, wrapped by that function. Replace only `gsap` and `ScrollTrigger` global reads with `runtime.gsap` and `runtime.ScrollTrigger` local bindings.
 
 Keep the existing selectors, `start: "top 75%"`, `once: true`, 2.5-second image/mask timing, 1.5-second text timing, 0.2 stagger, and 1.0 timeline position.
 
-- [ ] **Step 3: Register in `main.js` and retarget tests**
+- [x] **Step 3: Register in `main.js` and retarget tests**
 
 ```js
 import { registerProjectReveals } from "./motion/project-reveals.js";
@@ -439,7 +439,7 @@ registerProjectReveals(appContext);
 
 Read `project-reveals.js` for existing project timing assertions. Keep the one-shot reveal inline until it can move atomically with the preloader in Task 7. Run the focused test files and Vite build; expect PASS.
 
-- [ ] **Step 4: Run focused verification**
+- [x] **Step 4: Run focused verification**
 
 ```powershell
 node --test tests/content-refresh.test.mjs tests/source-modularization.test.mjs
@@ -448,7 +448,7 @@ node node_modules/vite/bin/vite.js build
 
 Expected: PASS; the project controller is external and the still-inline one-shot/preloader pair behaves as before.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git add index.html src/main.js src/motion/project-reveals.js tests/content-refresh.test.mjs tests/source-modularization.test.mjs
