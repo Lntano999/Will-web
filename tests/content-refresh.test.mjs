@@ -380,7 +380,14 @@ test("preloader fails open before external animation resources can block the pag
   assert.match(failOpen, /window\.releasePreloader = releasePreloader/);
   assert.match(failOpen, /classList\.add\("preloader-released"\)/);
   assert.match(failOpen, /classList\.remove\("pre-hidden"\)/);
-  assert.match(failOpen, /window\.lenis\?\.start\?\.\(\)/);
+  assert.match(
+    failOpen,
+    /window\.dispatchEvent\([\s\S]*?new CustomEvent\("preloader:released"/,
+  );
+  assert.match(
+    scrollController,
+    /handlePreloaderReleased = \(\) => instance\?\.start\?\.\(\)[\s\S]*?addEventListener\?\.\("preloader:released", handlePreloaderReleased\)/,
+  );
   assert.match(
     failOpen,
     /setTimeout\(\s*\(\) => releasePreloader\("watchdog-timeout"\),\s*FAIL_OPEN_TIMEOUT_MS/,

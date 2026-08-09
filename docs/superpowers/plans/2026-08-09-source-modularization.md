@@ -467,7 +467,7 @@ git commit -m "refactor: extract project reveal controller"
 - Modify: `index.html`
 - Modify: `tests/source-modularization.test.mjs`
 
-- [ ] **Step 1: Add failing assembly and inline-removal tests**
+- [x] **Step 1: Add failing assembly and inline-removal tests**
 
 Assert the four imports/calls exist in `main.js` and the old markers are absent from HTML:
 
@@ -484,7 +484,7 @@ assert.doesNotMatch(html, /ACTIVATION_DELAY|initNavMinimalElastic|ghost-logo|all
 
 Run the modularization test; expect RED.
 
-- [ ] **Step 2: Move each responsibility unchanged**
+- [x] **Step 2: Move each responsibility unchanged**
 
 Use one public function per file:
 
@@ -499,11 +499,11 @@ Move the complete interaction block from design-baseline commit `3232faf`, `inde
 
 `registerAnchorScroll` must intercept a link only when `scrollController.isSmooth` is true. When false, leave the original `href` intact so native anchors continue to work. This is the required Lenis-failure fallback. After this module is registered, remove `window.lenis = scrollController.instance ?? undefined` from `main.js` and remove `window.lenis?.start?.()` from the inline fail-open; the `preloader:released` listener is then the only scroll restart bridge.
 
-- [ ] **Step 3: Register after the runtime context is created**
+- [x] **Step 3: Register after the runtime context is created**
 
 Add the four imports to `src/main.js`, then call them in the same relative order as the old combined block: cursor, contact/anchors, navigation effects. Remove only the migrated combined inline block from `index.html`.
 
-- [ ] **Step 4: Verify browser-neutral contracts and build**
+- [x] **Step 4: Verify browser-neutral contracts and build**
 
 Run:
 
@@ -514,7 +514,7 @@ node node_modules/vite/bin/vite.js build
 
 Expected: PASS; build exits 0; no old interaction marker remains inline.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```powershell
 git add index.html src/main.js src/interactions tests/source-modularization.test.mjs

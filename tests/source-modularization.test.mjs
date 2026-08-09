@@ -64,3 +64,28 @@ test("project reveals are owned by one application module", async () => {
   assert.match(main, /registerProjectReveals\(appContext\);/);
   assert.doesNotMatch(html, /originalProjectList/);
 });
+
+test("site interactions are assembled from focused owners", async () => {
+  const html = await read("index.html");
+  const main = await read("src/main.js");
+
+  for (const [name, path] of [
+    ["registerCustomCursor", "custom-cursor"],
+    ["registerContactCopy", "contact-copy"],
+    ["registerAnchorScroll", "anchor-scroll"],
+    ["registerNavigationEffects", "navigation-effects"],
+  ]) {
+    assert.match(
+      main,
+      new RegExp(`import \\{ ${name} \\} from "\\.\\/interactions\\/${path}\\.js";`),
+    );
+    assert.match(main, new RegExp(`${name}\\(appContext\\);`));
+  }
+
+  assert.doesNotMatch(
+    html,
+    /ACTIVATION_DELAY|initNavMinimalElastic|ghost-logo|allAnchorLinks/,
+  );
+  assert.doesNotMatch(main, /window\.lenis/);
+  assert.doesNotMatch(html, /window\.lenis\?\.start/);
+});

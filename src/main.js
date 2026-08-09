@@ -1,6 +1,10 @@
 import { createAnimationRuntime } from "./runtime/animation-runtime.js";
 import { createScrollController } from "./runtime/scroll-controller.js";
 import { registerProjectReveals } from "./motion/project-reveals.js";
+import { registerCustomCursor } from "./interactions/custom-cursor.js";
+import { registerContactCopy } from "./interactions/contact-copy.js";
+import { registerAnchorScroll } from "./interactions/anchor-scroll.js";
+import { registerNavigationEffects } from "./interactions/navigation-effects.js";
 
 const runtime = createAnimationRuntime(window);
 const scrollController = createScrollController({ runtime });
@@ -8,7 +12,7 @@ const scrollController = createScrollController({ runtime });
 export const appContext = { runtime, scrollController };
 
 registerProjectReveals(appContext);
-
-// Transitional bridge for inline controllers. It is removed once scrolling
-// consumers import the shared controller directly.
-window.lenis = scrollController.instance ?? undefined;
+registerCustomCursor(appContext);
+registerContactCopy(appContext);
+registerAnchorScroll(appContext);
+registerNavigationEffects(appContext);
