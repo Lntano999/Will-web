@@ -13,6 +13,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "node --test tests/*.test.mjs",
+    "acceptance:local": "node scripts/manual-preview.mjs",
     "qa:portfolio": "node scripts/qa-portfolio.mjs",
     "qa:offline": "node scripts/run-qa-local.mjs"
   },

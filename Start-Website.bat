@@ -1,3 +1,9 @@
 @echo off
-start http://localhost:5500
-npx -y serve -l 5500 .
+setlocal
+cd /d "%~dp0"
+node scripts\manual-preview.mjs
+if errorlevel 1 (
+  echo.
+  echo Will-web preview failed. Review the error above.
+  pause
+)
