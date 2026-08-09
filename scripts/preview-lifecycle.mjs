@@ -5,7 +5,6 @@ function createDeadline(timeoutMs, createError) {
   let timeoutId;
   const promise = new Promise((_, reject) => {
     timeoutId = setTimeout(() => reject(createError()), timeoutMs);
-    timeoutId.unref?.();
   });
   return {
     promise,
