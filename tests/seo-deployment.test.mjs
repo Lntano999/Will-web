@@ -53,3 +53,22 @@ test("share image and crawler files are deployable", async () => {
   );
   assert.match(sitemap, /<loc>https:\/\/www\.will-tech\.xyz\/<\/loc>/);
 });
+
+test("Vercel enforces the approved non-visual security headers", async () => {
+  const config = JSON.parse(await readFile("vercel.json", "utf8"));
+  const headers = new Map(
+    config.headers[0].headers.map(({ key, value }) => [key, value]),
+  );
+  assert.equal(config.headers[0].source, "/(.*)");
+  assert.equal(headers.get("X-Content-Type-Options"), "nosniff");
+  assert.equal(
+    headers.get("Referrer-Policy"),
+    "strict-origin-when-cross-origin",
+  );
+  assert.equal(headers.get("X-Frame-Options"), "DENY");
+  assert.equal(
+    headers.get("Permissions-Policy"),
+    "camera=(), microphone=(), geolocation=()",
+  );
+  assert.equal(headers.has("Content-Security-Policy"), false);
+});
