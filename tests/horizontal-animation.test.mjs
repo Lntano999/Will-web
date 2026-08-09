@@ -112,9 +112,10 @@ test("horizontal slides keep the original layout pipelines but never reset after
 test("homepage and footer white copy use explicit line masks without SplitText reflow", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
   const customCss = await loadCustomCss();
-  const controllerStart = html.indexOf("(function initOneShotWhiteReveals()");
-  const controllerEnd = html.indexOf("</script>", controllerStart);
-  const controller = html.slice(controllerStart, controllerEnd);
+  const controller = await readFile(
+    new URL("../src/motion/one-shot-reveals.js", import.meta.url),
+    "utf8",
+  );
 
   assert.match(
     html,

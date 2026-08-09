@@ -598,7 +598,7 @@ git commit -m "refactor: separate horizontal motion ownership"
 - Modify: `tests/content-refresh.test.mjs`
 - Modify: `tests/source-modularization.test.mjs`
 
-- [ ] **Step 1: Add failing preloader-boundary tests**
+- [x] **Step 1: Add failing preloader-boundary tests**
 
 Assert all of the following:
 
@@ -615,19 +615,19 @@ assert.match(preloaderModule, /releasePreloader\("animation-complete"\)/);
 
 Run the focused test; expect RED because the one-shot controller and normal preloader animation remain inline.
 
-- [ ] **Step 2: Move the one-shot controller and preserve its returned handles**
+- [x] **Step 2: Move the one-shot controller and preserve its returned handles**
 
 Create `createOneShotReveals({ runtime, document = globalThis.document, window = globalThis.window })` from the complete body in design-baseline commit `3232faf`, `index.html` lines 2608–2676. Return `{ hero, footer }` instead of assigning `window.oneShotWhiteReveals`.
 
 Keep hero defaults `duration: 0.8`, `stagger: 0.08`; footer `duration: 1.05`, `stagger: 0.14`; reduced-motion final states; and footer threshold `0.25`.
 
-- [ ] **Step 3: Move the normal animation into one module**
+- [x] **Step 3: Move the normal animation into one module**
 
 Create `registerPreloader({ runtime, oneShotReveals, document = globalThis.document, window = globalThis.window })` from the complete normal animation body in design-baseline commit `3232faf`, `index.html` lines 2679–2951.
 
 Replace global reads with `runtime.anime`, `runtime.gsap`, and `oneShotReveals.hero`. Keep all current durations, delays, easings, selectors, counter formula, curtain movement, zoom cleanup, nav stagger, hero mask timing, and release reasons unchanged.
 
-- [ ] **Step 4: Register the pair in order and keep fail-open independent**
+- [x] **Step 4: Register the pair in order and keep fail-open independent**
 
 In `main.js`, assemble the pair exactly as:
 
@@ -656,7 +656,7 @@ expire after 8,000ms
 
 Do not import any module from this inline block. Remove both old inline blocks only after the two calls above exist.
 
-- [ ] **Step 5: Run focused and full static verification**
+- [x] **Step 5: Run focused and full static verification**
 
 ```powershell
 node --test tests/source-modularization.test.mjs tests/content-refresh.test.mjs tests/runtime-adapters.test.mjs

@@ -285,17 +285,21 @@ test("skill icons and rules reveal locally without a global style patrol", async
 test("footer and skill copy use scoped, moderately slower reveal timing", async () => {
   const html = await loadHtml();
   const customCss = await loadCustomCss();
+  const oneShotSource = await readFile(
+    new URL("../src/motion/one-shot-reveals.js", import.meta.url),
+    "utf8",
+  );
 
   assert.match(
-    html,
+    oneShotSource,
     /function createReveal\(element,\s*options\s*=\s*\{\}\)/,
   );
   assert.match(
-    html,
+    oneShotSource,
     /duration\s*=\s*0\.8[\s\S]*?stagger\s*=\s*0\.08/,
   );
   assert.match(
-    html,
+    oneShotSource,
     /createReveal\(targets\.footer,\s*\{\s*duration:\s*1\.05,\s*stagger:\s*0\.14\s*\}\)/,
   );
   assert.match(
@@ -356,6 +360,10 @@ test("skill reveal initializes before parser-blocking external resources", async
 
 test("preloader fails open before external animation resources can block the page", async () => {
   const html = await loadHtml();
+  const preloaderSource = await readFile(
+    new URL("../src/motion/preloader.js", import.meta.url),
+    "utf8",
+  );
   const scrollController = await readFile(
     new URL("../src/runtime/scroll-controller.js", import.meta.url),
     "utf8",
@@ -363,11 +371,6 @@ test("preloader fails open before external animation resources can block the pag
   const failOpenStart = html.indexOf("(function installPreloaderFailOpen()");
   const failOpenEnd = html.indexOf("</script>", failOpenStart);
   const firstExternalScript = html.indexOf("<script src=");
-  const preloaderControllerStart = html.indexOf("(function initPreloader()");
-  const preloaderControllerEnd = html.indexOf(
-    "</script>",
-    preloaderControllerStart,
-  );
 
   assert.ok(failOpenStart > -1, "missing dependency-free preloader fail-open");
   assert.ok(
@@ -393,16 +396,12 @@ test("preloader fails open before external animation resources can block the pag
     /setTimeout\(\s*\(\) => releasePreloader\("watchdog-timeout"\),\s*FAIL_OPEN_TIMEOUT_MS/,
   );
 
-  const preloaderController = html.slice(
-    preloaderControllerStart,
-    preloaderControllerEnd,
+  assert.match(
+    preloaderSource,
+    /if \(!anime \|\| !gsap\)[\s\S]*?releasePreloader\("animation-runtime-unavailable"\)[\s\S]*?return;/,
   );
   assert.match(
-    preloaderController,
-    /typeof anime === "undefined"[\s\S]*?typeof gsap === "undefined"[\s\S]*?releasePreloader\("animation-runtime-unavailable"\)[\s\S]*?return;/,
-  );
-  assert.match(
-    preloaderController,
+    preloaderSource,
     /releasePreloader\("animation-complete"\)/,
   );
   assert.match(

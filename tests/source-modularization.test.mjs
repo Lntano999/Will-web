@@ -107,3 +107,33 @@ test("horizontal animation owners are assembled outside HTML", async () => {
   assert.doesNotMatch(html, /querySelectorAll\("\.split-timeline"\)/);
   assert.doesNotMatch(html, /slideDataMap/);
 });
+
+test("branded entry motion stays behind the independent fail-open boundary", async () => {
+  const html = await read("index.html");
+  const main = await read("src/main.js");
+  const preloaderModule = await read("src/motion/preloader.js");
+
+  assert.match(html, /\(function installPreloaderFailOpen\(\)/);
+  assert.ok(
+    html.indexOf("installPreloaderFailOpen") < html.indexOf("<script src="),
+  );
+  assert.doesNotMatch(html, /\(function initOneShotWhiteReveals\(\)/);
+  assert.doesNotMatch(html, /\(function initPreloader\(\)/);
+  assert.match(
+    main,
+    /const oneShotReveals = createOneShotReveals\(appContext\);/,
+  );
+  assert.match(
+    main,
+    /Object\.assign\(appContext, \{ oneShotReveals \}\);/,
+  );
+  assert.match(main, /registerPreloader\(appContext\);/);
+  assert.match(
+    preloaderModule,
+    /releasePreloader\("animation-runtime-unavailable"\)/,
+  );
+  assert.match(
+    preloaderModule,
+    /releasePreloader\("animation-complete"\)/,
+  );
+});
