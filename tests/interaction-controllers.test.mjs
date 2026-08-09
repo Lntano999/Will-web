@@ -50,7 +50,7 @@ test("native anchors remain untouched when smooth scrolling is unavailable", () 
   assert.equal(harness.clickListeners.length, 0);
 });
 
-test("smooth anchors opt into the controlled navigation path", () => {
+test("smooth anchors retain their native href while opting into controlled scroll", () => {
   const harness = createHarness(true);
   registerAnchorScroll({
     scrollController: harness.scrollController,
@@ -59,7 +59,7 @@ test("smooth anchors opt into the controlled navigation path", () => {
   });
   harness.start();
 
+  assert.equal(harness.attributes.get("href"), "#tech");
   assert.equal(harness.attributes.get("data-target"), "#tech");
-  assert.equal(harness.attributes.get("href"), "javascript:void(0);");
   assert.equal(harness.clickListeners.length, 1);
 });

@@ -5,15 +5,22 @@ import test from "node:test";
 const read = (path) =>
   readFile(new URL(`../${path}`, import.meta.url), "utf8").catch(() => "");
 
+const withoutFileProtocolGuard = (html) =>
+  html.replace(
+    /<script>\s*\(function guardUnsupportedFileProtocol\(\)[\s\S]*?<\/script>/,
+    "",
+  );
+
 test("custom CSS has one ordered Vite entry", async () => {
   const html = await read("index.html");
+  const portfolioHtml = withoutFileProtocolGuard(html);
   const entry = await read("src/styles/index.css");
 
   assert.match(
     html,
     /<link rel="stylesheet" href="\/src\/styles\/index\.css">/,
   );
-  assert.doesNotMatch(html, /<style(?:\s[^>]*)?>/);
+  assert.doesNotMatch(portfolioHtml, /<style(?:\s[^>]*)?>/);
   assert.deepEqual(
     [...entry.matchAll(/@import\s+"\.\/([^\"]+)";/g)].map(
       (match) => match[1],
@@ -140,6 +147,7 @@ test("branded entry motion stays behind the independent fail-open boundary", asy
 
 test("the final source boundary and assembly order stay explicit", async () => {
   const html = await read("index.html");
+  const portfolioHtml = withoutFileProtocolGuard(html);
   const main = await read("src/main.js");
 
   for (const marker of [
@@ -154,7 +162,7 @@ test("the final source boundary and assembly order stay explicit", async () => {
   }
 
   assert.equal((html.match(/type="module"/g) ?? []).length, 1);
-  assert.doesNotMatch(html, /<style(?:\s[^>]*)?>/);
+  assert.doesNotMatch(portfolioHtml, /<style(?:\s[^>]*)?>/);
   assert.match(html, /installPreloaderFailOpen/);
   assert.match(html, /initSkillReveals/);
 

@@ -9,11 +9,8 @@ export function registerAnchorScroll({
     const allAnchorLinks = document.querySelectorAll('a[href^="#"]');
     allAnchorLinks.forEach((link) => {
       const targetId = link.getAttribute("href");
-
-      if (targetId && targetId !== "#") {
-        link.setAttribute("data-target", targetId);
-        link.setAttribute("href", "javascript:void(0);");
-      }
+      if (!targetId?.startsWith("#") || targetId === "#") return;
+      link.setAttribute("data-target", targetId);
 
       link.addEventListener("click", function (event) {
         event.preventDefault();
@@ -21,6 +18,7 @@ export function registerAnchorScroll({
 
         const actualTargetId = this.getAttribute("data-target");
         if (!actualTargetId) return;
+        window.history?.replaceState?.(null, "", actualTargetId);
 
         if (actualTargetId === "#WILL.") {
           const marqueeElement = document.querySelector(".item--marquee");

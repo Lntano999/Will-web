@@ -111,6 +111,29 @@
       pointer-events: none;
   }
 
+  .sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+  }
+
+  button.link-block,
+  button.button-small {
+      appearance: none;
+      border: 0;
+      padding: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+      text-align: inherit;
+  }
+
 
   .split-timeline div, .split-horizontal div, .manifesto div, .claim-m div, .claim-s div {
       padding-top: 0.2em !important;
@@ -161,4 +184,3 @@
       padding-bottom: 10vh !important; 
       z-index: 10 !important; 
   }
-
