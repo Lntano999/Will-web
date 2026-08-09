@@ -2,16 +2,38 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
+async function loadCustomCss() {
+  const files = [
+    "foundations",
+    "skills",
+    "navigation",
+    "preloader",
+    "motion",
+    "horizontal",
+  ];
+  return (
+    await Promise.all(
+      files.map((name) =>
+        readFile(
+          new URL(`../src/styles/${name}.css`, import.meta.url),
+          "utf8",
+        ),
+      ),
+    )
+  ).join("\n");
+}
+
 test("the blue texture is painted by moving lines, not their mask ancestors", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+  const customCss = await loadCustomCss();
 
   assert.doesNotMatch(
-    html,
+    customCss,
     /\.clipping-text\s*,\s*\.clipping-text\s+\*/,
     "mask wrappers must not inherit the clipping texture",
   );
   assert.match(
-    html,
+    customCss,
     /\.clipping-text\s+\.split-text-line/,
     "moving SplitText lines should own the clipping texture",
   );
@@ -74,6 +96,7 @@ test("horizontal slides keep the original layout pipelines but never reset after
 
 test("homepage and footer white copy use explicit line masks without SplitText reflow", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+  const customCss = await loadCustomCss();
   const controllerStart = html.indexOf("(function initOneShotWhiteReveals()");
   const controllerEnd = html.indexOf("</script>", controllerStart);
   const controller = html.slice(controllerStart, controllerEnd);
@@ -94,7 +117,7 @@ test("homepage and footer white copy use explicit line masks without SplitText r
     "the four homepage lines and three footer lines should each have a stable clipping mask",
   );
   assert.match(
-    html,
+    customCss,
     /\.one-shot-white-mask\s*\{[^}]*overflow:\s*hidden/s,
     "each explicit line wrapper should clip its moving inner line",
   );
@@ -122,6 +145,7 @@ test("homepage and footer white copy use explicit line masks without SplitText r
 
 test("the footer wordmark reserves period space without opening footer overflow", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+  const customCss = await loadCustomCss();
 
   assert.match(
     html,
@@ -129,17 +153,17 @@ test("the footer wordmark reserves period space without opening footer overflow"
     "the large footer mark should have a scoped class",
   );
   assert.match(
-    html,
+    customCss,
     /#contact\s+\.footer-wordmark\s*\{[^}]*transform:\s*translateY\(-0\.08em\)/s,
     "the footer mark should move the actual glyphs above the clipping boundary",
   );
   assert.doesNotMatch(
-    html,
+    customCss,
     /#contact\s+\.footer-wordmark\s*\{[^}]*padding-bottom:/s,
     "the fix must not rely on padding that extends the clipped box downward",
   );
   assert.match(
-    html,
+    customCss,
     /#contact\.footer\s*\{[^}]*overflow:\s*hidden\s*!important/s,
     "footer overflow containment must remain enabled",
   );

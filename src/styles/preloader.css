@@ -1,0 +1,199 @@
+  /* ══════════ Preloader — Split-Curtain Terminal HUD ══════════ */
+  #preloader {
+      position: fixed;
+      inset: 0;
+      z-index: 2147483646;
+      font-family: "SF Mono", "Fira Code", "JetBrains Mono", "Cascadia Code", "Consolas", monospace;
+      color: rgba(255, 255, 255, 0.85);
+      overflow: hidden;
+      pointer-events: auto;
+  }
+
+  /* ── 分幕结构：上下两半 ── */
+  .pre-curtain {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      overflow: hidden;
+      will-change: transform;
+  }
+  .pre-curtain--top {
+      top: 0;
+      transform-origin: center top;
+  }
+  .pre-curtain--bot {
+      bottom: 0;
+      transform-origin: center bottom;
+  }
+  /* 每半幕都有独立背景层 */
+  .pre-curtain-bg {
+      position: absolute;
+      /* 每个半幕的背景是全屏高度，通过 overflow:hidden 裁切 */
+      left: 0;
+      width: 100%;
+      height: 200%; /* 两倍高使之铺满整个可视区 */
+      background: #060a10;
+      box-shadow:
+        inset 0 0 180px 60px rgba(0, 18, 65, 0.28),
+        inset 0 0 400px 120px rgba(0, 8, 40, 0.15);
+  }
+  .pre-curtain--top .pre-curtain-bg { top: 0; }
+  .pre-curtain--bot .pre-curtain-bg { bottom: 0; }
+
+  /* ── 精确居中的中心线装饰 ── */
+  .pre-seam {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+      z-index: 5;
+      will-change: width;
+  }
+
+  /* ── 绝对居中的圆环 + Logo ── */
+  .pre-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 180px;
+      height: 180px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+  .pre-circles {
+      position: absolute;
+      inset: 0;
+  }
+  .pre-circles svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+  }
+  .pre-circles circle {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.2);
+      stroke-width: 0.5;
+  }
+  .pre-circle-progress circle {
+      stroke: rgba(255, 255, 255, 0.7);
+      stroke-width: 0.7;
+      stroke-dasharray: 565.49; /* 2π × 90 */
+      stroke-dashoffset: 565.49;
+      transform: rotate(-90deg);
+      transform-origin: center;
+  }
+  .pre-logo {
+      z-index: 2;
+      opacity: 0;
+  }
+  .pre-logo-text {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.92);
+      white-space: nowrap;
+      -webkit-font-smoothing: antialiased;
+      transform: translateZ(0);
+  }
+
+  /* ── 计数器：正中央偏上 ── */
+  .pre-counter-wrap {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+      margin-top: -140px; /* 调整相对位置 */
+      height: 20px;
+  }
+  .pre-counter__number {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-indent: 0.18em; /* 完美抵消排版中的右侧字距 */
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.7);
+      -webkit-font-smoothing: antialiased;
+      will-change: transform, opacity;
+      transform: translateZ(0);
+  }
+  .pre-ready-text {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-indent: 0.22em; /* 完美抵消排版中的右侧字距 */
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.7);
+      opacity: 0;
+      white-space: nowrap;
+      -webkit-font-smoothing: antialiased;
+      will-change: transform, opacity;
+      transform: translateZ(0);
+  }
+
+  /* ── 四角元信息（完美对称） ── */
+  .pre-corner {
+      position: absolute;
+      z-index: 10;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.35);
+      opacity: 0;
+  }
+  .pre-corner--tl { top: 2.4rem; left: 2.8rem; }
+  .pre-corner--tr { top: 2.4rem; right: 2.8rem; text-align: right; }
+  .pre-corner--bl { bottom: 2.4rem; left: 2.8rem; }
+  .pre-corner--br { bottom: 2.4rem; right: 2.8rem; text-align: right; }
+  .pre-corner .pre-recs {
+      display: flex;
+      gap: 3px;
+      justify-content: flex-end;
+  }
+  .pre-corner .pre-recs span {
+      display: block;
+      width: 6px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* ── 全局遮罩/过渡态 ── */
+  #preloader.is-leaving { pointer-events: none; }
+
+  /* 导航在预加载期间完全隐藏 */
+  .navigation.pre-hidden {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  html.preloader-released .navigation.pre-hidden {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+  }
+
+  @media (max-width: 768px) {
+      .pre-center { width: 140px; height: 140px; }
+      .pre-counter-wrap { margin-top: -110px; }
+      .pre-corner { font-size: 8px; }
+      .pre-corner--tl, .pre-corner--bl { left: 1.5rem; }
+      .pre-corner--tr, .pre-corner--br { right: 1.5rem; }
+  }

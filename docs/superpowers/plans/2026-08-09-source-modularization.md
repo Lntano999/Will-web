@@ -173,7 +173,7 @@ git commit -m "build: standardize HTTP runtime entry"
 - Modify: `tests/content-refresh.test.mjs`
 - Modify: `tests/horizontal-animation.test.mjs`
 
-- [ ] **Step 1: Write the CSS entry and no-inline-style contracts**
+- [x] **Step 1: Write the CSS entry and no-inline-style contracts**
 
 Create the setup in `tests/source-modularization.test.mjs`:
 
@@ -196,7 +196,7 @@ test("custom CSS has one ordered Vite entry", async () => {
 });
 ```
 
-- [ ] **Step 2: Run the new test and observe RED**
+- [x] **Step 2: Run the new test and observe RED**
 
 Run:
 
@@ -206,7 +206,7 @@ node --test tests/source-modularization.test.mjs
 
 Expected: FAIL because the CSS entry does not exist and `index.html` still contains seven `<style>` blocks.
 
-- [ ] **Step 3: Move the rules byte-for-byte in original cascade order**
+- [x] **Step 3: Move the rules byte-for-byte in original cascade order**
 
 Create `src/styles/index.css` exactly as:
 
@@ -237,7 +237,7 @@ Preserve every selector, declaration, media query, comment, `!important`, and or
 <link rel="stylesheet" href="/src/styles/index.css">
 ```
 
-- [ ] **Step 4: Retarget existing style assertions and verify GREEN**
+- [x] **Step 4: Retarget existing style assertions and verify GREEN**
 
 In both existing test files, add a loader that concatenates the ordered CSS files:
 
@@ -260,7 +260,7 @@ node node_modules/vite/bin/vite.js build
 
 Expected: all focused tests pass; build exits 0; no CSS order warning appears.
 
-- [ ] **Step 5: Commit the CSS extraction**
+- [x] **Step 5: Commit the CSS extraction**
 
 ```powershell
 git add index.html src/styles tests/source-modularization.test.mjs tests/content-refresh.test.mjs tests/horizontal-animation.test.mjs

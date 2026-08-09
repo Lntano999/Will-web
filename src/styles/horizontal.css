@@ -1,0 +1,2 @@
+                .svg-draw { width: 5.556vw !important; height: 5.556vw !important; }
+                @media (max-width: 479px) { .svg-draw { width: 19.9vw !important; height: 19.9vw !important; } }

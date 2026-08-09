@@ -1,0 +1,312 @@
+  /* ═══ 主导航链接：羽化毛玻璃光晕 + 流体悬停 + elastic-bounce（Contact Me 按钮保持 Webflow 原版，不套用）═══ */
+  /*
+   * 悬停：整体 scale(1.05)；transition 使用 all 与题述贝塞尔，禁止 ease。
+   * ::before：椭圆径向 mask 消掉硬边，blur(12px) + 极弱 rgba 提亮，无矩形/药丸描边感。
+   */
+  .navigation a.nav-minimal {
+      position: relative !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0.42em 1em !important;
+      margin: 0 !important;
+      border: none !important;
+      border-radius: 9999px !important;
+      box-sizing: border-box !important;
+      outline: none !important;
+      cursor: pointer !important;
+      text-decoration: none !important;
+      isolation: isolate !important;
+      overflow: visible !important;
+      transform: scale(1) translateZ(0) !important;
+      background-color: transparent !important;
+      color: rgba(255, 255, 255, 0.88) !important;
+      -webkit-text-fill-color: rgba(255, 255, 255, 0.88) !important;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  /*
+   * 羽化层：径向渐变作 mask → 中心实、外缘透明，边缘呈雾气消散；不画 border / box-shadow，避免「框感」。
+   */
+  .navigation a.nav-minimal::before {
+      content: "" !important;
+      position: absolute !important;
+      left: 50% !important;
+      top: 50% !important;
+      width: 160% !important;
+      min-width: 120px !important;
+      height: 220% !important;
+      min-height: 2.75em !important;
+      transform: translate(-50%, -50%) scale(0.88) !important;
+      transform-origin: center center !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      z-index: -1 !important;
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+      -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%) !important;
+      mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%) !important;
+      -webkit-mask-repeat: no-repeat !important;
+      mask-repeat: no-repeat !important;
+      -webkit-mask-size: 100% 100% !important;
+      mask-size: 100% 100% !important;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .navigation a.nav-minimal:hover:not(.is-pressed):not(.is-elastic-play-hover):not(.is-elastic-play-rest)::before,
+  .navigation a.nav-minimal:focus-visible:not(.is-pressed):not(.is-elastic-play-hover):not(.is-elastic-play-rest)::before {
+      opacity: 1 !important;
+      transform: translate(-50%, -50%) scale(1) !important;
+  }
+
+  .navigation a.nav-minimal:hover:not(.is-pressed):not(.is-elastic-play-hover):not(.is-elastic-play-rest),
+  .navigation a.nav-minimal:focus-visible:not(.is-pressed):not(.is-elastic-play-hover):not(.is-elastic-play-rest) {
+      transform: scale(1.05) translateZ(0) !important;
+      color: #ffffff !important;
+      -webkit-text-fill-color: #ffffff !important;
+  }
+
+  /*
+   * 按下：严格 scale(0.95)，过渡短于 0.1s，短贝塞尔（非 ease）。
+   */
+  .navigation a.nav-minimal.is-pressed {
+      transform: scale(0.95) translateZ(0) !important;
+      transition: transform 0.09s cubic-bezier(0.33, 0, 0.67, 1) !important;
+  }
+
+  .navigation a.nav-minimal.is-pressed::before {
+      transition: opacity 0.09s cubic-bezier(0.33, 0, 0.67, 1), transform 0.09s cubic-bezier(0.33, 0, 0.67, 1) !important;
+  }
+
+  /*
+   * elastic-bounce：0.95 → 峰值 1.08（40%）→ 衰减振荡（75%）→ 稳态悬停 1.05；模拟阻尼约 17 的欠阻尼收敛。
+   */
+  @keyframes elastic-bounce {
+      0% {
+        transform: scale(0.95) translateZ(0);
+      }
+      40% {
+        transform: scale(1.08) translateZ(0);
+      }
+      75% {
+        transform: scale(1.02) translateZ(0);
+      }
+      100% {
+        transform: scale(1.05) translateZ(0);
+      }
+  }
+
+  @keyframes elastic-bounce-rest {
+      0% {
+        transform: scale(0.95) translateZ(0);
+      }
+      40% {
+        transform: scale(1.06) translateZ(0);
+      }
+      75% {
+        transform: scale(0.99) translateZ(0);
+      }
+      100% {
+        transform: scale(1) translateZ(0);
+      }
+  }
+
+  .navigation a.nav-minimal.is-elastic-play-hover {
+      animation: elastic-bounce 0.58s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+      transition: none !important;
+  }
+
+  /* 松手后仍在悬停分支：hover 选择器因播放类暂时不命中，单独维持光晕显隐 */
+  .navigation a.nav-minimal.is-elastic-play-hover::before {
+      opacity: 1 !important;
+      transform: translate(-50%, -50%) scale(1) !important;
+  }
+
+  .navigation a.nav-minimal.is-elastic-play-rest {
+      animation: elastic-bounce-rest 0.58s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+      transition: none !important;
+  }
+
+  .navigation a.nav-minimal.is-elastic-play-rest::before {
+      opacity: 0 !important;
+      transform: translate(-50%, -50%) scale(0.88) !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .navigation a.nav-minimal {
+      transition-duration: 0.01ms !important;
+    }
+    .navigation a.nav-minimal::before {
+      display: none !important;
+    }
+    .navigation a.nav-minimal:hover:not(.is-pressed),
+    .navigation a.nav-minimal:focus-visible:not(.is-pressed) {
+      transform: none !important;
+    }
+    .navigation a.nav-minimal.is-pressed {
+      transform: none !important;
+    }
+    .navigation a.nav-minimal.is-elastic-play-hover,
+    .navigation a.nav-minimal.is-elastic-play-rest {
+      animation: none !important;
+    }
+  }
+ 
+  .manifesto {
+      font-size: clamp(20px, 2.5vw, 40px) !important; 
+      font-weight: 300 !important; 
+      letter-spacing: 0.02em !important; 
+      line-height: 1.6 !important; 
+      color: rgba(255, 255, 255, 0.85) !important; 
+  }
+  
+  .manifesto.clipping-text {
+      color: transparent !important;
+  }
+
+
+  .h-slide .bot.gap {
+      gap: 0.5vw !important; 
+  }
+
+ 
+  .use-case__img-container {
+      background-color: transparent !important; 
+      border-radius: 0 !important; 
+      border: none !important; 
+      box-sizing: border-box !important;
+      position: relative !important;
+  }
+  
+  .use-case__img-mask {
+      width: 100% !important;
+      aspect-ratio: 4 / 3 !important; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #ffffff !important; 
+      overflow: hidden;
+      position: relative;
+      border: none !important;
+  }
+
+  .use-case__img-mask img.use-case__img-item {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain !important; 
+      box-sizing: border-box !important;
+      padding: 12% !important; 
+      background-color: transparent !important;
+  }
+
+  
+  .center-logo-card {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: transparent !important;
+      position: absolute; 
+      top: 0;
+      left: 0;
+  }
+  .center-huge-logo {
+      font-size: clamp(60px, 12vw, 180px) !important; 
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      line-height: 1 !important;
+      background-image: url('https://cdn.prod.website-files.com/68f77e49c7ca6bd68b326c3d/6900c3d30f2eca17950257bd_Blizar%201.png') !important;
+      background-size: cover !important;
+      background-position: center !important;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
+      color: transparent !important;
+      -webkit-text-fill-color: transparent !important;
+      filter: none !important; 
+      margin: auto;
+      position: relative;
+      display: inline-block;
+      padding-right: 0.30em;
+  }
+  
+ 
+  .center-huge-logo::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -0.05em; 
+      width: 100%;
+      height: 0.08em;
+      background-image: url('https://cdn.prod.website-files.com/68f77e49c7ca6bd68b326c3d/6900c3d30f2eca17950257bd_Blizar%201.png');
+      background-size: cover;
+      background-position: center;
+  }
+  
+  
+  .img-line { display: none !important; }
+
+  .premium-toast {
+      background: rgba(161, 161, 170, 0.15);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 9999px;
+      font-weight: 300;
+      font-size: 14px;
+      letter-spacing: 0.02em;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      transform: translateY(30px) scale(0.9);
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform, opacity;
+  }
+  .premium-toast.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+  }
+
+            .button-small__arrow { overflow: hidden; width: 3.472vw; transition: opacity 0.25s ease-out, transform 0.35s cubic-bezier(0.77, 0, 0.175, 1); will-change: transform; }
+            @media screen and (max-width: 479px) { .button-small__arrow { width: 14.925vw; } }
+            .button-small__arrow .div-hide svg { display: block; transition: transform 0.35s cubic-bezier(0.77, 0, 0.175, 1); }
+            .button-small__center { position: relative; transition: transform 0.35s cubic-bezier(0.77, 0, 0.175, 1); }
+            .button-small__center .btn-s:not(.hide) { transform: translateY(0%); transition: transform 0.35s cubic-bezier(0.77, 0, 0.175, 1); }
+            .button-small__center .btn-s.hide { position: absolute; left: 0; top: 0; width: 100%; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.77, 0, 0.175, 1); }
+            .button-small:hover .button-small__center .btn-s:not(.hide) { transform: translateY(-100%); }
+            .button-small:hover .button-small__center .btn-s.hide { transform: translateY(0%); }
+            .button-small__arrow.left { transform-origin: right center; transform: scale(0) translateX(0); opacity: 0; pointer-events: none; }
+            .button-small__arrow.left .div-hide svg { transform: translateY(150%); }
+            .button-small__arrow.right { transform-origin: left center; transform: scale(1) translateX(0); opacity: 1; pointer-events: auto; }
+            .button-small__arrow.right .div-hide svg { transform: translateY(0%); }
+            .button-small__center { transform: translateX(0); }
+            .button-small:hover .button-small__arrow.left { transform: scale(1) translateX(3.472vw); opacity: 1; pointer-events: auto; }
+            @media screen and (max-width: 479px) { .button-small:hover .button-small__arrow.left { transform: scale(1) translateX(14.925vw); opacity: 1; pointer-events: auto; } }
+            .button-small:hover .button-small__arrow.left .div-hide svg { transform: translateY(0%); }
+            .button-small:hover .button-small__arrow.right { transform: scale(0) translateX(0); opacity: 0; pointer-events: none; }
+            .button-small:hover .button-small__arrow.right .div-hide svg { transform: translateY(150%); }
+            .button-small:hover .button-small__center { transform: translateX(3.472vw); }
+            @media screen and (max-width: 479px) { .button-small:hover .button-small__center { transform: translateX(14.925vw); } }
+            .button-small.is-footer-variant .button-small__center { transform: translateX(-3.472vw); }
+            .button-small.is-footer-variant .button-small__arrow.right { transform: translateX(-3.472vw) scale(1); }
+            @media screen and (max-width: 479px) { .button-small.is-footer-variant .button-small__center { transform: translateX(-14.925vw); } .button-small.is-footer-variant .button-small__arrow.right { transform: translateX(-14.925vw) scale(1); } }
+            .button-small.is-footer-variant .button-small__arrow.left { transform: translateX(0) scale(0); transform-origin: left center; }
+            .button-small.is-footer-variant:hover .button-small__center { transform: translateX(0); }
+            .button-small.is-footer-variant:hover .button-small__arrow.left { transform: translateX(0) scale(1); }
+            .button-small.is-footer-variant:hover .button-small__arrow.right { transform: translateX(0) scale(0); }
+        .nav-burger { display: none; border: none; padding: 0; background: none; cursor: pointer; outline: none; position: relative; z-index: 1100; color: #ffffff; }
+        .nav-burger svg { display: block; width: 18px; height: 18px; }
+        .nav-mobile-panel { position: fixed; inset: 0; width: 100vw; height: 100dvh; background: #ffffff; transform: translateY(-100%); transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1); z-index: 900; }
+        .nav-mobile-panel.is-open { transform: translateY(0); }
+        @media (max-width: 991px) { .nav-burger { display: inline-flex; align-items: center; justify-content: center; } .nav--list { display: none; } }
+        @media (min-width: 992px) { .nav-mobile-panel { display: none; } }
+        .nav-burger svg polyline { stroke: currentColor; }
+        .navigation.is-on-white:not(.menu-open) .nav-burger { color: #000000; }
+        .navigation.menu-open .nav-burger { color: #FA4838; }
+        .navigation.menu-open .nav-burger svg polyline { stroke: currentColor; }
+        .navigation.menu-open .nav-logo svg * { fill: #000 !important; }

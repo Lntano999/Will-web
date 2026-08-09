@@ -8,6 +8,27 @@ async function loadHtml() {
   return readFile(pageUrl, "utf8");
 }
 
+async function loadCustomCss() {
+  const files = [
+    "foundations",
+    "skills",
+    "navigation",
+    "preloader",
+    "motion",
+    "horizontal",
+  ];
+  return (
+    await Promise.all(
+      files.map((name) =>
+        readFile(
+          new URL(`../src/styles/${name}.css`, import.meta.url),
+          "utf8",
+        ),
+      ),
+    )
+  ).join("\n");
+}
+
 test("global positioning reflects quant development without tutoring copy", async () => {
   const html = await loadHtml();
 
@@ -94,13 +115,14 @@ test("horizontal experiences present four evidence-driven groups", async () => {
 
 test("field research links to the public South+ evidence accessibly", async () => {
   const html = await loadHtml();
+  const customCss = await loadCustomCss();
 
   assert.match(
     html,
     /<a[^>]+class="evidence-link"[^>]+href="https:\/\/static\.nfnews\.com\/content\/202607\/25\/c12659862\.html\?colID=0&amp;firstColID=24357&amp;appversion=13800&amp;from=weChatMessage&amp;enterColumnId=&amp;date=&amp;layer=3"[^>]+target="_blank"[^>]+rel="noopener noreferrer"[^>]+aria-label="查看陆丰县域发展调研的南方\+公开报道（在新窗口打开）"/,
   );
   assert.match(html, /查看南方\+公开报道/);
-  assert.match(html, /\.evidence-link:focus-visible\s*\{/);
+  assert.match(customCss, /\.evidence-link:focus-visible\s*\{/);
 });
 
 test("award claims link directly to privacy-safe public evidence", async () => {
@@ -195,6 +217,7 @@ test("skills and About cards use restrained first-year evidence", async () => {
 
 test("skill icons and rules reveal locally without a global style patrol", async () => {
   const html = await loadHtml();
+  const customCss = await loadCustomCss();
 
   const revealOrder = [
     ...html.matchAll(
@@ -212,48 +235,48 @@ test("skill icons and rules reveal locally without a global style patrol", async
     "every skill title must have its own waterfall mask",
   );
   assert.match(
-    html,
+    customCss,
     /\.w-mod-js\s+\.value-icon\s*\{[\s\S]*?opacity:\s*0[\s\S]*?transform:[\s\S]*?clip-path:\s*inset\(100%\s+0\s+0\)/,
   );
   assert.match(
-    html,
+    customCss,
     /\.w-mod-js\s+\.skill-title-line\s*\{[\s\S]*?opacity:\s*0\s*!important;[\s\S]*?transform:\s*translateY\(115%\)\s*!important;/,
   );
   assert.match(
-    html,
+    customCss,
     /\.w-mod-js\s+\.value-item__line\s*\{[\s\S]*?transform:\s*scaleX\(0\)/,
   );
   assert.match(
-    html,
+    customCss,
     /\.w-mod-js\s+\.value-divider\s*\{[\s\S]*?transform:\s*scaleY\(0\)/,
   );
-  assert.match(html, /\.value-item\.scroll-reveal-inview\s+\.value-icon/);
+  assert.match(customCss, /\.value-item\.scroll-reveal-inview\s+\.value-icon/);
   assert.match(
-    html,
+    customCss,
     /\.value-item\.scroll-reveal-inview\s+\.skill-title-line\s*\{[\s\S]*?opacity:\s*1\s*!important;[\s\S]*?transform:\s*translateY\(0\)\s*!important;/,
   );
   assert.match(
-    html,
+    customCss,
     /#tech\s+\.value-item\s+\.scroll-mask-block\s+\.reveal-text-line\s*\{[\s\S]*?transition-delay:\s*calc\(var\(--reveal-order,\s*0\)\s*\*\s*110ms\s*\+\s*var\(--skill-line-delay,\s*260ms\)\)/,
   );
-  assert.match(html, /\.value-divider\.scroll-reveal-inview/);
+  assert.match(customCss, /\.value-divider\.scroll-reveal-inview/);
   assert.match(
-    html,
+    customCss,
     /\.value-item\.scroll-reveal-inview\s+\.value-icon\s*\{[\s\S]*?opacity:\s*1\s*!important;[\s\S]*?transform:\s*translateY\(0\)\s*scale\(1\)\s*!important;[\s\S]*?clip-path:\s*inset\(0\)\s*!important;/,
   );
   assert.match(
-    html,
+    customCss,
     /\.value-item\.scroll-reveal-inview\s+\.value-item__line\s*\{[\s\S]*?transform:\s*scaleX\(1\)\s*!important;/,
   );
   assert.match(
-    html,
+    customCss,
     /\.value-divider\.scroll-reveal-inview\s*\{[\s\S]*?transform:\s*scaleY\(1\)\s*!important;/,
   );
   assert.match(
-    html,
+    customCss,
     /transition-delay:\s*calc\(var\(--reveal-order,\s*0\)\s*\*\s*80ms\)/,
   );
-  assert.match(html, /prefers-reduced-motion:\s*reduce/);
+  assert.match(customCss, /prefers-reduced-motion:\s*reduce/);
 
   assert.doesNotMatch(html, /new MutationObserver/);
   assert.doesNotMatch(html, /startStyleGuard/);
@@ -261,6 +284,7 @@ test("skill icons and rules reveal locally without a global style patrol", async
 
 test("footer and skill copy use scoped, moderately slower reveal timing", async () => {
   const html = await loadHtml();
+  const customCss = await loadCustomCss();
 
   assert.match(
     html,
@@ -275,11 +299,11 @@ test("footer and skill copy use scoped, moderately slower reveal timing", async 
     /createReveal\(targets\.footer,\s*\{\s*duration:\s*1\.05,\s*stagger:\s*0\.14\s*\}\)/,
   );
   assert.match(
-    html,
+    customCss,
     /\.value-item\s+\.scroll-mask-block\s+\.reveal-text-line\s*\{[\s\S]*?transform:\s*translateY\(125%\)[\s\S]*?transition-duration:\s*1\.1s,\s*1\.1s/,
   );
   assert.match(
-    html,
+    customCss,
     /#tech\s+\.value-item\s+\.scroll-mask-block\s+\.reveal-text-line\s*\{[\s\S]*?var\(--reveal-order,\s*0\)\s*\*\s*110ms/,
   );
 
@@ -292,7 +316,7 @@ test("footer and skill copy use scoped, moderately slower reveal timing", async 
     [6, 1010],
   ]) {
     assert.match(
-      html,
+      customCss,
       new RegExp(
         `mask-line-container:nth-child\\(${line}\\) \\{ --skill-line-delay: ${delay}ms; \\}`,
       ),
@@ -301,9 +325,9 @@ test("footer and skill copy use scoped, moderately slower reveal timing", async 
 });
 
 test("skill title masks reserve glyph headroom without moving the layout", async () => {
-  const html = await loadHtml();
+  const customCss = await loadCustomCss();
   assert.match(
-    html,
+    customCss,
     /\.mask-line-container\.skill-title-mask\s*\{[\s\S]*?padding-top:\s*0?\.12em;[\s\S]*?margin-top:\s*-0?\.12em;[\s\S]*?padding-bottom:\s*0?\.12em;[\s\S]*?margin-bottom:\s*calc\(0?\.25rem\s*-\s*0?\.12em\);/,
   );
 });
@@ -421,6 +445,7 @@ test("browser QA is reproducible and exercises every horizontal SVG group", asyn
 
 test("horizontal expansion preserves animation timing and explicit line masks", async () => {
   const html = await loadHtml();
+  const customCss = await loadCustomCss();
 
   assert.match(
     html,
@@ -435,20 +460,20 @@ test("horizontal expansion preserves animation timing and explicit line masks", 
   assert.match(html, /duration:\s*0\.7,[\s\S]*?ease:\s*"power3\.out",[\s\S]*?stagger:\s*0\.1/);
   assert.match(html, /duration:\s*0\.5,[\s\S]*?ease:\s*"power3\.out"/);
   assert.match(
-    html,
+    customCss,
     /\.svg-draw path\s*\{[\s\S]*?stroke-dasharray:\s*1[\s\S]*?stroke-dashoffset:\s*1/,
   );
-  assert.match(html, /transition:\s*stroke-dashoffset\s+2\.4s/);
+  assert.match(customCss, /transition:\s*stroke-dashoffset\s+2\.4s/);
   assert.match(
-    html,
+    customCss,
     /\.svg-draw path:nth-child\(2\)[\s\S]*?transition-delay:\s*0\.14s/,
   );
   assert.match(
-    html,
+    customCss,
     /\.svg-draw path:nth-child\(3\)[\s\S]*?transition-delay:\s*0\.28s/,
   );
   assert.match(
-    html,
+    customCss,
     /\.svg-draw path:nth-child\(4\)[\s\S]*?transition-delay:\s*0\.42s/,
   );
   assert.doesNotMatch(html, /getTotalLength\(/);
