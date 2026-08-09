@@ -1,6 +1,7 @@
 {
   "name": "will-web",
   "private": true,
+  "type": "module",
   "engines": {
     "node": ">=20.19.0"
   },

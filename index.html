@@ -1074,72 +1074,13 @@
   <script src="/vendor/gsap/gsap.min.js" type="text/javascript"></script>
   <script src="/vendor/gsap/SplitText.min.js" type="text/javascript"></script>
   <script src="/vendor/gsap/ScrollTrigger.min.js" type="text/javascript"></script>
-  <script type="text/javascript">
-    if (typeof gsap !== "undefined") {
-      const availableGsapPlugins = [
-        window.SplitText,
-        window.ScrollTrigger,
-      ].filter(Boolean);
-      if (availableGsapPlugins.length) {
-        gsap.registerPlugin(...availableGsapPlugins);
-      }
-    }
-  </script>
   <script src="/vendor/lenis/lenis.min.js"></script>
   <script src="/vendor/anime/anime.umd.min.js"></script>
 
-  <script>
-    /* 1. 禁用浏览器默认的滚动恢复 */
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
-    }
-
-    /* 2. 清除 URL 中的锚点（避免 Webflow 脚本或浏览器强制跳转） */
-    if (window.location.hash) {
-      window.history.replaceState('', document.title, window.location.pathname + window.location.search);
-    }
-
-    /* 3. 页面即将卸载（刷新）时，提前把坐标归零，欺骗部分浏览器的缓存机制 */
-    window.addEventListener('beforeunload', function() {
-      window.scrollTo(0, 0);
-    });
-
-    /* 4. 极早期同步重置 */
-    window.scrollTo(0, 0);
-
-    var lenis;
-    if (
-      typeof Lenis !== "undefined" &&
-      typeof ScrollTrigger !== "undefined" &&
-      typeof gsap !== "undefined"
-    ) {
-      lenis = new Lenis();
-      lenis.on('scroll', ScrollTrigger.update);
-      gsap.ticker.add((time) => { lenis.raf(time * 1000); });
-      gsap.ticker.lagSmoothing(0);
-
-      /* 预加载期间阻止滚动，并重置 lenis 内部状态 */
-      lenis.scrollTo(0, { immediate: true });
-      if (document.documentElement.classList.contains("preloader-released")) {
-        lenis.start();
-      } else {
-        lenis.stop();
-      }
-
-      /* 5. DOM 完全加载时最终保险，杜绝下半截出现空白冻结 */
-      document.addEventListener("DOMContentLoaded", () => {
-        window.scrollTo(0, 0);
-        lenis.scrollTo(0, { immediate: true });
-      });
-    }
-  </script>
-
   <script type="text/javascript">!function(){if(!window.UnicornStudio){window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.5.3/dist/unicornStudio.umd.js",i.onload=function(){window.UnicornStudio.isInitialized||(UnicornStudio.init(),window.UnicornStudio.isInitialized=!0)},(document.head || document.body).appendChild(i)}}();</script>
+  <script type="module" src="/src/main.js"></script>
 
   <script>
-  if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
-    gsap.registerPlugin(ScrollTrigger);
-  }
   document.addEventListener("DOMContentLoaded", () => {
     if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
 

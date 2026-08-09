@@ -28,3 +28,27 @@ test("custom CSS has one ordered Vite entry", async () => {
     ],
   );
 });
+
+test("application JavaScript has one explicit Vite module entry", async () => {
+  const html = await read("index.html");
+  const main = await read("src/main.js");
+  const packageJson = JSON.parse(await read("package.json"));
+
+  assert.equal(
+    html.match(/<script type="module" src="\/src\/main\.js"><\/script>/g)
+      ?.length,
+    1,
+  );
+  assert.match(
+    main,
+    /import \{ createAnimationRuntime \} from "\.\/runtime\/animation-runtime\.js";/,
+  );
+  assert.match(
+    main,
+    /import \{ createScrollController \} from "\.\/runtime\/scroll-controller\.js";/,
+  );
+  assert.doesNotMatch(html, /availableGsapPlugins/);
+  assert.doesNotMatch(html, /gsap\.registerPlugin/);
+  assert.doesNotMatch(html, /\bvar lenis\b/);
+  assert.equal(packageJson.type, "module");
+});

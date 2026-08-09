@@ -356,6 +356,10 @@ test("skill reveal initializes before parser-blocking external resources", async
 
 test("preloader fails open before external animation resources can block the page", async () => {
   const html = await loadHtml();
+  const scrollController = await readFile(
+    new URL("../src/runtime/scroll-controller.js", import.meta.url),
+    "utf8",
+  );
   const failOpenStart = html.indexOf("(function installPreloaderFailOpen()");
   const failOpenEnd = html.indexOf("</script>", failOpenStart);
   const firstExternalScript = html.indexOf("<script src=");
@@ -395,8 +399,8 @@ test("preloader fails open before external animation resources can block the pag
     /releasePreloader\("animation-complete"\)/,
   );
   assert.match(
-    html,
-    /var lenis;[\s\S]*?typeof Lenis !== "undefined"[\s\S]*?typeof ScrollTrigger !== "undefined"[\s\S]*?typeof gsap !== "undefined"/,
+    scrollController,
+    /instance = new runtime\.Lenis\(\)[\s\S]*?instance\.on\("scroll", scrollListener\)[\s\S]*?runtime\.gsap\.ticker\.add\(tickerCallback\)/,
   );
 });
 

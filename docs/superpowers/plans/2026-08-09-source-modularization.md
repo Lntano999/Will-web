@@ -279,7 +279,7 @@ git commit -m "refactor: extract custom site styles"
 - Modify: `tests/source-modularization.test.mjs`
 - Modify: `tests/content-refresh.test.mjs`
 
-- [ ] **Step 1: Write behavioral adapter tests**
+- [x] **Step 1: Write behavioral adapter tests**
 
 Test these public contracts in `tests/runtime-adapters.test.mjs`:
 
@@ -314,7 +314,7 @@ test("scroll controller falls back without constructing Lenis", () => {
 
 Also test that a fake Lenis constructor is called once, that `preloader:released` starts it, and that `destroy()` removes its ticker/listener when supported.
 
-- [ ] **Step 2: Run the adapter tests and observe RED**
+- [x] **Step 2: Run the adapter tests and observe RED**
 
 Run:
 
@@ -324,7 +324,7 @@ node --test tests/runtime-adapters.test.mjs
 
 Expected: FAIL with module-not-found for `src/runtime/animation-runtime.js`.
 
-- [ ] **Step 3: Implement the narrow runtime boundary**
+- [x] **Step 3: Implement the narrow runtime boundary**
 
 Implement these exact exports:
 
@@ -359,7 +359,7 @@ export function createAnimationRuntime(globals = globalThis) {
 
 Move the complete Lenis setup from design-baseline commit `3232faf`, `index.html` lines 2267–2311: construction, `ScrollTrigger.update`, GSAP ticker callback, lag smoothing, initial stop/start decision, and DOM reset. Add a `preloader:released` listener that calls `start()`. The fallback `scrollTo` must accept a number or element and call native `window.scrollTo`.
 
-- [ ] **Step 4: Add the assembly entry and remove duplicate inline runtime setup**
+- [x] **Step 4: Add the assembly entry and remove duplicate inline runtime setup**
 
 Start `src/main.js` with:
 
@@ -385,7 +385,7 @@ Replace the inline GSAP plugin registration and inline Lenis block with one tag 
 
 Keep the earliest scroll-reset block and dependency-free preloader fail-open inline. Keep its current `window.lenis?.start?.()` call during this transitional task so the old and new ownership paths remain compatible; Task 5 removes the temporary global bridge and that call together after anchor scrolling consumes `scrollController` directly.
 
-- [ ] **Step 5: Verify and commit**
+- [x] **Step 5: Verify and commit**
 
 Run:
 
