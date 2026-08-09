@@ -21,6 +21,16 @@ test("file protocol fails explicitly before portfolio resources", async () => {
   assert.match(html, /window\.stop\(\)/);
 });
 
+test("the file guard cannot impersonate the real document head during Vite build", async () => {
+  const html = await read("index.html");
+  const guard = html.match(
+    /\(function guardUnsupportedFileProtocol\(\)[\s\S]*?window\.stop\(\);/,
+  );
+  assert.ok(guard);
+  assert.doesNotMatch(guard[0], /<\/head>/);
+  assert.match(guard[0], /<\\\/head>/);
+});
+
 test("manual acceptance uses the checked-in Vite preview", async () => {
   const [batch, script, packageJsonText, readme] = await Promise.all([
     read("Start-Website.bat"),
