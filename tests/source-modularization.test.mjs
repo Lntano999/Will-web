@@ -81,6 +81,7 @@ test("site interactions are assembled from focused owners", async () => {
     ["registerContactCopy", "contact-copy"],
     ["registerAnchorScroll", "anchor-scroll"],
     ["registerNavigationEffects", "navigation-effects"],
+    ["registerMobileNavigation", "mobile-navigation"],
   ]) {
     assert.match(
       main,
@@ -174,6 +175,7 @@ test("the final source boundary and assembly order stay explicit", async () => {
     "registerContactCopy(appContext)",
     "registerAnchorScroll(appContext)",
     "registerNavigationEffects(appContext)",
+    "registerMobileNavigation(appContext)",
     "createOneShotReveals(appContext)",
     "registerPreloader(appContext)",
   ];

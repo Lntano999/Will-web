@@ -310,3 +310,6 @@
         .navigation.menu-open .nav-burger { color: #FA4838; }
         .navigation.menu-open .nav-burger svg polyline { stroke: currentColor; }
         .navigation.menu-open .nav-logo svg * { fill: #000 !important; }
+        button.nav-burger { appearance: none; font: inherit; }
+        .nav-burger:focus-visible,
+        .nav-mobile__link:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
