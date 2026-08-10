@@ -74,7 +74,7 @@
 
 
   .clipping-text, .clipping-text .split-text-line {
-      background-image: url('https://cdn.prod.website-files.com/68f77e49c7ca6bd68b326c3d/6900c3d30f2eca17950257bd_Blizar%201.png') !important;
+      background-image: url('/assets/brand-texture.png') !important;
       background-size: cover !important;
       background-position: center !important;
       -webkit-background-clip: text !important;
@@ -365,7 +365,7 @@
       visibility: visible !important;
   }
   .navigation .will-logo-text {
-      background-image: url('https://cdn.prod.website-files.com/68f77e49c7ca6bd68b326c3d/6900c3d30f2eca17950257bd_Blizar%201.png') !important;
+      background-image: url('/assets/brand-texture.png') !important;
       background-size: cover !important;
       background-position: center !important;
       -webkit-background-clip: text !important;
@@ -478,4 +478,3 @@
       color: #ffffff !important;
       filter: none !important;
   }
-

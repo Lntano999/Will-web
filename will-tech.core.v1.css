@@ -2881,7 +2881,7 @@ strong {
 
 .left.clipping-text {
   -webkit-text-fill-color: transparent;
-  background-image: url("https://cdn.prod.website-files.com/68f77e49c7ca6bd68b326c3d/6900c3d30f2eca17950257bd_Blizar%201.png");
+  background-image: url("/assets/brand-texture.png");
   background-position: 0 0;
   background-size: auto;
   -webkit-background-clip: text;
@@ -2958,7 +2958,7 @@ strong {
 
 .clipping-text {
   -webkit-text-fill-color: transparent;
-  background-image: url("https://cdn.prod.website-files.com/68f77e49c7ca6bd68b326c3d/6900c3d30f2eca17950257bd_Blizar%201.png");
+  background-image: url("/assets/brand-texture.png");
   background-position: 0 0;
   background-size: auto;
   -webkit-background-clip: text;
@@ -5688,7 +5688,7 @@ strong {
 
   .h-line-mobile.on-mobile.clipping-item {
     -webkit-text-fill-color: inherit;
-    background-image: url("https://cdn.prod.website-files.com/68f77e49c7ca6bd68b326c3d/6900c3d30f2eca17950257bd_Blizar%201.png");
+    background-image: url("/assets/brand-texture.png");
     background-position: 50%;
     background-repeat: no-repeat;
     background-size: cover;

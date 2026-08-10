@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { readdir, readFile } from "node:fs/promises";
 import test from "node:test";
 
 const indexHtml = await readFile("index.html", "utf8");
@@ -10,6 +11,20 @@ const syncScript = await readFile("scripts/sync-vendor-assets.mjs", "utf8").catc
 );
 const qaScript = await readFile("scripts/qa-portfolio.mjs", "utf8");
 const qaRunner = await readFile("scripts/run-qa-local.mjs", "utf8");
+const sourcePaths = await listFilesRecursively("src");
+const runtimeCssPaths = [
+  "will-tech.core.v1.css",
+  ...sourcePaths.filter((path) => path.endsWith(".css")),
+];
+const runtimeCss = (
+  await Promise.all(runtimeCssPaths.map((path) => readFile(path, "utf8")))
+).join("\n");
+const runtimeSource = (
+  await Promise.all([
+    Promise.resolve(indexHtml),
+    ...sourcePaths.map((path) => readFile(path, "utf8")),
+  ])
+).join("\n");
 
 test("runtime dependencies use exact reproducible versions", () => {
   assert.deepEqual(packageJson.dependencies, {
@@ -71,6 +86,34 @@ test("vendor synchronization uses a fixed allowlist and generated output stays i
   assert.doesNotMatch(syncScript, /InertiaPlugin|Draggable/);
 });
 
+test("brand texture CSS uses a same-origin local asset", async () => {
+  const remoteCssImageUrls = [
+    ...runtimeCss.matchAll(/url\(\s*(["']?)(https?:\/\/[^)"']+)\1\s*\)/gi),
+  ].map((match) => match[2]);
+
+  assert.deepEqual(
+    remoteCssImageUrls,
+    [],
+    `runtime CSS still requests external images: ${remoteCssImageUrls.join(", ")}`,
+  );
+  assert.match(
+    runtimeCss,
+    /url\(["']?\/assets\/brand-texture\.png["']?\)/,
+  );
+
+  const texture = await readFile("public/assets/brand-texture.png");
+  assert.equal(
+    createHash("sha256").update(texture).digest("hex").toUpperCase(),
+    "7D63475025E71B979E3FC3557953878E6D792BC97CEB79639DD9194C5F11E175",
+    "brand texture must remain byte-for-byte identical to the approved artwork",
+  );
+});
+
+test("local content images never fail over to third-party placeholders", () => {
+  assert.doesNotMatch(runtimeSource, /<img\b[^>]*\bonerror\s*=/i);
+  assert.doesNotMatch(runtimeSource, /images\.unsplash\.com/i);
+});
+
 test("offline QA verifies both self-hosted runtimes and dependency fail-open", () => {
   assert.match(
     qaScript,
@@ -106,6 +149,18 @@ test("offline QA verifies both self-hosted runtimes and dependency fail-open", (
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+async function listFilesRecursively(directory) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const paths = await Promise.all(
+    entries.map((entry) => {
+      const path = `${directory}/${entry.name}`;
+      return entry.isDirectory() ? listFilesRecursively(path) : [path];
+    }),
+  );
+
+  return paths.flat();
 }
 
 function assertVendorPathAttribute(html, expectedPath, htmlLabel) {
