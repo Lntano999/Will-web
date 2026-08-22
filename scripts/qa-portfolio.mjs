@@ -24,6 +24,7 @@ const playwrightModule = moduleTarget
 const { chromium } = playwrightModule;
 
 const allViewports = [
+  { width: 2408, height: 1104 },
   { width: 1920, height: 1080 },
   { width: 1440, height: 900 },
   { width: 1024, height: 768 },
@@ -42,6 +43,7 @@ const viewports = requestedWidths.size
   : allViewports;
 
 const screenshotWidths = new Set([1920, 1024, 390]);
+const skillScreenshotWidths = new Set([2408, 1440]);
 const evidencePaths = [
   "evidence/modeling-csee-cup-2026-third-prize-redacted.png",
   "evidence/cn-story-2026-guangdong-second-prize-redacted.jpg",
@@ -436,7 +438,25 @@ try {
     const skillState = await page.evaluate(() =>
       [...document.querySelectorAll(".value-item")].map((item) => {
         const icon = getComputedStyle(item.querySelector(".value-icon"));
-        const title = getComputedStyle(item.querySelector(".skill-title-line"));
+        const titleElement = item.querySelector(".skill-title-line");
+        const titleMask = titleElement.closest(".skill-title-mask");
+        const body = item.querySelector(".scroll-mask-block");
+        const title = getComputedStyle(titleElement);
+        const titleRect = titleElement.getBoundingClientRect();
+        const titleMaskRect = titleMask.getBoundingClientRect();
+        const bodyRect = body.getBoundingClientRect();
+        const priorMaskStyle = titleMask.getAttribute("style");
+        titleMask.style.paddingTop = "0.12em";
+        titleMask.style.marginTop = "-0.12em";
+        titleMask.style.paddingBottom = "0.12em";
+        titleMask.style.marginBottom = "calc(0.25rem - 0.12em)";
+        const legacyTitleTop = titleElement.getBoundingClientRect().top;
+        const legacyBodyTop = body.getBoundingClientRect().top;
+        if (priorMaskStyle === null) {
+          titleMask.removeAttribute("style");
+        } else {
+          titleMask.setAttribute("style", priorMaskStyle);
+        }
         const textLines = [
           ...item.querySelectorAll(".scroll-mask-block .reveal-text-line"),
         ];
@@ -450,6 +470,9 @@ try {
           iconClipPath: icon.clipPath,
           titleOpacity: Number(title.opacity),
           titleTransform: title.transform,
+          titleMaskFinalClearance: titleMaskRect.bottom - titleRect.bottom,
+          titleLayoutShift: Math.abs(titleRect.top - legacyTitleTop),
+          bodyLayoutShift: Math.abs(bodyRect.top - legacyBodyTop),
           hiddenTextLines: textLines.filter(
             (line) => Number(getComputedStyle(line).opacity) < 0.99,
           ).length,
@@ -477,6 +500,20 @@ try {
           (state.titleTransform === "none" ||
             state.titleTransform === "matrix(1, 0, 0, 1, 0, 0)"),
         `${viewport.width}px: skill ${index + 1} title did not finish its mask reveal`,
+      );
+      if (viewport.width === 2408) {
+        check(
+          state.titleMaskFinalClearance >= 4.5,
+          `${viewport.width}px: skill ${index + 1} final title-mask clearance is ${state.titleMaskFinalClearance}px, expected at least 4.5px`,
+        );
+      }
+      check(
+        state.titleLayoutShift <= 0.5,
+        `${viewport.width}px: skill ${index + 1} title layout shift from legacy compensation is ${state.titleLayoutShift}px`,
+      );
+      check(
+        state.bodyLayoutShift <= 0.5,
+        `${viewport.width}px: skill ${index + 1} body layout shift from legacy compensation is ${state.bodyLayoutShift}px`,
       );
       check(
         state.hiddenTextLines === 0 &&
@@ -510,6 +547,12 @@ try {
           state.transform === "matrix(1, 0, 0, 1, 0, 0)",
         `${viewport.width}px: divider ${index + 1} did not reach full scale`,
       );
+    }
+
+    if (skillScreenshotWidths.has(viewport.width)) {
+      await page.locator("#tech .section-values").screenshot({
+        path: path.join(outputDir, `skills-${viewport.width}.png`),
+      });
     }
 
     const passiveContentState = await page.evaluate(() => ({
@@ -597,12 +640,6 @@ try {
         await visualContext.close();
       }
     }
-    if (viewport.width === 1440) {
-      await page.locator("#tech .section-values").screenshot({
-        path: path.join(outputDir, "skills-1440.png"),
-      });
-    }
-
     if (blockExternal) {
       check(
         pageErrors.length === 0,

@@ -334,7 +334,7 @@ test("skill title masks reserve glyph headroom without moving the layout", async
   const customCss = await loadCustomCss();
   assert.match(
     customCss,
-    /\.mask-line-container\.skill-title-mask\s*\{[\s\S]*?padding-top:\s*0?\.12em;[\s\S]*?margin-top:\s*-0?\.12em;[\s\S]*?padding-bottom:\s*0?\.12em;[\s\S]*?margin-bottom:\s*calc\(0?\.25rem\s*-\s*0?\.12em\);/,
+    /\.mask-line-container\.skill-title-mask\s*\{[\s\S]*?padding-top:\s*0?\.18em;[\s\S]*?margin-top:\s*-0?\.18em;[\s\S]*?padding-bottom:\s*0?\.18em;[\s\S]*?margin-bottom:\s*calc\(0?\.25rem\s*-\s*0?\.18em\);/,
   );
 });
 
@@ -438,6 +438,23 @@ test("browser QA is reproducible and exercises every horizontal SVG group", asyn
   assert.match(qa, /hiddenTextLines/);
   assert.match(qa, /titleMaskHeadroom/);
   assert.match(qa, /titleMaskClearance/);
+  assert.match(qa, /\{ width: 2408, height: 1104 \}/);
+  assert.match(qa, /titleMaskFinalClearance/);
+  assert.match(qa, /titleLayoutShift/);
+  assert.match(qa, /bodyLayoutShift/);
+  assert.match(
+    qa,
+    /if \(viewport\.width === 2408\) \{\s*check\(\s*state\.titleMaskFinalClearance >= 4\.5/,
+  );
+  assert.match(qa, /const skillScreenshotWidths = new Set\(\[2408, 1440\]\);/);
+  assert.match(qa, /skills-\$\{viewport\.width\}\.png/);
+  assert.match(qa, /state\.titleLayoutShift <= 0\.5/);
+  assert.match(qa, /state\.bodyLayoutShift <= 0\.5/);
+  assert.ok(
+    qa.indexOf("if (skillScreenshotWidths.has(viewport.width))") <
+      qa.indexOf('const copyButtons'),
+    "skill screenshot capture must precede copy-button interactions",
+  );
   assert.match(qa, /textLineDelays/);
   assert.match(qa, /expectedDelay/);
   assert.match(qa, /hiddenSkillTitles/);
