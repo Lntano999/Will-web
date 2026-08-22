@@ -162,11 +162,15 @@
   }
 
   .mask-line-container.skill-title-mask {
-    overflow: hidden;
+    overflow: visible;
     padding-top: 0.18em;
     margin-top: -0.18em;
     padding-bottom: 0.18em;
     margin-bottom: calc(0.25rem - 0.18em);
+  }
+
+  .skill-title-line {
+    font-family: Arial, "Helvetica Neue", sans-serif !important;
   }
 
   @media screen and (max-width: 991px) {
@@ -225,12 +229,18 @@
 
   @media (prefers-reduced-motion: reduce) {
     .w-mod-js .value-icon,
-    .w-mod-js .skill-title-line,
     .w-mod-js .value-item__line,
     .w-mod-js .value-divider {
       opacity: 1 !important;
       transform: none !important;
       clip-path: inset(0) !important;
+      transition: none;
+    }
+
+    .w-mod-js .skill-title-line {
+      opacity: 1 !important;
+      transform: none !important;
+      clip-path: none !important;
       transition: none;
     }
   }
