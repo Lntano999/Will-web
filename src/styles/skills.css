@@ -163,10 +163,19 @@
 
   .mask-line-container.skill-title-mask {
     overflow: hidden;
-    padding-top: 0.12em;
-    margin-top: -0.12em;
-    padding-bottom: 0.12em;
-    margin-bottom: calc(0.25rem - 0.12em);
+    padding-top: 0.18em;
+    margin-top: -0.18em;
+    padding-bottom: 0.18em;
+    margin-bottom: calc(0.25rem - 0.18em);
+  }
+
+  @media screen and (max-width: 991px) {
+    .mask-line-container.skill-title-mask {
+      padding-top: 0.12em;
+      margin-top: -0.12em;
+      padding-bottom: 0.12em;
+      margin-bottom: calc(0.25rem - 0.12em);
+    }
   }
 
   .w-mod-js .skill-title-line {
