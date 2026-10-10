@@ -1,12 +1,26 @@
 import assert from "node:assert/strict";
+import { execFile as execFileCallback } from "node:child_process";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
+import { promisify } from "node:util";
 
 const repoUrl = new URL("../", import.meta.url);
+const execFile = promisify(execFileCallback);
 
 async function readText(relativePath) {
   return readFile(new URL(relativePath, repoUrl), "utf8");
 }
+
+test("local .vs IDE and .superpowers agent state stay out of the repository index", async () => {
+  const gitignore = await readText(".gitignore");
+  assert.match(gitignore, /^\.vs\/$/m);
+  assert.match(gitignore, /^\.superpowers\/$/m);
+
+  const { stdout } = await execFile("git", ["ls-files", "--", ".vs", ".superpowers"], {
+    cwd: new URL("../", import.meta.url),
+  });
+  assert.equal(stdout.trim(), "");
+});
 
 test("package scripts expose a reproducible Vite lifecycle", async () => {
   const packageJson = JSON.parse(await readText("package.json"));

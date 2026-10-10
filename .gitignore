@@ -8,6 +8,10 @@ node_modules/
 # Codex isolated implementation worktrees
 .worktrees/
 
+# Local IDE and agent execution state
+.vs/
+.superpowers/
+
 # Generated build and browser QA artifacts
 dist/
 .artifacts/
