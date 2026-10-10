@@ -178,7 +178,7 @@ The script must not blur, pixelate, or retain editable layers.
 Run Poppler at 150 DPI into a temporary working directory:
 
 ```powershell
-pdftoppm.exe -png -r 150 -singlefile "C:\Users\lenovo\xwechat_files\wxid_6kkeeqhjjwt722_dacf\msg\file\2026-07\005680_1(2).pdf" "<temporary-dir>\modeling-certificate"
+pdftoppm.exe -png -r 150 -singlefile "<private-source-dir>\modeling-certificate.pdf" "<temporary-dir>\modeling-certificate"
 ```
 
 Expected: a single PNG page; the source PDF remains outside the repository.
@@ -190,7 +190,7 @@ Run:
 ```powershell
 python.exe scripts/redact_evidence.py `
   --modeling-render "<temporary-dir>\modeling-certificate.png" `
-  --cn-story "C:\Users\lenovo\xwechat_files\wxid_6kkeeqhjjwt722_dacf\temp\RWTemp\2026-07\9e20f478899dc29eb19741386f9343c8\97ac6a8dcc9da13afe7926b79fd2a85f.jpg" `
+  --cn-story "<private-source-dir>\cn-story-certificate.jpg" `
   --out-dir evidence
 ```
 
