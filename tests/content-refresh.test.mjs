@@ -68,7 +68,8 @@ test("global positioning reflects quant development without tutoring copy", asyn
     /现实问题<\/span><br\s*\/?>\s*<span class="reveal-text-line">的交叉地带。/,
   );
   assert.match(html, />Current Focus</);
-  assert.match(html, /量化开发 × 金融科技后端/);
+  assert.match(html, />金融科技后端<br\/>/);
+  assert.doesNotMatch(html, /量化开发 × 金融科技后端/);
   assert.match(html, /用建模、工程实现与真实场景调研，积累可验证的问题解决能力。/);
 
   assert.match(html, />Background</);
