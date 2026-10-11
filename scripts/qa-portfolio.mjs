@@ -257,6 +257,35 @@ try {
       const focusRect = focus?.getBoundingClientRect();
       const textRect = focusText?.getBoundingClientRect();
       const identityRects = identityLines.map((line) => line.getBoundingClientRect());
+      const protectedIdentityPhrase = "问题的";
+      const protectedIdentityLine = identityLines.find((line) =>
+        line.textContent.includes(protectedIdentityPhrase),
+      );
+      const protectedIdentityElement = protectedIdentityLine?.matches(
+        ".reveal-text-line",
+      )
+        ? protectedIdentityLine
+        : protectedIdentityLine?.querySelector(".reveal-text-line");
+      const protectedIdentityTextNode = protectedIdentityElement
+        ? [...protectedIdentityElement.childNodes].find(
+            (node) =>
+              node.nodeType === Node.TEXT_NODE &&
+              node.data.includes(protectedIdentityPhrase),
+          )
+        : null;
+      let protectedIdentityRectCount = 0;
+      if (protectedIdentityTextNode) {
+        const phraseStart = protectedIdentityTextNode.data.indexOf(
+          protectedIdentityPhrase,
+        );
+        const phraseRange = document.createRange();
+        phraseRange.setStart(protectedIdentityTextNode, phraseStart);
+        phraseRange.setEnd(
+          protectedIdentityTextNode,
+          phraseStart + protectedIdentityPhrase.length,
+        );
+        protectedIdentityRectCount = phraseRange.getClientRects().length;
+      }
 
       return {
         overflow: root.scrollWidth - root.clientWidth,
@@ -273,6 +302,7 @@ try {
         identityText: identityLines.map((line) =>
           line.textContent.replace(/\s+/g, ""),
         ),
+        protectedIdentityRectCount,
       };
     });
 
@@ -293,8 +323,12 @@ try {
       `${viewport.width}px: identity lines do not advance vertically (${basicLayout.identityAdvance}px)`,
     );
     check(
-      basicLayout.identityText.includes("的交叉地带。"),
-      `${viewport.width}px: third identity line is not isolated`,
+      basicLayout.identityText.includes("现实问题的交叉地带。"),
+      `${viewport.width}px: identity closing phrase is not grouped`,
+    );
+    check(
+      basicLayout.protectedIdentityRectCount === 1,
+      `${viewport.width}px: 问题的 wraps across ${basicLayout.protectedIdentityRectCount} visual rows`,
     );
 
     const initialSkillState = await page.evaluate(() =>
