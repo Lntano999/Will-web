@@ -175,9 +175,24 @@ test("smooth scroll setup is single-owner and cleans up every subscription", () 
   assert.equal(calls.at(-1)[0], "destroy");
 });
 
+test("Lenis leaves native input alone when its frame driver is missing", () => {
+  class Lenis {
+    constructor() {
+      assert.fail("Lenis must not intercept input without a ticker");
+    }
+  }
+  for (const gsap of [null, { ticker: {} }]) {
+    const controller = createScrollController({ runtime: { Lenis, gsap } });
+    assert.equal(controller.isSmooth, false);
+    assert.equal(controller.instance, null);
+    controller.destroy();
+  }
+});
+
 test("an already released page starts smooth scrolling immediately", () => {
   const calls = [];
   class FakeLenis {
+    raf() {}
     on() {}
     scrollTo() {}
     start() {
@@ -189,7 +204,7 @@ test("an already released page starts smooth scrolling immediately", () => {
   }
 
   createScrollController({
-    runtime: { Lenis: FakeLenis, gsap: null, ScrollTrigger: null },
+    runtime: { Lenis: FakeLenis, gsap: { ticker: { add() {} } }, ScrollTrigger: null },
     globals: { addEventListener() {}, scrollTo() {} },
     document: {
       addEventListener() {},

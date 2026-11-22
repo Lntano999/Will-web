@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 
-export async function verifyMobileExperience(page) {
+export async function verifyExperienceFlow(page) {
   const cards = page.locator("#research [data-experience]");
   assert.deepEqual(
     await cards.evaluateAll((items) => items.map((item) => item.dataset.experience)),

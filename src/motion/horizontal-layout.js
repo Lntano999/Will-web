@@ -6,7 +6,9 @@ export function registerHorizontalLayout({
   const { gsap, ScrollTrigger, SplitText } = runtime;
 
   window.addEventListener("load", () => {
+    const section = document.querySelector(".horizontal-section");
     if (!gsap || !ScrollTrigger) {
+      section?.classList.add("is-static");
       document.body.classList.add("horizontal-reveal-immediate");
       document
         .querySelectorAll(".h-slide")
@@ -14,7 +16,6 @@ export function registerHorizontalLayout({
       return;
     }
 
-    const section = document.querySelector(".horizontal-section");
     const wrapper = section?.querySelector(".horizontal-wrapper");
     const track = section?.querySelector(".track");
     const textPin = document.querySelector(".horizontal-text-pin");
