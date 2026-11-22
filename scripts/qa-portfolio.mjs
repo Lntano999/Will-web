@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { verifyMobileExperience } from "./qa-mobile-experience.mjs";
 import { mkdir } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -417,6 +418,7 @@ try {
     );
 
     if (viewport.width <= 390) {
+      await verifyMobileExperience(page);
       const trigger = page.locator("[data-mobile-nav-trigger]");
       await trigger.focus();
       await page.keyboard.press("Space");
@@ -673,6 +675,13 @@ try {
       } finally {
         await visualContext.close();
       }
+    }
+    if (!allowOffline && viewport.width === 390) {
+      await page.setViewportSize({ ...viewport, width: 480 });
+      await page.waitForFunction(() => document.querySelector("#research").closest(".pin-spacer"));
+      await page.setViewportSize(viewport);
+      await page.waitForFunction(() => !document.querySelector("#research").closest(".pin-spacer"));
+      await verifyMobileExperience(page);
     }
     if (blockExternal) {
       check(

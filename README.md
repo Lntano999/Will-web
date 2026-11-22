@@ -4,13 +4,15 @@ Static Vite portfolio for WILL.
 
 ## Supported local entry
 
-Run `node scripts/manual-preview.mjs` or double-click `Start-Website.bat`, then open `http://127.0.0.1:4173/`. Press `Ctrl+C` in the launcher terminal to stop it. Do not double-click `index.html`.
+From the project directory, use Node.js 22.12 or later on the 22.x line (CI uses 22.12.0), or Node.js 24. Run `npm ci` on first checkout and after lockfile changes.
+
+Run `npm run acceptance:local` or double-click `Start-Website.bat` on Windows. The launcher runs `npm run build` and serves the result at `http://127.0.0.1:4173/`. Press `Ctrl+C` in the launcher terminal to stop it.
 
 ## Engineering commands
 
-- Tests: `node --test tests/*.test.mjs`
-- Build: `node node_modules/vite/bin/vite.js build`
-- Full local QA: `node scripts/run-qa-local.mjs`
+- Tests: `npm test`
+- Build: `npm run build` synchronizes the self-hosted animation libraries into the production output.
+- Full local QA: install Chromium once with `npx playwright install chromium`, then run `npm run build` followed by `npm run qa:offline`.
 - Read-only production smoke: `node scripts/qa-production.mjs`
 
 ## Delivery model
