@@ -3,7 +3,7 @@ export function registerHorizontalReveals({
   document = globalThis.document,
   window = globalThis.window,
 }) {
-  const { gsap, SplitText } = runtime;
+  const { gsap, ScrollTrigger, SplitText } = runtime;
 
   window.addEventListener("load", () => {
     const slides = [...document.querySelectorAll(".h-slide")];
@@ -29,7 +29,7 @@ export function registerHorizontalReveals({
       }
     }
 
-    if (!gsap || !SplitText || !window.IntersectionObserver) {
+    if (!gsap || !ScrollTrigger || !SplitText || !window.IntersectionObserver) {
       revealSlidesImmediately();
       return;
     }

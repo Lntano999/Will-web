@@ -1,2 +1,23 @@
                 .svg-draw { width: 5.556vw !important; height: 5.556vw !important; }
                 @media (max-width: 479px) { .svg-draw { width: 19.9vw !important; height: 19.9vw !important; } }
+
+/* Without a horizontal scroll driver, each desktop card and its timeline
+   panel share one row in the normal document flow. */
+@media (width > 479px) {
+  .horizontal-section.is-static {
+    height: auto;
+    margin-top: 0;
+  }
+
+  .horizontal-section.is-static .horizontal-wrapper,
+  .horizontal-section.is-static .track,
+  .horizontal-section.is-static .h-slide {
+    height: auto;
+  }
+
+  .horizontal-section.is-static .track {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(100vh, auto);
+  }
+}

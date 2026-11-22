@@ -33,7 +33,7 @@ export function createScrollController({
   }
   globals.addEventListener?.("beforeunload", handleBeforeUnload);
 
-  if (runtime?.Lenis) {
+  if (runtime?.Lenis && typeof runtime.gsap?.ticker?.add === "function") {
     instance = new runtime.Lenis();
 
     if (runtime.ScrollTrigger?.update && instance.on) {
@@ -41,11 +41,9 @@ export function createScrollController({
       instance.on("scroll", scrollListener);
     }
 
-    if (runtime.gsap?.ticker?.add && instance.raf) {
-      tickerCallback = (time) => instance.raf(time * 1000);
-      runtime.gsap.ticker.add(tickerCallback);
-      runtime.gsap.ticker.lagSmoothing?.(0);
-    }
+    tickerCallback = (time) => instance.raf(time * 1000);
+    runtime.gsap.ticker.add(tickerCallback);
+    runtime.gsap.ticker.lagSmoothing?.(0);
 
     instance.scrollTo?.(0, { immediate: true });
     if (document?.documentElement?.classList?.contains("preloader-released")) {
@@ -86,7 +84,7 @@ export function createScrollController({
       );
       document?.removeEventListener?.("DOMContentLoaded", handleDomReady);
 
-      if (tickerCallback) runtime.gsap?.ticker?.remove?.(tickerCallback);
+      if (tickerCallback) runtime.gsap.ticker.remove?.(tickerCallback);
       if (scrollListener) instance?.off?.("scroll", scrollListener);
       instance?.destroy?.();
     },

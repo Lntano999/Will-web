@@ -68,6 +68,7 @@ await runWithPreviewLifecycle(previewLifecycle, async () => {
     QA_VIEWPORTS: "1440,390",
     QA_OUTPUT_DIR: path.join(outputDir, "fallback"),
   });
+  await runQa(path.join(repoDir, "scripts", "qa-scroll-fallback.mjs"), {});
 });
 
 await runQa(entryGuardQaScript, {
