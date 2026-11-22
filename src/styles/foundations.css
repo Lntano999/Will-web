@@ -153,11 +153,17 @@
 
 
   .horizontal-section {
-      height: 100vh !important;
-      min-height: 100vh !important;
       width: 100%;
-      overflow: hidden !important; 
+      overflow: hidden !important;
       position: relative;
+  }
+
+  /* Desktop pins one screen. On phones the four cards flow vertically. */
+  @media (width > 479px) {
+    .horizontal-section {
+      height: 100vh;
+      min-height: 100vh;
+    }
   }
 
   

@@ -2,10 +2,10 @@
 
 ## Candidate flow
 
-1. Work on an isolated branch/worktree.
-2. Run `node --test tests/*.test.mjs`.
-3. Run `node node_modules/vite/bin/vite.js build`.
-4. Run `node scripts/run-qa-local.mjs` and inspect screenshots.
+1. Work on an isolated branch/worktree and install the locked dependencies with `npm ci`.
+2. Run `npm test`.
+3. Run `npm run build` to synchronize the vendor assets and build the site.
+4. Install Chromium with `npx playwright install chromium` on first use. Run `npm run qa:offline` and inspect screenshots.
 5. Push the isolated branch only with explicit authorization.
 6. Open the Vercel Preview URL and repeat the human visual checklist.
 7. Merge or deploy only after explicit approval.

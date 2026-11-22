@@ -47,7 +47,12 @@ test("manual acceptance uses the checked-in Vite preview", async () => {
     "node scripts/manual-preview.mjs",
   );
   assert.match(script, /viteEntry/);
-  assert.match(script, /["']build["']/);
+  assert.match(script, /npm run build/);
+  assert.match(readme, /npm ci/);
+  assert.match(readme, /npm run build/);
+  const runbook = await read("docs/runbooks/preview-and-rollback.md");
+  assert.match(runbook, /npm run build/);
+  assert.doesNotMatch(readme + runbook, /node_modules\/vite\/bin\/vite\.js build/);
   assert.match(script, /["']preview["']/);
   assert.match(script, /--strictPort/);
   assert.match(script, /http:\/\/127\.0\.0\.1:4173\//);

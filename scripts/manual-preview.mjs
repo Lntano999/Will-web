@@ -1,11 +1,11 @@
 import { spawn, spawnSync } from "node:child_process";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { createPreviewLifecycle } from "./preview-lifecycle.mjs";
 
 export const manualPreviewUrl = "http://127.0.0.1:4173/";
-export const viteEntry = path.resolve("node_modules", "vite", "bin", "vite.js");
-export const buildArguments = [viteEntry, "build"];
+const repoDir = fileURLToPath(new URL("../", import.meta.url));
+export const viteEntry = path.join(repoDir, "node_modules", "vite", "bin", "vite.js");
 export const previewArguments = [
   viteEntry,
   "preview",
@@ -28,11 +28,14 @@ function openBrowser(url) {
 }
 
 export async function main() {
-  const build = spawnSync(process.execPath, buildArguments, { stdio: "inherit" });
+  // Use npm's prebuild hook for the same vendor assets as CI. The shell
+  // resolves npm.cmd on Windows as well as npm on POSIX.
+  const build = spawnSync("npm run build", { cwd: repoDir, shell: true, stdio: "inherit" });
   if (build.status !== 0) process.exitCode = build.status ?? 1;
   if (process.exitCode) return;
 
   const preview = spawn(process.execPath, previewArguments, {
+    cwd: repoDir,
     stdio: ["ignore", "pipe", "inherit"],
   });
   const lifecycle = createPreviewLifecycle(preview, { baseUrl: manualPreviewUrl });
